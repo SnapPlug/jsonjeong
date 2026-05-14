@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웹 서비스 아키텍처 지도 — 전체 그림</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e14;
+    --panel: #161b22;
+    --panel-2: #1c2128;
+    --border: #30363d;
+    --border-strong: #484f58;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --dim: #6e7681;
+
+    --user: #58a6ff;
+    --edge: #79c0ff;
+    --proxy: #a5d6ff;
+    --app: #d2a8ff;
+    --backend: #ff7b72;
+    --frontend: #ffa657;
+    --data: #7ee787;
+    --external: #f0883e;
+    --dev: #d29922;
+    --ops: #bc8cff;
+    --security: #f85149;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 32px 16px;
+  }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header h1 {
+    font-size: 2.2em;
+    background: linear-gradient(135deg, #58a6ff, #bc8cff, #ff7b72);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 1.05em;
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    font-size: 0.85em;
+    color: var(--muted);
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  /* MAIN LAYOUT: 메인 흐름(좌측 큰 컬럼) + 사이드 컬럼(우측) */
+  .map {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 16px;
+  }
+  @media (max-width: 1100px) {
+    .map { grid-template-columns: 1fr; }
+  }
+
+  /* 레이어 박스 (수직 흐름) */
+  .layer {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+
+  .layer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .layer-title {
+    font-size: 0.85em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .layer-title .num {
+    background: var(--panel-2);
+    color: var(--muted);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-family: "SF Mono", Menlo, monospace;
+  }
+
+  .layer-subtitle {
+    color: var(--dim);
+    font-size: 0.8em;
+    font-style: italic;
+  }
+
+  .components {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  .comp {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .comp-role {
+    font-size: 0.7em;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .comp-name {
+    font-weight: 600;
+    font-size: 0.95em;
+    margin-bottom: 6px;
+  }
+
+  .comp-options {
+    font-size: 0.75em;
+    color: var(--dim);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .comp-pick {
+    font-size: 0.78em;
+    font-family: "SF Mono", Menlo, monospace;
+    background: rgba(63, 185, 80, 0.1);
+    color: var(--data);
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    border: 1px solid rgba(63, 185, 80, 0.3);
+  }
+
+  /* 레이어별 컬러 보더 */
+  .layer.user { border-color: var(--user); }
+  .layer.user .layer-title { color: var(--user); }
+
+  .layer.edge { border-color: var(--edge); }
+  .layer.edge .layer-title { color: var(--edge); }
+
+  .layer.proxy { border-color: var(--proxy); }
+  .layer.proxy .layer-title { color: var(--proxy); }
+
+  .layer.app-server { border-color: var(--app); }
+  .layer.app-server .layer-title { color: var(--app); }
+
+  .layer.backend { border-color: var(--backend); }
+  .layer.backend .layer-title { color: var(--backend); }
+
+  .layer.frontend { border-color: var(--frontend); }
+  .layer.frontend .layer-title { color: var(--frontend); }
+
+  .layer.data { border-color: var(--data); }
+  .layer.data .layer-title { color: var(--data); }
+
+  .layer.external { border-color: var(--external); }
+  .layer.external .layer-title { color: var(--external); }
+
+  .arrow {
+    text-align: center;
+    color: var(--border-strong);
+    font-size: 1.5em;
+    margin: -4px 0;
+    line-height: 1;
+  }
+
+  /* 사이드 컬럼 */
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .side-card {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 18px;
+  }
+
+  .side-card.dev { border-color: var(--dev); }
+  .side-card.dev .side-title { color: var(--dev); }
+
+  .side-card.security { border-color: var(--security); }
+  .side-card.security .side-title { color: var(--security); }
+
+  .side-card.ops { border-color: var(--ops); }
+  .side-card.ops .side-title { color: var(--ops); }
+
+  .side-title {
+    font-size: 0.85em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .side-title .num {
+    background: var(--panel-2);
+    color: var(--muted);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-family: "SF Mono", Menlo, monospace;
+  }
+
+  .side-item {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85em;
+  }
+  .side-item:last-child { border-bottom: none; }
+
+  .side-item-name {
+    color: var(--text);
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+
+  .side-item-pick {
+    color: var(--data);
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 0.8em;
+  }
+
+  .side-item-pick.none {
+    color: var(--dim);
+    font-style: italic;
+  }
+
+  /* 빌드 파이프라인 (상단 가로 흐름) */
+  .pipeline {
+    background: var(--panel);
+    border: 2px solid var(--dev);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+  }
+
+  .pipeline-title {
+    font-size: 0.85em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--dev);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .pipeline-flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+
+  .pipe-step {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-width: 130px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .pipe-step .step-label {
+    font-size: 0.7em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .pipe-step .step-tool {
+    font-size: 0.85em;
+    color: var(--data);
+    font-family: "SF Mono", Menlo, monospace;
+  }
+  .pipe-arrow {
+    color: var(--border-strong);
+    flex-shrink: 0;
+  }
+
+  /* 흐름 표시 */
+  .flow-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85em;
+    margin: 4px 0 10px;
+    font-style: italic;
+  }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85em;
+  }
+
+  .summary-box {
+    background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(188, 140, 255, 0.08));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 24px 0;
+    font-size: 0.95em;
+  }
+
+  .summary-box strong {
+    color: var(--user);
+  }
+
+  @media print {
+    body { background: white; color: black; }
+    .layer, .side-card, .pipeline, .comp { border-color: #ccc !important; background: white !important; }
+    .pipe-step { background: #f5f5f5 !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>웹 서비스 아키텍처 지도</h1>
+    <p>코드를 짜서 → 사용자가 접속하기까지, 한 화면에서 보는 전체 그림</p>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background: var(--user)"></span> 사용자/엣지</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--app)"></span> 앱 실행</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--backend)"></span> 백엔드</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--frontend)"></span> 프론트엔드</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--data)"></span> 데이터</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--external)"></span> 외부 서비스</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--dev)"></span> 개발/배포</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--security)"></span> 보안</div>
+      <div class="legend-item"><span class="legend-dot" style="background: var(--ops)"></span> 운영/관측</div>
+    </div>
+  </header>
+
+  <div class="summary-box">
+    <strong>읽는 법 —</strong>
+    각 박스는 <em>"이 역할을 하는 무언가가 필요하다"</em> 라는 추상적인 자리.
+    아래 회색 작은 글씨가 <em>업계 일반 선택지</em>, 초록색 박스가 <em>우리(jsonjeong.com)의 선택</em>입니다.
+    위에서 아래로 사용자 요청이 흐르고, 우측은 사용자 요청과 무관하게 항상 돌아가는 영역입니다.
+  </div>
+
+  <!-- 빌드 파이프라인 (상단 가로) -->
+  <div class="pipeline">
+    <div class="pipeline-title">⚙ 0. 빌드 / 배포 파이프라인 — "내 노트북 코드가 어떻게 서버로 가는가"</div>
+    <div class="pipeline-flow">
+      <div class="pipe-step">
+        <div class="step-label">코드 작성</div>
+        <div class="step-tool">VSCode + Claude Code</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="step-label">버전 관리</div>
+        <div class="step-tool">Git + GitHub</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="step-label">이미지 빌드</div>
+        <div class="step-tool">Docker (amd64)</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="step-label">이미지 저장소</div>
+        <div class="step-tool">GHCR</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="step-label">배포 도구</div>
+        <div class="step-tool">Kamal 2</div>
+      </div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step">
+        <div class="step-label">서버 실행</div>
+        <div class="step-tool">DigitalOcean</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN MAP: 좌측 흐름 + 우측 사이드 -->
+  <div class="map">
+
+    <!-- 좌측: 사용자 요청 흐름 -->
+    <div class="main-flow">
+
+      <!-- 1. USER -->
+      <div class="layer user">
+        <div class="layer-header">
+          <div class="layer-title"><span class="num">1</span> 👤 사용자 (User)</div>
+          <div class="layer-subtitle">웹 브라우저에서 도메인 입력</div>
+        </div>
+        <div class="components">
+          <div class="comp">
+            <div class="comp-role">진입점</div>
+            <div class="comp-name">URL 입력</div>
+            <div class="comp-options">Chrome / Safari / Firefox / 모바일 브라우저</div>
+            <div class="comp-pick">jsonjeong.com</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">↓ HTTPS 요청</div>
+
+      <!-- 2. EDGE -->
+      <div class="layer edge">
+        <div class="layer-header">
+          <div class="layer-title"><span class="num">2</span> 🌐 네트워크 엣지 (Network Edge)</div>
+          <div class="layer-subtitle">도메인 → IP 변환 + TLS + 글로벌 캐시</div>
+        </div>
+        <div class="components">
+          <div class="comp">
+            <div class="comp-role">도메인 등록</div>
+            <div class="comp-name">Domain Registrar</div>
+            <div class="comp-options">GoDaddy, Namecheap, Google Domains, Cloudflare Registrar</div>
+            <div class="comp-pick">Cloudflare Registrar</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">DNS</div>
+            <div class="comp-name">DNS 서버</div>
+            <div class="comp-options">Route 53, Cloudflare DNS, GoDaddy DNS</div>
+            <div class="comp-pick">Cloudflare DNS</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">CDN</div>
+            <div class="comp-name">콘텐츠 캐시</div>
+            <div class="comp-options">Cloudflare, CloudFront, Fastly, Bunny.net</div>
+            <div class="comp-pick">Cloudflare CDN</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">TLS / 인증서</div>
+            <div class="comp-name">SSL 인증서</div>
+            <div class="comp-options">Let's Encrypt, Cloudflare Origin Cert, 상용 인증서</div>
+            <div class="comp-pick">Cloudflare Origin Cert (15년)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">DDoS / WAF</div>
+            <div class="comp-name">방어 레이어</div>
+            <div class="comp-options">Cloudflare, AWS Shield, Imperva</div>
+            <div class="comp-pick">Cloudflare (기본)</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">↓ Origin 서버로 전달</div>
+
+      <!-- 3. SERVER -->
+      <div class="layer proxy">
+        <div class="layer-header">
+          <div class="layer-title"><span class="num">3</span> 🖥 서버 / 호스팅 (Hosting)</div>
+          <div class="layer-subtitle">실제 코드가 돌아가는 컴퓨터</div>
+        </div>
+        <div class="components">
+          <div class="comp">
+            <div class="comp-role">호스팅 형태</div>
+            <div class="comp-name">서버 환경</div>
+            <div class="comp-options">VPS / 베어메탈 / PaaS / 서버리스 / 컨테이너 플랫폼</div>
+            <div class="comp-pick">VPS (DigitalOcean Droplet)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">호스팅 제공자</div>
+            <div class="comp-name">클라우드</div>
+            <div class="comp-options">AWS, GCP, Azure, DigitalOcean, Hetzner, Linode, Vercel, Heroku, Render, Fly.io</div>
+            <div class="comp-pick">DigitalOcean</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">컨테이너 런타임</div>
+            <div class="comp-name">격리/실행</div>
+            <div class="comp-options">Docker, Podman, K8s, systemd</div>
+            <div class="comp-pick">Docker</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">↓ 서버로 들어온 요청</div>
+
+      <!-- 4. APP SERVER STACK -->
+      <div class="layer app-server">
+        <div class="layer-header">
+          <div class="layer-title"><span class="num">4</span> 🔀 리버스 프록시 + 앱 서버 (Web Tier)</div>
+          <div class="layer-subtitle">요청을 받아 앱 프로세스로 라우팅</div>
+        </div>
+        <div class="components">
+          <div class="comp">
+            <div class="comp-role">리버스 프록시</div>
+            <div class="comp-name">TLS 종단 / 라우팅</div>
+            <div class="comp-options">nginx, Caddy, HAProxy, Traefik, kamal-proxy</div>
+            <div class="comp-pick">kamal-proxy</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">HTTP 가속기</div>
+            <div class="comp-name">정적 캐시 / 압축</div>
+            <div class="comp-options">Varnish, Thruster, nginx 내장</div>
+            <div class="comp-pick">Thruster</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">앱 서버</div>
+            <div class="comp-name">언어 런타임 호스트</div>
+            <div class="comp-options">Puma, Unicorn (Ruby) / Gunicorn (Python) / Node / Java Tomcat</div>
+            <div class="comp-pick">Puma</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">↓ 앱 프로세스로 진입</div>
+
+      <!-- 5. BACKEND -->
+      <div class="layer backend">
+        <div class="layer-header">
+          <div class="layer-title"><span class="num">5</span> 🔧 백엔드 (Backend Application)</div>
+          <div class="layer-subtitle">비즈니스 로직 + 데이터 처리 + 응답 생성</div>
+        </div>
+        <div class="components">
+          <div class="comp">
+            <div class="comp-role">언어</div>
+            <div class="comp-name">프로그래밍 언어</div>
+            <div class="comp-options">Ruby, Python, JS/TS, Go, Java, PHP, Rust, Elixir</div>
+            <div class="comp-pick">Ruby 3.3.11</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">프레임워크</div>
+            <div class="comp-name">웹 프레임워크</div>
+            <div class="comp-options">Rails, Django, Express/Next.js, Laravel, Spring, Phoenix</div>
+            <div class="comp-pick">Rails 8.1</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">ORM</div>
+            <div class="comp-name">DB 추상화</div>
+            <div class="comp-options">Active Record, Prisma, SQLAlchemy, TypeORM, Ecto</div>
+            <div class="comp-pick">Active Record (내장)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">라우팅</div>
+            <div class="comp-name">URL → 컨트롤러</div>
+            <div class="comp-options">Rails routes, Express router, Next.js file-based</div>
+            <div class="comp-pick">Rails routes</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">인증</div>
+            <div class="comp-name">로그인/세션</div>
+            <div class="comp-options">Devise, NextAuth, Auth0, Clerk, Supabase Auth, 내장 generator</div>
+            <div class="comp-pick">Rails 8 내장 (bcrypt)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">인가/권한</div>
+            <div class="comp-name">접근 제어</div>
+            <div class="comp-options">Pundit, CanCan, CASL</div>
+            <div class="comp-pick">현재 미사용 (단순 페이지)</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">↓ HTML 응답 생성</div>
+
+      <!-- 6. FRONTEND -->
+      <div class="layer frontend">
+        <div class="layer-header">
+          <div class="layer-title"><span class="num">6</span> 🎨 프론트엔드 (Frontend)</div>
+          <div class="layer-subtitle">브라우저가 받아서 그리는 것 — HTML/CSS/JS</div>
+        </div>
+        <div class="components">
+          <div class="comp">
+            <div class="comp-role">렌더링 방식</div>
+            <div class="comp-name">SSR / SPA / SSG</div>
+            <div class="comp-options">서버 렌더(SSR), 클라이언트 렌더(SPA), 정적 생성(SSG), 하이브리드</div>
+            <div class="comp-pick">SSR (Rails ERB)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">템플릿 엔진</div>
+            <div class="comp-name">HTML 생성</div>
+            <div class="comp-options">ERB, Slim, Haml / Jinja / JSX / Vue SFC</div>
+            <div class="comp-pick">ERB</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">CSS 프레임워크</div>
+            <div class="comp-name">스타일</div>
+            <div class="comp-options">Tailwind, Bootstrap, Bulma, CSS Modules, Vanilla CSS</div>
+            <div class="comp-pick">Tailwind CSS</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">JS 프레임워크</div>
+            <div class="comp-name">인터랙션</div>
+            <div class="comp-options">React, Vue, Svelte, Hotwire(Turbo+Stimulus), Alpine.js, htmx, Vanilla JS</div>
+            <div class="comp-pick">Hotwire</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">JS 빌드 도구</div>
+            <div class="comp-name">번들러</div>
+            <div class="comp-options">Vite, Webpack, esbuild, Parcel, Rollup, Import maps(번들러 없음)</div>
+            <div class="comp-pick">Import maps (번들 없음)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">에셋 파이프라인</div>
+            <div class="comp-name">정적 파일</div>
+            <div class="comp-options">Propshaft, Sprockets, Vite Rails</div>
+            <div class="comp-pick">Propshaft</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">↓ DB / 캐시 / 잡 큐 호출</div>
+
+      <!-- 7. DATA -->
+      <div class="layer data">
+        <div class="layer-header">
+          <div class="layer-title"><span class="num">7</span> 💾 데이터 레이어 (Data Layer)</div>
+          <div class="layer-subtitle">상태를 저장하고 꺼내고 작업을 큐잉</div>
+        </div>
+        <div class="components">
+          <div class="comp">
+            <div class="comp-role">메인 DB</div>
+            <div class="comp-name">영구 저장소</div>
+            <div class="comp-options">Postgres, MySQL, SQLite, MongoDB, MariaDB</div>
+            <div class="comp-pick">SQLite (단일 파일)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">캐시</div>
+            <div class="comp-name">빠른 읽기</div>
+            <div class="comp-options">Redis, Memcached, Solid Cache (DB), 인메모리</div>
+            <div class="comp-pick">Solid Cache (SQLite)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">잡 큐</div>
+            <div class="comp-name">비동기 작업</div>
+            <div class="comp-options">Sidekiq, GoodJob, Resque, Solid Queue, Celery, BullMQ</div>
+            <div class="comp-pick">Solid Queue (SQLite)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">WebSocket / Pub-Sub</div>
+            <div class="comp-name">실시간 통신</div>
+            <div class="comp-options">Redis Pub/Sub, Solid Cable, Pusher, Ably</div>
+            <div class="comp-pick">Solid Cable (SQLite)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">파일 스토리지</div>
+            <div class="comp-name">업로드 저장</div>
+            <div class="comp-options">로컬 디스크, S3, R2, GCS, Active Storage</div>
+            <div class="comp-pick">Active Storage + 로컬 볼륨</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">전문 검색</div>
+            <div class="comp-name">검색 엔진</div>
+            <div class="comp-options">Elasticsearch, Meilisearch, Typesense, Postgres FTS</div>
+            <div class="comp-pick">현재 미사용</div>
+          </div>
+        </div>
+      </div>
+      <div class="arrow">↓ 외부 서비스 호출 (필요시)</div>
+
+      <!-- 8. EXTERNAL -->
+      <div class="layer external">
+        <div class="layer-header">
+          <div class="layer-title"><span class="num">8</span> 🔌 외부 서비스 (Third-Party APIs)</div>
+          <div class="layer-subtitle">직접 구현하지 않고 SaaS 로 위임하는 영역</div>
+        </div>
+        <div class="components">
+          <div class="comp">
+            <div class="comp-role">이메일 / 뉴스레터</div>
+            <div class="comp-name">발송 / 구독 관리</div>
+            <div class="comp-options">Beehiiv, Mailchimp, ConvertKit, Resend, Postmark, SendGrid, SES</div>
+            <div class="comp-pick">Beehiiv</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">결제</div>
+            <div class="comp-name">카드/구독</div>
+            <div class="comp-options">Stripe, Polar, LemonSqueezy, Paddle, 토스페이먼츠</div>
+            <div class="comp-pick">Polar (MoR, 예정)</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">분석</div>
+            <div class="comp-name">유저 행동</div>
+            <div class="comp-options">GA4, Plausible, Fathom, PostHog, Mixpanel, Amplitude</div>
+            <div class="comp-pick">현재 미연동</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">에러 추적</div>
+            <div class="comp-name">예외 모니터링</div>
+            <div class="comp-options">Sentry, Bugsnag, Rollbar, Honeybadger, AppSignal</div>
+            <div class="comp-pick">현재 미연동</div>
+          </div>
+          <div class="comp">
+            <div class="comp-role">AI / LLM</div>
+            <div class="comp-name">생성형 AI</div>
+            <div class="comp-options">Anthropic, OpenAI, Cohere, 로컬 모델</div>
+            <div class="comp-pick">현재 미사용</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- 우측 사이드: 횡단 관심사 (요청 흐름과 무관) -->
+    <div class="sidebar">
+
+      <!-- 개발 도구 -->
+      <div class="side-card dev">
+        <div class="side-title"><span class="num">A</span> 🛠 개발 환경</div>
+
+        <div class="side-item">
+          <div class="side-item-name">에디터 / IDE</div>
+          <div class="side-item-pick">VSCode + Claude Code</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">런타임 버전 관리</div>
+          <div class="side-item-pick">mise (.ruby-version)</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">패키지 매니저</div>
+          <div class="side-item-pick">Bundler (Gemfile)</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">로컬 개발 서버</div>
+          <div class="side-item-pick">bin/dev (Foreman)</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">버전 관리</div>
+          <div class="side-item-pick">Git + GitHub</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">CI/CD</div>
+          <div class="side-item-pick none">현재 수동 배포</div>
+        </div>
+      </div>
+
+      <!-- 보안 -->
+      <div class="side-card security">
+        <div class="side-title"><span class="num">B</span> 🔒 보안 (Security)</div>
+
+        <div class="side-item">
+          <div class="side-item-name">시크릿 관리</div>
+          <div class="side-item-pick">Rails encrypted credentials</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">비밀번호 해싱</div>
+          <div class="side-item-pick">bcrypt</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">HTTPS / TLS</div>
+          <div class="side-item-pick">Cloudflare Origin Cert</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">정적 분석</div>
+          <div class="side-item-pick">Brakeman</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">의존성 점검</div>
+          <div class="side-item-pick">bundler-audit</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">CSRF / XSS / SQL Injection</div>
+          <div class="side-item-pick">Rails 기본 방어</div>
+        </div>
+      </div>
+
+      <!-- 운영 / 관측 -->
+      <div class="side-card ops">
+        <div class="side-title"><span class="num">C</span> 📊 운영 / 관측 (Ops)</div>
+
+        <div class="side-item">
+          <div class="side-item-name">헬스 체크</div>
+          <div class="side-item-pick">/up 엔드포인트</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">로깅</div>
+          <div class="side-item-pick">Rails 기본 로그</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">테스트</div>
+          <div class="side-item-pick">Minitest + Capybara</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">린트</div>
+          <div class="side-item-pick">RuboCop (Omakase)</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">메트릭 / APM</div>
+          <div class="side-item-pick none">현재 미연동</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">백업</div>
+          <div class="side-item-pick none">현재 미설정 (TODO)</div>
+        </div>
+        <div class="side-item">
+          <div class="side-item-name">업타임 모니터</div>
+          <div class="side-item-pick none">현재 미연동</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="summary-box" style="margin-top: 32px;">
+    <strong>웹 서비스에 필요한 "자리"는 보통 12~15개 정도 —</strong>
+    어떤 회사도 이 자리들을 채울 뿐이고, 다만 어떤 자리는 매니지드 서비스(Vercel, Supabase) 가 통째로 가져가고,
+    어떤 자리는 우리처럼 Rails 모놀리스가 통째로 가져갑니다.
+    <br><br>
+    <strong>핵심 의사결정 = "이 자리들을 몇 개의 박스로 합칠 것인가" —</strong>
+    1인 메이커는 박스를 최소화하고 (Rails 8 모놀리스), 대규모 조직은 박스를 분리합니다 (마이크로서비스).
+    우리는 박스를 최대한 줄여서 <strong>외부 의존성 0</strong>(Redis 0, Node 0) 으로 갔습니다.
+  </div>
+
+  <footer>
+    웹 서비스 아키텍처 지도 · 2026-05-15 · jsonjeong.com 기준<br>
+    <em>구성요소(자리)는 일반론, 초록 박스는 현재 구현 — 시간이 지나면 일부 "미연동" 자리들이 채워집니다.</em>
+  </footer>
+
+</div>
+
+</body>
+</html>

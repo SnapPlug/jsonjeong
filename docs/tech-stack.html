@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jsonjeong.com — 기술 스택 문서</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-2: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #f0883e;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --yellow: #d29922;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+  }
+
+  h1 {
+    font-size: 2.4em;
+    margin: 0 0 8px;
+    background: linear-gradient(135deg, #58a6ff, #bc8cff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 1.05em;
+  }
+
+  .meta {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+    font-size: 0.85em;
+    color: var(--muted);
+  }
+
+  .meta span {
+    background: var(--panel);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  h2 {
+    font-size: 1.6em;
+    margin: 48px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: 1.2em;
+    margin: 32px 0 12px;
+    color: var(--accent);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: var(--panel);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  th, td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    background: var(--panel-2);
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  tr:hover td { background: var(--panel-2); }
+
+  code {
+    font-family: "SF Mono", Menlo, Monaco, Consolas, monospace;
+    background: var(--panel-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.88em;
+    color: var(--orange);
+  }
+
+  pre {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    overflow-x: auto;
+    line-height: 1.4;
+    font-size: 0.82em;
+    color: var(--text);
+  }
+
+  pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75em;
+    font-weight: 600;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .badge.zero { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+  .badge.warn { background: rgba(240, 136, 62, 0.15); color: var(--orange); }
+  .badge.skip { background: rgba(248, 81, 73, 0.15); color: var(--red); }
+
+  .callout {
+    background: var(--panel);
+    border-left: 4px solid var(--accent);
+    padding: 16px 20px;
+    border-radius: 4px;
+    margin: 20px 0;
+  }
+  .callout.green { border-left-color: var(--green); }
+  .callout.orange { border-left-color: var(--orange); }
+
+  .callout strong { color: var(--accent); }
+  .callout.green strong { color: var(--green); }
+  .callout.orange strong { color: var(--orange); }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  @media (max-width: 720px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .card h4 {
+    margin: 0 0 12px;
+    color: var(--accent);
+    font-size: 1em;
+  }
+
+  ul {
+    padding-left: 20px;
+  }
+
+  ul li {
+    margin: 6px 0;
+  }
+
+  .diagram-wrap {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  .diagram-wrap pre {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: var(--text);
+    font-size: 0.75em;
+    line-height: 1.25;
+  }
+
+  .summary-row {
+    background: linear-gradient(135deg, rgba(88, 166, 255, 0.08), rgba(188, 140, 255, 0.08));
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 24px 0;
+    font-size: 1.05em;
+  }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85em;
+    text-align: center;
+  }
+
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .stack-tag {
+    display: inline-block;
+    background: var(--panel-2);
+    color: var(--text);
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    margin: 2px;
+    border: 1px solid var(--border);
+    font-family: "SF Mono", Menlo, monospace;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>jsonjeong.com — 기술 스택</h1>
+    <div class="subtitle">바이브 코딩 인덱스 사이트의 풀스택 구성 정리</div>
+    <div class="meta">
+      <span>Last updated: 2026-05-15</span>
+      <span>Ruby 3.3.11</span>
+      <span>Rails 8.1.3</span>
+      <span>Domain: jsonjeong.com</span>
+    </div>
+  </header>
+
+  <div class="summary-row">
+    <strong>한 줄 요약 —</strong>
+    Rails 8 풀스택 모놀리스. Ruby 3.3.11, SQLite + Solid 트리오, Hotwire(Turbo/Stimulus) + Tailwind + Import maps,
+    Beehiiv 뉴스레터, Kamal 2 로 DigitalOcean 에 배포, Cloudflare Origin Cert 로 TLS.
+    <strong>외부 Redis/Node 빌드 체인 0.</strong>
+  </div>
+
+  <h2>1. 아키텍처 도식</h2>
+  <div class="diagram-wrap">
+<pre>┌─────────────────────────────────────────────────────────────────────────────┐
+│                              사용자 브라우저                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │ HTTPS
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                Cloudflare (DNS + CDN + Full strict SSL)                      │
+│       jsonjeong.com · www.jsonjeong.com · newsletter.jsonjeong.com           │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      │ HTTPS (Origin Cert 와일드카드 15년)
+                                      ▼
+┌─────────────────────────────────────────────────────────────────────────────┐
+│             DigitalOcean Droplet  (69.55.54.59, amd64)                       │
+│                                                                              │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  kamal-proxy   (TLS termination · 호스트 라우팅)                    │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+│                                  │                                          │
+│                                  ▼                                          │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  Thruster      (HTTP 캐시 · 압축 · X-Sendfile)                      │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+│                                  │                                          │
+│                                  ▼                                          │
+│  ┌────────────────────────────────────────────────────────────────────┐    │
+│  │  Puma          (앱 서버)                                            │    │
+│  └────────────────────────────────────────────────────────────────────┘    │
+│                                  │                                          │
+│                                  ▼                                          │
+│  ╔════════════════════════════════════════════════════════════════════╗    │
+│  ║            Rails 8.1  앱  (Ruby 3.3.11)                            ║    │
+│  ║                                                                     ║    │
+│  ║  Routes (서브도메인 분기)                                            ║    │
+│  ║   ├─ apex/www      → DashboardController#index                      ║    │
+│  ║   ├─ newsletter.*  → NewsletterController                           ║    │
+│  ║   ├─ /session, /passwords → 내장 인증                                ║    │
+│  ║   └─ /up           → Rails health (Kamal 헬스 체크)                 ║    │
+│  ║                                                                     ║    │
+│  ║  모델: User · Session · Subscriber · Current                        ║    │
+│  ║  서비스: BeehiivClient ─────────── 외부 API ─┐                      ║    │
+│  ║  뷰: ERB + Tailwind + Hotwire + Import maps   │                     ║    │
+│  ║  인증: Rails 8 내장 generator + bcrypt        │                     ║    │
+│  ╚════════════════════════════════════════════════════════════════════╝    │
+│                                  │                              │           │
+│                                  ▼                              │           │
+│  ┌─ 데이터 레이어 (전부 SQLite, Redis 0) ──────────────────────┐│           │
+│  │                                                              ││           │
+│  │  Active Record  │  Solid Cache  │  Solid Queue  │  Solid Cable│           │
+│  │   users         │   Rails.cache │   Active Job  │   WebSocket │           │
+│  │   sessions      │               │   워커        │   pub/sub   │           │
+│  │   subscribers   │               │               │             │           │
+│  │                                                              ││           │
+│  │  영속 볼륨: jsonjeong_storage:/rails/storage                  ││           │
+│  │    └ SQLite DB + Active Storage 업로드                       ││           │
+│  └─────────────────────────────────────────────────────────────┘│           │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                                                  │
+                                                                  ▼
+                                                       ┌──────────────────┐
+                                                       │   Beehiiv API    │
+                                                       │  (뉴스레터 발송)  │
+                                                       └──────────────────┘</pre>
+  </div>
+
+  <h2>2. Backend</h2>
+  <table>
+    <thead>
+      <tr><th>영역</th><th>선택</th><th>비고</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>언어 / 런타임</td><td>Ruby 3.3.11</td><td><code>.ruby-version</code> + <code>mise.toml</code> 로 고정. mise 가 디렉터리 진입 시 자동 활성화</td></tr>
+      <tr><td>웹 프레임워크</td><td>Rails 8.1.3</td><td>풀스택 모놀리스. Omakase 관례 유지</td></tr>
+      <tr><td>웹 서버</td><td>Puma</td><td>Rails 8 기본</td></tr>
+      <tr><td>HTTP 가속</td><td>Thruster</td><td>Puma 앞단에서 HTTP 캐시 · 압축 · X-Sendfile</td></tr>
+      <tr><td>에셋 파이프라인</td><td>Propshaft</td><td>Sprockets 후속, Rails 8 기본</td></tr>
+      <tr><td>인증</td><td>Rails 8 내장 generator</td><td>Devise 미사용. <code>User</code> + <code>Session</code> + <code>Authentication</code> concern</td></tr>
+      <tr><td>비밀번호 해싱</td><td>bcrypt</td><td><code>has_secure_password</code></td></tr>
+      <tr><td>암호화 자격증명</td><td>Rails encrypted credentials</td><td><code>config/credentials.yml.enc</code> + <code>master.key</code></td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. Database & 데이터 스토어</h2>
+  <div class="callout green">
+    <strong>"외부 의존성 0" 원칙 —</strong>
+    Rails 8 Solid 트리오로 캐시 · 잡 · 웹소켓 전부 DB 안에서 처리. <span class="badge zero">Redis 0</span> <span class="badge zero">Memcached 0</span> <span class="badge zero">Sidekiq 0</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>용도</th><th>스택</th><th>저장 위치</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>메인 DB</td><td>SQLite (<code>sqlite3 ≥ 2.1</code>)</td><td>단일 파일</td></tr>
+      <tr><td>캐시</td><td>Solid Cache</td><td>SQLite 테이블</td></tr>
+      <tr><td>백그라운드 잡</td><td>Solid Queue (Active Job)</td><td>SQLite 테이블</td></tr>
+      <tr><td>WebSocket / pub-sub</td><td>Solid Cable (Action Cable)</td><td>SQLite 테이블</td></tr>
+    </tbody>
+  </table>
+
+  <h3>스키마 (db/schema.rb)</h3>
+  <pre><code>users        (id, email_address, password_digest, timestamps)
+sessions     (id, user_id, ip_address, user_agent, timestamps)
+subscribers  (id, email, source, status, beehiiv_synced_at, timestamps)</code></pre>
+
+  <h2>4. Frontend</h2>
+  <div class="callout green">
+    <strong>빌드 도구 없음 —</strong>
+    Node, Webpack, Vite, esbuild 전부 없음. Import maps 로 ESM 모듈 직접 로드. <span class="badge zero">node_modules 0</span>
+  </div>
+
+  <table>
+    <thead>
+      <tr><th>영역</th><th>선택</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>CSS</td><td>Tailwind CSS (<code>tailwindcss-rails</code>) — <code>bin/rails tailwindcss:watch</code> 워치</td></tr>
+      <tr><td>JS 모듈 시스템</td><td>Import maps (<code>importmap-rails</code>) — 번들러 없이 ESM 직접 로드</td></tr>
+      <tr><td>SPA-라이크 네비게이션</td><td>Turbo (<code>turbo-rails</code>)</td></tr>
+      <tr><td>인터랙티브 컴포넌트</td><td>Stimulus (<code>stimulus-rails</code>)</td></tr>
+      <tr><td>JSON API 빌더</td><td>jbuilder (필요 시)</td></tr>
+      <tr><td>이미지 변환</td><td>image_processing (Active Storage variants)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>5. 외부 서비스 통합</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h4>Beehiiv (뉴스레터)</h4>
+      <ul>
+        <li><code>app/services/beehiiv_client.rb</code> 로 직접 API 호출</li>
+        <li><code>subscribers</code> 테이블에 미러링</li>
+        <li><code>beehiiv_synced_at</code> 으로 동기화 상태 추적</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Polar (결제) <span class="badge warn">예정</span></h4>
+      <ul>
+        <li>이 인덱스 사이트엔 결제 없음</li>
+        <li>개별 SaaS 레포에서 도입 예정</li>
+        <li>Merchant of Record 모델 (Stripe 한국 진입 장벽 회피)</li>
+        <li><code>pay</code> gem 미사용 — 웹훅 직접 처리</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>6. 라우팅 (서브도메인 분기)</h2>
+  <pre><code># config/routes.rb
+constraints subdomain: "newsletter" do
+  root "newsletter#show"
+  post "/" => "newsletter#subscribe"
+end
+
+constraints subdomain: /\A(www)?\z/ do
+  root "dashboard#index"
+  get "newsletter", to: redirect { ... }   # apex/newsletter → 서브도메인 301
+  post "newsletter", to: "newsletter#subscribe"
+end
+
+resource :session                # 로그인/로그아웃
+resources :passwords, param: :token
+get "up" => "rails/health#show"  # Kamal 헬스 체크</code></pre>
+
+  <h2>7. 배포 / 인프라</h2>
+  <table>
+    <thead>
+      <tr><th>영역</th><th>선택</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>배포 도구</td><td>Kamal 2 (<code>config/deploy.yml</code>)</td></tr>
+      <tr><td>컨테이너 레지스트리</td><td>GitHub Container Registry — <code>ghcr.io/snapplug/jsonjeong</code></td></tr>
+      <tr><td>빌드 아키텍처</td><td>로컬에서 amd64 단일 아키 빌드</td></tr>
+      <tr><td>호스팅</td><td>DigitalOcean Droplet (<code>69.55.54.59</code>)</td></tr>
+      <tr><td>리버스 프록시</td><td>kamal-proxy</td></tr>
+      <tr><td>TLS</td><td>Cloudflare Origin Certificate (와일드카드 <code>*.jsonjeong.com</code>, 15년)</td></tr>
+      <tr><td>앞단 CDN</td><td>Cloudflare Full(strict) SSL</td></tr>
+      <tr><td>DNS / 도메인</td><td>Cloudflare (도메인 등록도 Cloudflare)</td></tr>
+      <tr><td>영속 볼륨</td><td><code>jsonjeong_storage:/rails/storage</code> — SQLite DB + Active Storage 업로드</td></tr>
+      <tr><td>에셋 핸드오버</td><td><code>asset_path: /rails/public/assets</code> — in-flight 요청 404 방지</td></tr>
+      <tr><td>시크릿</td><td><code>.kamal/secrets</code>: CERTIFICATE_PEM, PRIVATE_KEY_PEM, KAMAL_REGISTRY_PASSWORD, RAILS_MASTER_KEY</td></tr>
+    </tbody>
+  </table>
+
+  <h3>배포 파이프라인</h3>
+  <pre><code>로컬 (amd64 빌드)  ──►  GHCR (ghcr.io/snapplug/jsonjeong)  ──►  Droplet
+     │                          │                                  │
+docker build              kamal deploy                       무중단 교체
+bin/kamal deploy          (이미지 pull)                      (asset 핸드오버)</code></pre>
+
+  <h2>8. 개발 환경</h2>
+  <pre><code>bin/dev                 # 개발 서버 (Foreman: Rails server + Tailwind watcher 동시 실행)
+bin/rails console       # REPL
+bin/rails test          # 전체 테스트
+bin/rails db:migrate    # 마이그레이션
+bin/rubocop             # 린트 (Rails Omakase)
+bin/brakeman            # 보안 정적 분석
+bin/bundler-audit       # gem 취약점 점검
+bin/kamal deploy        # 배포
+bin/kamal console       # 라이브 컨테이너 Rails console
+bin/kamal shell         # 라이브 컨테이너 bash</code></pre>
+
+  <h2>9. 품질 / 보안 도구</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h4>테스트</h4>
+      <ul>
+        <li>Minitest (Rails 기본)</li>
+        <li>Capybara</li>
+        <li>selenium-webdriver (시스템 테스트)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>코드 품질</h4>
+      <ul>
+        <li>RuboCop (rails-omakase 규칙)</li>
+        <li>bootsnap — 부팅 가속</li>
+        <li>debug gem — 디버거</li>
+        <li>web-console — 예외 페이지 콘솔 (dev only)</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>보안</h4>
+      <ul>
+        <li>Brakeman — 정적 분석</li>
+        <li>bundler-audit — gem 취약점</li>
+        <li>Rails encrypted credentials</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>관측</h4>
+      <ul>
+        <li><code>/up</code> 헬스 체크 엔드포인트</li>
+        <li>Rails 기본 로깅 (현재 외부 APM 미연동)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>10. 선택 vs 회피 — 한눈에</h2>
+  <table>
+    <thead>
+      <tr><th>레이어</th><th>선택 <span class="badge zero">✓</span></th><th>회피 <span class="badge skip">✗</span></th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>앞단</td>
+        <td>Cloudflare → kamal-proxy → Thruster → Puma</td>
+        <td>nginx, Caddy, ELB</td>
+      </tr>
+      <tr>
+        <td>앱</td>
+        <td>Rails 8 모놀리스 (서버 렌더 ERB)</td>
+        <td>SPA, API+클라이언트 분리</td>
+      </tr>
+      <tr>
+        <td>프런트</td>
+        <td>Tailwind + Hotwire + Import maps</td>
+        <td>Node, Webpack, Vite, esbuild</td>
+      </tr>
+      <tr>
+        <td>데이터</td>
+        <td>SQLite + Solid 트리오</td>
+        <td>Postgres, Redis, Memcached, Sidekiq</td>
+      </tr>
+      <tr>
+        <td>배포</td>
+        <td>Kamal 2 + GHCR + DigitalOcean</td>
+        <td>Heroku, Render, Fly, K8s</td>
+      </tr>
+      <tr>
+        <td>인증</td>
+        <td>Rails 8 내장 + bcrypt</td>
+        <td>Devise, OAuth 게이트웨이</td>
+      </tr>
+      <tr>
+        <td>결제</td>
+        <td>Polar (예정 — MoR)</td>
+        <td>Stripe (한국 진입 장벽), <code>pay</code> gem</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>11. 핵심 설계 원칙</h2>
+  <div class="callout">
+    <strong>단순함 = AI 친화 —</strong>
+    분리된 스택 대신 풀스택 모놀리스. Rails 8 기본값에서 벗어나지 않는다. 관례 일탈은 AI 가 패턴을 못 잡게 만든다.
+    (참고: <a href="https://youtu.be/6cE6494X22w" target="_blank">헤이제임스, "프롬프트 문제가 아니라 프레임워크 문제"</a>)
+  </div>
+  <div class="callout green">
+    <strong>레포 구조 —</strong>
+    이 레포(jsonjeong)는 인덱스 사이트일 뿐. 모든 세부 SaaS 는 각각 별도 Rails 앱 · 별도 레포 · 별도 도메인 (마크 루 패턴).
+    인덱스 카드의 <code>path:</code> 는 외부 URL.
+  </div>
+  <div class="callout orange">
+    <strong>premature abstraction 회피 —</strong>
+    인증 / 결제 / 파싱 헬퍼는 처음엔 복붙. 3번째 서비스 시점에 internal gem 추출 검토.
+  </div>
+
+  <h2>12. 스택 태그 클라우드</h2>
+  <div style="line-height: 2.2;">
+    <span class="stack-tag">Ruby 3.3.11</span>
+    <span class="stack-tag">Rails 8.1.3</span>
+    <span class="stack-tag">Puma</span>
+    <span class="stack-tag">Thruster</span>
+    <span class="stack-tag">Propshaft</span>
+    <span class="stack-tag">SQLite</span>
+    <span class="stack-tag">Solid Cache</span>
+    <span class="stack-tag">Solid Queue</span>
+    <span class="stack-tag">Solid Cable</span>
+    <span class="stack-tag">Tailwind CSS</span>
+    <span class="stack-tag">Hotwire / Turbo</span>
+    <span class="stack-tag">Stimulus</span>
+    <span class="stack-tag">Import maps</span>
+    <span class="stack-tag">bcrypt</span>
+    <span class="stack-tag">Beehiiv API</span>
+    <span class="stack-tag">Kamal 2</span>
+    <span class="stack-tag">Docker</span>
+    <span class="stack-tag">GHCR</span>
+    <span class="stack-tag">DigitalOcean</span>
+    <span class="stack-tag">Cloudflare</span>
+    <span class="stack-tag">Minitest</span>
+    <span class="stack-tag">Capybara</span>
+    <span class="stack-tag">RuboCop</span>
+    <span class="stack-tag">Brakeman</span>
+    <span class="stack-tag">bundler-audit</span>
+    <span class="stack-tag">bootsnap</span>
+    <span class="stack-tag">mise</span>
+  </div>
+
+  <footer>
+    jsonjeong.com · 기술 스택 문서 · 2026-05-15 기준<br>
+    실제 코드 기준: <code>Gemfile</code>, <code>config/deploy.yml</code>, <code>config/routes.rb</code>, <code>db/schema.rb</code>, <code>CLAUDE.md</code>
+  </footer>
+
+</div>
+</body>
+</html>
