@@ -1,0 +1,56 @@
+<% content_for :title, "Vibe Coding Notes" %>
+<% content_for :description, "Weekly notes from a solo dev in Jeju: what I shipped, what failed, the actual numbers. No fluff." %>
+
+<div class="mx-auto max-w-2xl px-5 py-10 lg:px-16 lg:py-20">
+  <p class="text-sm text-muted">
+    <%= link_to "← Back to jsonjeong.com", apex_root_url, class: "hover:text-ink transition" %>
+  </p>
+
+  <h1 class="mt-6 text-4xl lg:text-5xl font-extrabold tracking-tight text-ink">
+    <%= @name %>
+  </h1>
+
+  <p class="mt-4 text-lg text-ink/80 leading-relaxed">
+    <%= @promise %>
+  </p>
+
+  <% if flash[:notice] %>
+    <div class="mt-6 rounded-lg bg-brand/15 border border-brand text-brand-dark px-4 py-3 text-sm font-semibold">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <%= render "subscribe_form",
+        subscriber: @subscriber,
+        source: @source,
+        cta: "Follow the $1K bet",
+        placeholder: "Don't miss the public meltdown",
+        url: "/" %>
+
+  <div class="mt-12 space-y-6 text-ink/80 leading-relaxed">
+    <h2 class="text-xl font-bold text-ink">What you'll get</h2>
+    <ul class="space-y-2 list-disc list-inside">
+      <li>Honest build logs — what shipped, what broke, what I'd skip next time</li>
+      <li>Numbers — MRR, traffic, churn, refunds. No vanity</li>
+      <li>The decisions that made or wasted weeks of solo dev time</li>
+      <li>Occasional rants about Rails, AI tooling, and indie life from a Korean island</li>
+    </ul>
+
+    <h2 class="text-xl font-bold text-ink pt-4">Who it's for</h2>
+    <p>
+      Solo devs, indie makers, and curious technical people who'd rather ship one tiny app
+      this month than plan a 12-month roadmap.
+    </p>
+
+    <h2 class="text-xl font-bold text-ink pt-4">How often</h2>
+    <p>Once a week. No drip campaigns, no upsells. Unsubscribe in one click.</p>
+  </div>
+
+  <hr class="mt-12 border-black/10">
+
+  <p class="mt-6 text-sm text-muted">
+    Built in public. Follow the daily mess on
+    <a href="#" class="text-brand underline underline-offset-2">X</a> and
+    <a href="#" class="text-brand underline underline-offset-2">Threads</a>.
+  </p>
+</div>

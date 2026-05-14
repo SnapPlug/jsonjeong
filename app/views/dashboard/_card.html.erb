@@ -1,0 +1,50 @@
+<%
+  status_emoji = { planning: "🟡", building: "🔵", shipped: "🟢" }[service.status] || "⚪"
+  status_label = service.status.to_s.titleize
+
+  status_class = {
+    planning: "bg-black/5 text-ink/70",
+    building: "bg-brand/15 text-brand-dark",
+    shipped:  "bg-brand-dark text-white"
+  }[service.status] || "bg-black/5 text-ink/70"
+
+  mrr_label = "$#{number_with_delimiter(service.mrr_usd.to_i)}"
+
+  cta_url = if service.path.present?
+              service.path
+            else
+              "#{newsletter_subdomain_url}?source=#{service.cta_source}"
+            end
+%>
+
+<div class="bg-surface rounded-2xl p-6 flex flex-col gap-3">
+  <div class="flex items-start justify-between gap-3">
+    <div class="flex items-center gap-2 min-w-0">
+      <span class="text-xl shrink-0" aria-hidden="true"><%= service.emoji %></span>
+      <p class="text-base font-bold text-ink truncate"><%= service.name %></p>
+    </div>
+  </div>
+
+  <% if service.tagline.present? %>
+    <p class="text-[15px] font-semibold text-ink leading-snug"><%= service.tagline %></p>
+  <% end %>
+
+  <% if service.subline.present? %>
+    <p class="text-sm text-ink/70 leading-relaxed"><%= service.subline %></p>
+  <% end %>
+
+  <div class="mt-auto pt-3 border-t border-black/[0.06] flex items-center justify-between gap-3 font-mono text-sm text-ink/70">
+    <span class="inline-flex items-center gap-1.5">
+      <span class="inline-flex items-center rounded-full <%= status_class %> text-xs font-semibold px-2 py-0.5">
+        <%= status_emoji %> <%= status_label %>
+      </span>
+      <span>·</span>
+      <span>MRR: <%= mrr_label %></span>
+    </span>
+  </div>
+
+  <%= link_to cta_url,
+        class: "inline-flex items-center justify-center rounded-lg bg-brand text-brand-dark text-sm font-semibold px-4 py-2 hover:opacity-90 transition" do %>
+    <%= service.cta_label || "Get notified →" %>
+  <% end %>
+</div>

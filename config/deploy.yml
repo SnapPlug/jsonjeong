@@ -1,0 +1,59 @@
+# Kamal 2 config for jsonjeong.com (apex + newsletter subdomain).
+# IP placeholder — replace 0.0.0.0 with the DigitalOcean droplet IP once it's provisioned.
+
+service: jsonjeong
+
+# Container image — pushed to GitHub Container Registry (free, tied to SnapPlug account)
+image: snapplug/jsonjeong
+
+servers:
+  web:
+    - 69.55.54.59
+
+# Built-in Let's Encrypt SSL via kamal-proxy.
+# Hosts list covers apex, www, and the newsletter subdomain (single Rails app handles both via constraints subdomain).
+proxy:
+  ssl: true
+  hosts:
+    - jsonjeong.com
+    - www.jsonjeong.com
+    - newsletter.jsonjeong.com
+  app_port: 80
+
+# GHCR image registry (free, scoped to the SnapPlug GH account).
+# KAMAL_REGISTRY_PASSWORD is a GitHub PAT with `write:packages` scope — generated and stored in .kamal/secrets.
+registry:
+  server: ghcr.io
+  username: SnapPlug
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+# Build the image locally (single-arch amd64 to match the droplet).
+builder:
+  arch: amd64
+
+# Inject Rails master key so encrypted credentials decrypt at boot.
+# Future: BEEHIIV_API_KEY, POLAR_*, etc.
+env:
+  secret:
+    - RAILS_MASTER_KEY
+
+# SSH defaults — droplet ships with `root`. Switch to a non-root user later if desired.
+ssh:
+  user: root
+
+# Persistent storage for SQLite + Active Storage uploads.
+# Without this, the entire DB and uploads are wiped on every deploy.
+volumes:
+  - "jsonjeong_storage:/rails/storage"
+
+# Carry fingerprinted assets between deploys to avoid 404 on in-flight requests.
+asset_path: /rails/public/assets
+
+# Useful aliases:
+# bin/kamal console  → bin/rails console on the live container
+# bin/kamal shell    → bash on the live container
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell:   app exec --interactive --reuse "bash"
+  logs:    app logs -f
