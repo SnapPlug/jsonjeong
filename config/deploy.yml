@@ -13,19 +13,17 @@ servers:
 # Built-in Let's Encrypt SSL via kamal-proxy.
 # Hosts list covers apex, www, and the newsletter subdomain (single Rails app handles both via constraints subdomain).
 proxy:
-  ssl: true
+  # Cloudflare Origin Certificate (wildcard *.jsonjeong.com + jsonjeong.com, 15 yr).
+  # PEM contents loaded from .kamal/secrets (CERTIFICATE_PEM / PRIVATE_KEY_PEM).
+  # Replaces Let's Encrypt — Cloudflare proxy sits in front with Full(strict) SSL.
+  ssl:
+    certificate_pem: CERTIFICATE_PEM
+    private_key_pem: PRIVATE_KEY_PEM
   hosts:
     - jsonjeong.com
     - www.jsonjeong.com
     - newsletter.jsonjeong.com
   app_port: 80
-
-  # Cloudflare Origin Certificate (covers *.jsonjeong.com and jsonjeong.com, valid 15 years).
-  # Replaces Let's Encrypt — Cloudflare proxy will sit in front with Full (strict) SSL mode.
-  ssl_certificate_path: /home/kamal-proxy/.config/certs/origin.crt
-  ssl_private_key_path: /home/kamal-proxy/.config/certs/origin.key
-  volumes:
-    - "/etc/ssl/cloudflare:/home/kamal-proxy/.config/certs:ro"
 
 # GHCR image registry (free, scoped to the SnapPlug GH account).
 # KAMAL_REGISTRY_PASSWORD is a GitHub PAT with `write:packages` scope — generated and stored in .kamal/secrets.
