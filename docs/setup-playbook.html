@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>jsonjeong.com 제로베이스 셋업 플레이북</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e14;
+    --panel: #161b22;
+    --panel-2: #1c2128;
+    --panel-3: #21262d;
+    --border: #30363d;
+    --border-strong: #484f58;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --dim: #6e7681;
+
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #f0883e;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #bc8cff;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    padding: 32px 16px 80px;
+  }
+
+  .container { max-width: 1000px; margin: 0 auto; }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+
+  header h1 {
+    font-size: 2em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p { color: var(--muted); font-size: 1.05em; }
+
+  .meta-bar {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    font-size: 0.85em;
+    color: var(--muted);
+  }
+  .meta-bar span {
+    background: var(--panel);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+
+  .intro {
+    background: linear-gradient(135deg, rgba(88,166,255,0.08), rgba(188,140,255,0.08));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 24px 0 36px;
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 40px;
+  }
+
+  .toc-title {
+    font-size: 0.85em;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+
+  .toc ol {
+    padding-left: 22px;
+  }
+
+  .toc li {
+    margin: 6px 0;
+    font-size: 0.95em;
+  }
+
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+  }
+  .toc a:hover { color: var(--accent); }
+  .toc .est {
+    color: var(--dim);
+    font-size: 0.85em;
+    margin-left: 8px;
+  }
+
+  /* Phase 박스 */
+  .phase {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 24px;
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 6px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .phase-num {
+    background: var(--panel-2);
+    color: var(--accent);
+    font-family: "SF Mono", Menlo, monospace;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    font-size: 0.9em;
+  }
+
+  .phase-title {
+    font-size: 1.35em;
+    font-weight: 700;
+    flex: 1;
+  }
+
+  .phase-time {
+    color: var(--muted);
+    font-size: 0.85em;
+    font-style: italic;
+  }
+
+  .phase-goal {
+    color: var(--muted);
+    font-size: 0.92em;
+    margin: 12px 0 20px;
+    padding: 10px 14px;
+    background: var(--panel-2);
+    border-left: 3px solid var(--accent);
+    border-radius: 4px;
+  }
+  .phase-goal strong { color: var(--accent); }
+
+  /* Step (단계) */
+  .step {
+    margin: 18px 0;
+    padding: 14px 18px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .step-num {
+    background: var(--panel-3);
+    color: var(--muted);
+    font-family: "SF Mono", Menlo, monospace;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 600;
+  }
+
+  .step-title {
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .step-body {
+    font-size: 0.93em;
+    color: var(--text);
+  }
+
+  .step-body p { margin: 6px 0; }
+  .step-body ul { padding-left: 22px; margin: 6px 0; }
+  .step-body li { margin: 4px 0; }
+
+  pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    font-size: 0.83em;
+    margin: 8px 0;
+    line-height: 1.5;
+  }
+
+  code {
+    font-family: "SF Mono", Menlo, Monaco, monospace;
+    background: var(--panel-3);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.86em;
+    color: var(--orange);
+  }
+
+  pre code { background: transparent; padding: 0; color: var(--text); }
+
+  /* 검증 / 주의 박스 */
+  .verify {
+    background: rgba(63, 185, 80, 0.07);
+    border-left: 3px solid var(--green);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 8px 0;
+    font-size: 0.88em;
+  }
+  .verify::before {
+    content: "✓ 검증: ";
+    color: var(--green);
+    font-weight: 700;
+  }
+
+  .warn {
+    background: rgba(240, 136, 62, 0.07);
+    border-left: 3px solid var(--orange);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 8px 0;
+    font-size: 0.88em;
+  }
+  .warn::before {
+    content: "⚠ 주의: ";
+    color: var(--orange);
+    font-weight: 700;
+  }
+
+  .gotcha {
+    background: rgba(248, 81, 73, 0.07);
+    border-left: 3px solid var(--red);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 8px 0;
+    font-size: 0.88em;
+  }
+  .gotcha::before {
+    content: "🔥 실제 겪은 함정: ";
+    color: var(--red);
+    font-weight: 700;
+  }
+
+  .tip {
+    background: rgba(88, 166, 255, 0.07);
+    border-left: 3px solid var(--accent);
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin: 8px 0;
+    font-size: 0.88em;
+  }
+  .tip::before {
+    content: "💡 팁: ";
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* 사전 결정 / 계정 테이블 */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    background: var(--panel-2);
+    border-radius: 6px;
+    overflow: hidden;
+    font-size: 0.9em;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    background: var(--panel-3);
+    color: var(--muted);
+    font-weight: 600;
+    font-size: 0.85em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  /* 최종 체크리스트 */
+  .checklist {
+    background: var(--panel);
+    border: 2px solid var(--green);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 32px 0;
+  }
+
+  .checklist h3 {
+    color: var(--green);
+    margin-bottom: 14px;
+  }
+
+  .checklist ul {
+    list-style: none;
+  }
+
+  .checklist li {
+    padding: 6px 0;
+    padding-left: 28px;
+    position: relative;
+    font-size: 0.95em;
+  }
+  .checklist li::before {
+    content: "☑";
+    position: absolute;
+    left: 0;
+    color: var(--green);
+    font-size: 1.1em;
+  }
+
+  .checklist li.todo::before {
+    content: "☐";
+    color: var(--muted);
+  }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85em;
+  }
+
+  a { color: var(--accent); }
+
+  h2 {
+    scroll-margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>jsonjeong.com 제로베이스 셋업 플레이북</h1>
+    <p>빈 디렉터리에서 jsonjeong.com 이 라이브 서비스가 되기까지 — 모든 단계 기록</p>
+    <div class="meta-bar">
+      <span>완료일: 2026-05-14</span>
+      <span>총 소요시간: 약 2-3일</span>
+      <span>비용: 도메인 + $6/월 droplet</span>
+    </div>
+  </header>
+
+  <div class="intro">
+    <strong>이 문서의 용도 —</strong>
+    (1) 실제 수행한 단계의 회고적 기록,
+    (2) 다음 SaaS 레포(snapdeck 등)를 동일 패턴으로 찍어낼 때 쓰는 플레이북.
+    각 단계마다 명령어 · 검증 방법 · 실제로 겪은 함정을 함께 적었습니다.
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">단계 목차</div>
+    <ol>
+      <li><a href="#p0">사전 결정 & 계정 준비</a><span class="est">— 30분</span></li>
+      <li><a href="#p1">로컬 개발 환경</a><span class="est">— 30분</span></li>
+      <li><a href="#p2">Rails 8 프로젝트 부트스트랩</a><span class="est">— 30분</span></li>
+      <li><a href="#p3">도메인 & DNS (Cloudflare)</a><span class="est">— 30분</span></li>
+      <li><a href="#p4">앱 코어 개발</a><span class="est">— 1일</span></li>
+      <li><a href="#p5">서버 프로비저닝 (DigitalOcean)</a><span class="est">— 30분</span></li>
+      <li><a href="#p6">배포 인프라 (Kamal + GHCR)</a><span class="est">— 1-2시간</span></li>
+      <li><a href="#p7">첫 배포 + TLS</a><span class="est">— 1-2시간</span></li>
+      <li><a href="#p8">공개 + 빌드 인 퍼블릭</a><span class="est">— 30분</span></li>
+    </ol>
+  </div>
+
+  <!-- Phase 0 -->
+  <div class="phase" id="p0">
+    <div class="phase-header">
+      <span class="phase-num">Phase 0</span>
+      <span class="phase-title">사전 결정 & 계정 준비</span>
+      <span class="phase-time">~30분</span>
+    </div>
+    <div class="phase-goal"><strong>목표 —</strong> 코드 한 줄 짜기 전에 결정해야 할 것들. 잘못 결정하면 나중에 마이그레이션 비용이 큼.</div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">0-1</span><span class="step-title">기술 스택 결정 (이미 완료)</span></div>
+      <div class="step-body">
+        Rails 8 풀스택 모놀리스 + SQLite + Solid 트리오 + Hotwire + Tailwind + Kamal 2.
+        결정 이유는 <a href="../CLAUDE.md">CLAUDE.md</a> 와 <a href="stack-comparison.html">stack-comparison.html</a> 참조.
+        <div class="tip">새 SaaS 레포에서는 이 결정을 그대로 복붙. 박스를 줄이는 게 1인 메이커의 무기.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">0-2</span><span class="step-title">언어 정책 결정</span></div>
+      <div class="step-body">
+        <ul>
+          <li><b>사용자 ↔ Claude 대화 / 내부 메모</b>: 한글</li>
+          <li><b>사이트 UI / 카피 / 메타데이터</b>: 영문 only</li>
+          <li><b>마케팅 콘텐츠</b>: 영문 only (글로벌 타겟)</li>
+        </ul>
+        <div class="warn">한국어 카피가 섞이면 글로벌 신뢰도 떨어짐. 이 결정을 <code>CLAUDE.md</code> 에 박아둘 것 — 안 그러면 AI 가 자꾸 한글 카피 생성.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">0-3</span><span class="step-title">필요 계정 발급</span></div>
+      <div class="step-body">
+        <table>
+          <thead><tr><th>서비스</th><th>용도</th><th>비용</th></tr></thead>
+          <tbody>
+            <tr><td>GitHub</td><td>레포 + GHCR(이미지 레지스트리)</td><td>무료</td></tr>
+            <tr><td>Cloudflare</td><td>도메인 등록 + DNS + CDN + SSL</td><td>도메인 $9~/년</td></tr>
+            <tr><td>DigitalOcean</td><td>VPS 호스팅</td><td>$6/월 (1GB RAM droplet)</td></tr>
+            <tr><td>Beehiiv</td><td>뉴스레터 발송 + 구독자 관리</td><td>무료 → Pro 유료</td></tr>
+            <tr><td>Polar (예정)</td><td>결제 (Merchant of Record)</td><td>수수료 기반</td></tr>
+          </tbody>
+        </table>
+        <div class="tip">GitHub 은 <code>SnapPlug</code> 같은 조직 계정 권장. 이미지 레지스트리(GHCR) 가 조직 단위로 깔끔하게 분리됨.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">0-4</span><span class="step-title">디자인 레퍼런스 선정</span></div>
+      <div class="step-body">
+        <p>jsonjeong 의 경우 <a href="https://marclou.com" target="_blank">marclou.com</a> 을 비주얼 타깃으로. 카드 그리드 + 프로필 + 뉴스레터 패턴.</p>
+        <div class="tip">기억에 의존하지 말고 <code>/browse</code> (gstack) 로 실제 사이트를 확인하면서 진행.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 1 -->
+  <div class="phase" id="p1">
+    <div class="phase-header">
+      <span class="phase-num">Phase 1</span>
+      <span class="phase-title">로컬 개발 환경</span>
+      <span class="phase-time">~30분</span>
+    </div>
+    <div class="phase-goal"><strong>목표 —</strong> <code>bin/dev</code> 한 번에 로컬 서버가 뜨는 상태.</div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">1-1</span><span class="step-title">Ruby 버전 매니저 설치 (mise)</span></div>
+      <div class="step-body">
+<pre><code>brew install mise
+# ~/.zshrc 에 추가
+eval "$(mise activate zsh)"</code></pre>
+        <div class="warn">rbenv, asdf, rvm 도 가능하지만 mise 가 가장 빠름. 디렉터리 진입 시 자동으로 Ruby 버전 활성화.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">1-2</span><span class="step-title">Ruby 3.3 설치</span></div>
+      <div class="step-body">
+<pre><code>mise install ruby@3.3</code></pre>
+        <div class="verify"><code>ruby -v</code> 가 3.3.x 출력</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">1-3</span><span class="step-title">Rails 8 설치</span></div>
+      <div class="step-body">
+<pre><code>gem install rails -v "~> 8.1"</code></pre>
+        <div class="verify"><code>rails -v</code> 가 8.1.x 출력</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">1-4</span><span class="step-title">Docker Desktop 설치 (배포 빌드용)</span></div>
+      <div class="step-body">
+        <p>Kamal 이 amd64 이미지를 로컬에서 빌드하므로 필요.</p>
+<pre><code>brew install --cask docker
+# Docker Desktop 실행 후 한 번 동의 클릭</code></pre>
+        <div class="verify"><code>docker ps</code> 가 빈 테이블 출력 (에러 없음)</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">1-5</span><span class="step-title">GitHub CLI (gh) 설치 + 인증</span></div>
+      <div class="step-body">
+<pre><code>brew install gh
+gh auth login</code></pre>
+        <div class="verify"><code>gh auth status</code> 가 로그인 계정 표시</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase" id="p2">
+    <div class="phase-header">
+      <span class="phase-num">Phase 2</span>
+      <span class="phase-title">Rails 8 프로젝트 부트스트랩</span>
+      <span class="phase-time">~30분</span>
+    </div>
+    <div class="phase-goal"><strong>목표 —</strong> 새 Rails 앱 + Git 초기 커밋 + 로컬 서버 동작 확인.</div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">2-1</span><span class="step-title">Rails 앱 생성</span></div>
+      <div class="step-body">
+<pre><code>cd ~/projects
+rails new jsonjeong --css tailwind
+cd jsonjeong</code></pre>
+        <p>Rails 8 의 <code>rails new</code> 는 기본적으로 다음을 포함:</p>
+        <ul>
+          <li>SQLite (메인 DB)</li>
+          <li>Solid Cache / Queue / Cable</li>
+          <li>Propshaft (에셋 파이프라인)</li>
+          <li>Import maps + Turbo + Stimulus</li>
+          <li>Puma + Thruster</li>
+          <li>Kamal 설정 파일</li>
+          <li>Brakeman + bundler-audit</li>
+        </ul>
+        <div class="tip"><code>--css tailwind</code> 플래그로 <code>tailwindcss-rails</code> gem 자동 추가.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">2-2</span><span class="step-title">Ruby 버전 고정</span></div>
+      <div class="step-body">
+<pre><code># .ruby-version 파일 생성 (rails new 가 자동 생성)
+echo "3.3.11" > .ruby-version
+
+# mise.toml 추가 (선택)
+cat > mise.toml &lt;&lt;EOF
+[tools]
+ruby = "3.3"
+EOF</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">2-3</span><span class="step-title">Git 초기화 + 첫 커밋</span></div>
+      <div class="step-body">
+<pre><code>git init
+git add .
+git commit -m "init: rails 8 new app"</code></pre>
+        <div class="verify"><code>bin/dev</code> 실행 → <code>http://localhost:3000</code> 에서 Rails 환영 페이지</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">2-4</span><span class="step-title">CLAUDE.md 작성</span></div>
+      <div class="step-body">
+        프로젝트 루트에 <code>CLAUDE.md</code> 생성. 다음 항목 포함:
+        <ul>
+          <li>프로젝트 목적 (한 줄)</li>
+          <li>기술 스택 결정 + 이유</li>
+          <li>레포 구조 (인덱스 vs 세부 SaaS 분리)</li>
+          <li>언어 정책 (대화 한글, 사이트 영문)</li>
+          <li>자주 쓰는 명령어</li>
+          <li>코드 스타일 (Omakase 유지)</li>
+        </ul>
+        <div class="tip">이 파일은 AI 코딩의 헌법. 잘 써두면 매 세션마다 같은 설명 반복할 필요 없음.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase" id="p3">
+    <div class="phase-header">
+      <span class="phase-num">Phase 3</span>
+      <span class="phase-title">도메인 & DNS (Cloudflare)</span>
+      <span class="phase-time">~30분 + DNS 전파 대기</span>
+    </div>
+    <div class="phase-goal"><strong>목표 —</strong> 도메인 구매 + Cloudflare 네임서버 + Origin Cert 발급까지.</div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">3-1</span><span class="step-title">Cloudflare Registrar 에서 도메인 구매</span></div>
+      <div class="step-body">
+        <p>Cloudflare Dashboard → Domain Registration → 검색 → 구매.</p>
+        <ul>
+          <li><code>jsonjeong.com</code> — $10/년 수준</li>
+          <li>구매 시 자동으로 Cloudflare 네임서버 세팅</li>
+        </ul>
+        <div class="tip">GoDaddy/Namecheap 등 외부에서 산 도메인이면 네임서버를 Cloudflare 로 변경 필요 (전파 24-48시간).</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">3-2</span><span class="step-title">DNS 레코드 추가 (드롭릿 IP 가 있다면 - 임시 placeholder 도 OK)</span></div>
+      <div class="step-body">
+<pre><code># Cloudflare Dashboard → DNS → Records
+A     jsonjeong.com         &lt;droplet-IP&gt;     Proxied
+A     www.jsonjeong.com     &lt;droplet-IP&gt;     Proxied
+A     newsletter.jsonjeong.com &lt;droplet-IP&gt;  Proxied</code></pre>
+        <p>드롭릿 IP 는 Phase 5 에서 확정. 일단 placeholder 로 만들고 나중에 수정해도 됨.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">3-3</span><span class="step-title">SSL/TLS 모드 = Full (strict)</span></div>
+      <div class="step-body">
+        <p>Cloudflare Dashboard → SSL/TLS → Overview → <b>Full (strict)</b> 선택.</p>
+        <div class="warn">Flexible 모드는 절대 사용 금지. 클라이언트 ↔ Cloudflare 만 암호화하고 Cloudflare ↔ Origin 은 평문이라 MITM 위험.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">3-4</span><span class="step-title">Cloudflare Origin Certificate 생성</span></div>
+      <div class="step-body">
+        <p>SSL/TLS → Origin Server → Create Certificate.</p>
+        <ul>
+          <li><b>Hostnames</b>: <code>*.jsonjeong.com, jsonjeong.com</code> (와일드카드 포함)</li>
+          <li><b>Validity</b>: 15 years (최대)</li>
+          <li>생성된 <code>certificate.pem</code> 과 <code>private_key.pem</code> 을 다운로드</li>
+        </ul>
+<pre><code># 인증서 파일을 레포 밖에 안전하게 보관
+mkdir -p ~/.config/jsonjeong-cert
+mv ~/Downloads/certificate.pem ~/.config/jsonjeong-cert/origin.crt
+mv ~/Downloads/private_key.pem ~/.config/jsonjeong-cert/origin.key
+chmod 600 ~/.config/jsonjeong-cert/*</code></pre>
+        <div class="gotcha">
+          초기엔 Let's Encrypt 로 시작했다가, Cloudflare proxied 모드에서 Let's Encrypt 인증서 발급 challenge 가 어려워서 Origin Cert 로 전환. 처음부터 Origin Cert 가 정답.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase" id="p4">
+    <div class="phase-header">
+      <span class="phase-num">Phase 4</span>
+      <span class="phase-title">앱 코어 개발</span>
+      <span class="phase-time">~1일</span>
+    </div>
+    <div class="phase-goal"><strong>목표 —</strong> 인덱스 사이트의 핵심 페이지(대시보드 + 뉴스레터 + 인증) 구현.</div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">4-1</span><span class="step-title">Rails 8 내장 인증 generator</span></div>
+      <div class="step-body">
+<pre><code>bin/rails generate authentication
+bin/rails db:migrate</code></pre>
+        <p>자동 생성되는 것:</p>
+        <ul>
+          <li><code>User</code> 모델 (<code>email_address</code>, <code>password_digest</code>)</li>
+          <li><code>Session</code> 모델 (IP / UA 추적)</li>
+          <li><code>SessionsController</code>, <code>PasswordsController</code></li>
+          <li><code>Authentication</code> concern → ApplicationController 에 자동 include</li>
+          <li>비밀번호 재설정 메일러</li>
+        </ul>
+        <div class="tip">Devise 보다 훨씬 가볍고 학습할 게 적음. OAuth 필요하면 그때 omniauth 추가.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">4-2</span><span class="step-title">Subscriber 모델 + 마이그레이션</span></div>
+      <div class="step-body">
+<pre><code>bin/rails generate model Subscriber email:string source:string status:string beehiiv_synced_at:datetime
+# 마이그레이션에 unique index, NOT NULL, default 추가
+bin/rails db:migrate</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">4-3</span><span class="step-title">DashboardController + 서비스 카드 그리드</span></div>
+      <div class="step-body">
+        <p><code>app/controllers/dashboard_controller.rb</code> 작성. <code>SERVICES</code> 상수에 각 SaaS 카드 정의. 외부 도메인 URL 로 link.</p>
+<pre><code>SERVICES = [
+  Service.new(name: "SnapDeck", path: "https://snapdeck.com", ...),
+  Service.new(name: "SnapTeam", path: "https://snapteam.com", ...),
+]</code></pre>
+        <div class="tip">새 서비스 추가는 이 배열에 한 줄 추가하는 것. 별도 레포는 따로 만들고 여기선 카드만.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">4-4</span><span class="step-title">NewsletterController + 서브도메인 라우팅</span></div>
+      <div class="step-body">
+        <code>config/routes.rb</code> 에 서브도메인 제약 추가:
+<pre><code>constraints subdomain: "newsletter" do
+  root "newsletter#show"
+  post "/" => "newsletter#subscribe"
+end
+
+constraints subdomain: /\A(www)?\z/ do
+  root "dashboard#index"
+  post "newsletter", to: "newsletter#subscribe"
+end</code></pre>
+        <div class="warn">로컬 개발에선 <code>lvh.me</code> 사용 (<code>newsletter.lvh.me:3000</code> 이 자동으로 127.0.0.1 로 풀림).</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">4-5</span><span class="step-title">BeehiivClient 서비스</span></div>
+      <div class="step-body">
+        <code>app/services/beehiiv_client.rb</code> 작성. <code>Net::HTTP</code> 로 직접 호출.
+        API 키는 Rails encrypted credentials 에서 읽음:
+<pre><code>bin/rails credentials:edit
+# 추가:
+# beehiiv:
+#   api_key: bh_...
+#   publication_id: pub_...</code></pre>
+        <div class="tip">gem 추가 없이 표준 라이브러리만 사용. <code>httparty</code>, <code>faraday</code> 안 씀.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">4-6</span><span class="step-title">Tailwind 디자인 (marclou.com 참고)</span></div>
+      <div class="step-body">
+        <p><code>/browse</code> 로 marclou.com 을 직접 보면서 레이아웃 / 여백 / 타이포그래피 모방.</p>
+        <ul>
+          <li><code>app/views/layouts/application.html.erb</code> — 공통 레이아웃</li>
+          <li><code>app/views/dashboard/index.html.erb</code> — 카드 그리드</li>
+          <li><code>app/views/newsletter/show.html.erb</code> — 뉴스레터 랜딩</li>
+        </ul>
+        <div class="warn">개발 서버에서 <code>bin/dev</code> 는 Rails + Tailwind watcher 를 동시 실행. <code>bin/rails server</code> 만 띄우면 CSS 업데이트 안 됨.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">4-7</span><span class="step-title">로컬 검증</span></div>
+      <div class="step-body">
+<pre><code>bin/dev
+# http://lvh.me:3000          → 대시보드
+# http://newsletter.lvh.me:3000 → 뉴스레터 랜딩</code></pre>
+        <div class="verify">두 URL 모두 200 + 뉴스레터 구독 폼 동작</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase" id="p5">
+    <div class="phase-header">
+      <span class="phase-num">Phase 5</span>
+      <span class="phase-title">서버 프로비저닝 (DigitalOcean)</span>
+      <span class="phase-time">~30분</span>
+    </div>
+    <div class="phase-goal"><strong>목표 —</strong> SSH 로 접속되는 Ubuntu droplet 1개.</div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">5-1</span><span class="step-title">Droplet 생성</span></div>
+      <div class="step-body">
+        DigitalOcean → Create → Droplet:
+        <ul>
+          <li><b>Image</b>: Ubuntu 24.04 LTS</li>
+          <li><b>Plan</b>: Basic / Regular / $6/월 (1GB RAM, 25GB SSD)</li>
+          <li><b>Region</b>: Singapore 또는 San Francisco (한국에서 가까운 곳)</li>
+          <li><b>Authentication</b>: SSH key (계정 SSH key 등록 후 선택)</li>
+        </ul>
+        <p>생성 후 IP 주소 메모. Cloudflare DNS A 레코드도 이 IP 로 업데이트.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">5-2</span><span class="step-title">SSH 접속 확인</span></div>
+      <div class="step-body">
+<pre><code>ssh root@&lt;droplet-IP&gt;
+# 첫 접속 fingerprint 승인</code></pre>
+        <div class="verify"><code>uname -a</code> 가 Ubuntu 24.04 출력</div>
+        <div class="tip">Docker 는 Kamal 이 첫 deploy 시 자동 설치. 수동 설치 불필요.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="phase" id="p6">
+    <div class="phase-header">
+      <span class="phase-num">Phase 6</span>
+      <span class="phase-title">배포 인프라 (Kamal + GHCR)</span>
+      <span class="phase-time">~1-2시간</span>
+    </div>
+    <div class="phase-goal"><strong>목표 —</strong> <code>bin/kamal deploy</code> 한 줄로 배포되는 상태.</div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">6-1</span><span class="step-title">GHCR 용 GitHub PAT 발급</span></div>
+      <div class="step-body">
+        GitHub → Settings → Developer settings → Personal access tokens (classic):
+        <ul>
+          <li><b>Scopes</b>: <code>write:packages</code>, <code>read:packages</code></li>
+          <li><b>Note</b>: <code>jsonjeong-kamal</code></li>
+        </ul>
+<pre><code># 환경변수로 보관 (~/.zshrc 또는 .envrc)
+export KAMAL_REGISTRY_PASSWORD="ghp_..."</code></pre>
+        <div class="warn">PAT 는 절대 git 커밋하지 말 것. <code>.kamal/secrets</code> 안에서는 <code>$KAMAL_REGISTRY_PASSWORD</code> 로만 참조.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">6-2</span><span class="step-title">config/deploy.yml 작성</span></div>
+      <div class="step-body">
+<pre><code>service: jsonjeong
+image: snapplug/jsonjeong
+
+servers:
+  web:
+    - &lt;droplet-IP&gt;
+
+proxy:
+  ssl:
+    certificate_pem: CERTIFICATE_PEM
+    private_key_pem: PRIVATE_KEY_PEM
+  hosts:
+    - jsonjeong.com
+    - www.jsonjeong.com
+    - newsletter.jsonjeong.com
+  app_port: 80
+
+registry:
+  server: ghcr.io
+  username: SnapPlug
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+
+ssh:
+  user: root
+
+volumes:
+  - "jsonjeong_storage:/rails/storage"
+
+asset_path: /rails/public/assets</code></pre>
+        <div class="warn"><code>volumes</code> 설정을 빼먹으면 매 배포마다 SQLite DB 가 날아감. 가장 중요한 한 줄.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">6-3</span><span class="step-title">.kamal/secrets 작성 (커밋 안전 버전)</span></div>
+      <div class="step-body">
+<pre><code># .kamal/secrets — git 커밋 OK (플레인텍스트 시크릿 없음)
+RAILS_MASTER_KEY=$(cat config/master.key)
+KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
+CERTIFICATE_PEM=$(cat ~/.config/jsonjeong-cert/origin.crt)
+PRIVATE_KEY_PEM=$(cat ~/.config/jsonjeong-cert/origin.key)</code></pre>
+        <div class="tip">실제 시크릿은 ENV 또는 레포 밖 파일에서 읽음. <code>.kamal/secrets</code> 자체는 ENV 이름과 외부 경로만 적힘.</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">6-4</span><span class="step-title">.gitignore 점검</span></div>
+      <div class="step-body">
+        다음 항목이 무시되는지 반드시 확인:
+<pre><code>/.env*
+/config/*.key
+/storage/*
+/log/*
+/tmp/*</code></pre>
+        <div class="verify"><code>git check-ignore -v config/master.key</code> 가 <code>.gitignore</code> 룰 출력</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">6-5</span><span class="step-title">Kamal setup (서버 초기 부트스트랩)</span></div>
+      <div class="step-body">
+<pre><code>bin/kamal setup</code></pre>
+        <p>한 번만 실행. Docker 설치 + 첫 이미지 빌드 + push + run + proxy 세팅을 자동으로 수행.</p>
+        <div class="verify"><code>curl -I https://jsonjeong.com</code> 가 200 응답 (DNS 전파 후)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 7 -->
+  <div class="phase" id="p7">
+    <div class="phase-header">
+      <span class="phase-num">Phase 7</span>
+      <span class="phase-title">첫 배포 + TLS 트러블슈팅</span>
+      <span class="phase-time">~1-2시간 (트러블슈팅 포함)</span>
+    </div>
+    <div class="phase-goal"><strong>목표 —</strong> https://jsonjeong.com 이 실제 카드 그리드를 보여주는 상태.</div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">7-1</span><span class="step-title">이후 배포는 한 줄</span></div>
+      <div class="step-body">
+<pre><code>bin/kamal deploy</code></pre>
+        <p>변경사항 빌드 → push → 무중단 컨테이너 교체 → 헬스 체크.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">7-2</span><span class="step-title">실제 겪은 함정 — TLS 전환 이슈</span></div>
+      <div class="step-body">
+        <div class="gotcha">
+          <b>증상:</b> Cloudflare proxied + Let's Encrypt 조합에서 인증서 발급 실패 (ACME challenge 가 Cloudflare 에서 막힘).<br>
+          <b>해결:</b> Let's Encrypt 포기 → Cloudflare Origin Cert 로 전환 (Phase 3-4 에서 미리 준비).<br>
+          <b>커밋 흔적:</b> <code>0c17a00 deploy: switch to Cloudflare Origin Cert for Full(strict) SSL</code>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">7-3</span><span class="step-title">디버깅 명령어</span></div>
+      <div class="step-body">
+<pre><code>bin/kamal app logs -f         # 실시간 앱 로그
+bin/kamal app exec --interactive --reuse "bin/rails console"  # 라이브 REPL
+bin/kamal shell                # 컨테이너 bash
+bin/kamal proxy logs           # kamal-proxy 로그 (TLS / 라우팅)</code></pre>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">7-4</span><span class="step-title">검증 체크리스트</span></div>
+      <div class="step-body">
+        <ul>
+          <li><code>https://jsonjeong.com</code> → 카드 그리드 표시</li>
+          <li><code>https://www.jsonjeong.com</code> → 동일 (apex 가 처리)</li>
+          <li><code>https://newsletter.jsonjeong.com</code> → 뉴스레터 랜딩</li>
+          <li><code>https://jsonjeong.com/up</code> → "Rails: Ok" 헬스 체크</li>
+          <li>구독 폼 제출 → Beehiiv 대시보드에 새 구독자 노출</li>
+          <li>브라우저 자물쇠 아이콘 → 정상 (Cloudflare 발급 인증서)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Phase 8 -->
+  <div class="phase" id="p8">
+    <div class="phase-header">
+      <span class="phase-num">Phase 8</span>
+      <span class="phase-title">공개 + 빌드 인 퍼블릭</span>
+      <span class="phase-time">~30분</span>
+    </div>
+    <div class="phase-goal"><strong>목표 —</strong> 코드를 GitHub 공개 + 첫 X 콘텐츠 발행.</div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">8-1</span><span class="step-title">GitHub 레포 생성 + push</span></div>
+      <div class="step-body">
+<pre><code>gh repo view SnapPlug/jsonjeong || \
+  gh repo create SnapPlug/jsonjeong --public --description "..."
+
+git remote add origin https://github.com/SnapPlug/jsonjeong.git
+git push -u origin main</code></pre>
+        <div class="verify">레포가 GitHub 에 보이고 시크릿 누출 없음 (Phase 6-4 의 .gitignore 점검 덕분)</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">8-2</span><span class="step-title">README + About 추가 (TODO)</span></div>
+      <div class="step-body">
+        <p>레포 영문 README + 짧은 description (gh repo edit) — 글로벌 메이커 시장 타겟.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-header"><span class="step-num">8-3</span><span class="step-title">첫 빌드 인 퍼블릭 콘텐츠</span></div>
+      <div class="step-body">
+        <p><code>/go-viral-or-die</code> 스킬로 X 스레드 초안 생성. "Solo dev in Jeju, $0 → $1K MRR in 90 days" 류 후크.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 최종 체크리스트 -->
+  <div class="checklist">
+    <h3>최종 체크리스트 — 이게 다 되면 라이브 서비스</h3>
+    <ul>
+      <li>로컬 <code>bin/dev</code> 동작</li>
+      <li>Ruby 버전 mise 로 고정</li>
+      <li>Rails 8 내장 인증 + bcrypt</li>
+      <li>SQLite + Solid 트리오</li>
+      <li>Hotwire + Tailwind + Import maps</li>
+      <li>Cloudflare 도메인 + DNS</li>
+      <li>Cloudflare Origin Cert (15년)</li>
+      <li>SSL/TLS Full (strict) 모드</li>
+      <li>DigitalOcean droplet</li>
+      <li>GHCR PAT (write:packages)</li>
+      <li>config/deploy.yml + .kamal/secrets</li>
+      <li>영속 볼륨 (jsonjeong_storage:/rails/storage)</li>
+      <li>asset_path 설정 (in-flight 요청 404 방지)</li>
+      <li>Beehiiv credentials</li>
+      <li>.gitignore 점검 (master.key, .env, storage 제외)</li>
+      <li>bin/kamal deploy 성공</li>
+      <li>https://jsonjeong.com + newsletter 서브도메인 동작</li>
+      <li>GitHub repo public 공개</li>
+      <li class="todo">README.md 추가</li>
+      <li class="todo">에러 추적 (Sentry / Honeybadger)</li>
+      <li class="todo">업타임 모니터 (UptimeRobot)</li>
+      <li class="todo">DB 백업 자동화</li>
+      <li class="todo">분석 (Plausible / PostHog)</li>
+      <li class="todo">CI/CD (GitHub Actions → Kamal)</li>
+    </ul>
+  </div>
+
+  <footer>
+    제로베이스 셋업 플레이북 · 2026-05-15 · jsonjeong.com<br>
+    <em>다음 SaaS (snapdeck 등) 도 이 플레이북을 그대로 따라 찍어내면 1-2일에 라이브.</em>
+  </footer>
+
+</div>
+
+</body>
+</html>

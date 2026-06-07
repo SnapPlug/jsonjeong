@@ -1,0 +1,646 @@
+#!/usr/bin/env bash
+# new-saas — Rails 8 + AI 코딩 최적화 프로젝트 부트스트랩
+#
+# 설치:
+#   mkdir -p ~/bin
+#   cp /Users/jason/jason/docs/new-saas ~/bin/new-saas
+#   chmod +x ~/bin/new-saas
+#   # ~/.zshrc 에 추가:  export PATH="$HOME/bin:$PATH"
+#
+# 사용:
+#   new-saas <project-name>                       # 인터랙티브
+#   new-saas <project-name> --type client --private --github-org acme
+#
+# 이 스크립트는 다음을 자동화한다:
+#   1. rails new --css tailwind
+#   2. CLAUDE.md 생성 (maker / client 템플릿 분기)
+#   3. .gitignore 강화
+#   4. (옵션) Rails 8 내장 인증 generator
+#   5. Kamal / Cloudflare 배포 템플릿 파일 생성
+#   6. 첫 git 커밋
+#   7. (옵션) GitHub 레포 생성 + push
+
+set -euo pipefail
+
+VERSION="1.0.0"
+
+# ---------- 색상 출력 ----------
+RED=$'\033[0;31m'
+GREEN=$'\033[0;32m'
+YELLOW=$'\033[1;33m'
+BLUE=$'\033[0;34m'
+CYAN=$'\033[0;36m'
+BOLD=$'\033[1m'
+RESET=$'\033[0m'
+
+info()    { printf "${BLUE}▸${RESET} %s\n" "$*"; }
+success() { printf "${GREEN}✓${RESET} %s\n" "$*"; }
+warn()    { printf "${YELLOW}⚠${RESET} %s\n" "$*"; }
+error()   { printf "${RED}✗${RESET} %s\n" "$*" >&2; }
+step()    { printf "\n${BOLD}${CYAN}━━ %s ━━${RESET}\n" "$*"; }
+
+show_usage() {
+  cat <<EOF
+${BOLD}new-saas v$VERSION${RESET} — Rails 8 + AI 코딩 최적화 부트스트랩
+
+${BOLD}Usage:${RESET}
+  new-saas <project-name> [options]
+
+${BOLD}Options:${RESET}
+  --type maker|client       프로젝트 종류 (default: 프롬프트)
+  --lang ko|en|bilingual    언어 정책 (default: 프롬프트)
+  --no-auth                 Rails 인증 generator 건너뛰기
+  --no-github               GitHub 레포 생성 건너뛰기
+  --github-org <org>        GitHub 조직 (default: 프롬프트)
+  --private                 Private 레포로 생성 (default: maker=public, client=private)
+  --no-deploy-template      Kamal/Cloudflare 템플릿 파일 건너뛰기
+  -h, --help                이 도움말
+
+${BOLD}Examples:${RESET}
+  new-saas snapdeck                                 # 인터랙티브
+  new-saas snapteam --type maker --github-org SnapPlug
+  new-saas acme-portal --type client --private --github-org acme-corp
+
+${BOLD}프로젝트 이름 규칙:${RESET}
+  - 소문자 + 숫자 + 하이픈만 (kebab-case)
+  - 예: snapdeck, my-app, acme-portal-v2
+EOF
+}
+
+# ---------- 인자 파싱 ----------
+PROJECT_NAME=""
+PROJECT_TYPE=""
+LANG_POLICY=""
+WITH_AUTH=1
+WITH_GITHUB=1
+WITH_DEPLOY_TEMPLATE=1
+GITHUB_ORG=""
+VISIBILITY=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -h|--help) show_usage; exit 0 ;;
+    --type) PROJECT_TYPE="$2"; shift 2 ;;
+    --lang) LANG_POLICY="$2"; shift 2 ;;
+    --no-auth) WITH_AUTH=0; shift ;;
+    --no-github) WITH_GITHUB=0; shift ;;
+    --no-deploy-template) WITH_DEPLOY_TEMPLATE=0; shift ;;
+    --github-org) GITHUB_ORG="$2"; shift 2 ;;
+    --private) VISIBILITY="private"; shift ;;
+    --public) VISIBILITY="public"; shift ;;
+    -*) error "알 수 없는 옵션: $1"; show_usage; exit 1 ;;
+    *) PROJECT_NAME="$1"; shift ;;
+  esac
+done
+
+# ---------- 사전 검증 ----------
+if [[ -z "$PROJECT_NAME" ]]; then
+  error "프로젝트 이름이 필요합니다."
+  show_usage
+  exit 1
+fi
+
+if ! [[ "$PROJECT_NAME" =~ ^[a-z][a-z0-9-]*$ ]]; then
+  error "프로젝트 이름은 소문자/숫자/하이픈만 허용. (kebab-case)"
+  error "예: snapdeck, my-app, acme-portal"
+  exit 1
+fi
+
+if [[ -d "$PROJECT_NAME" ]]; then
+  error "디렉터리가 이미 존재합니다: $PROJECT_NAME"
+  exit 1
+fi
+
+# 필수 도구 점검
+for tool in ruby rails git; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    error "$tool 가 설치되지 않았습니다."
+    case "$tool" in
+      ruby)  echo "    설치: brew install mise && mise install ruby@3.3" ;;
+      rails) echo "    설치: gem install rails -v '~> 8.1'" ;;
+    esac
+    exit 1
+  fi
+done
+
+# Rails 버전 점검 (8.x 권장)
+RAILS_VERSION=$(rails -v 2>/dev/null | awk '{print $2}' || echo "unknown")
+if [[ ! "$RAILS_VERSION" =~ ^8\. ]]; then
+  warn "Rails $RAILS_VERSION 감지. 이 스크립트는 Rails 8.x 가정. 계속하려면 Enter."
+  read -r
+fi
+
+# ---------- 인터랙티브 프롬프트 ----------
+prompt_select() {
+  local question="$1"
+  local default="$2"
+  shift 2
+  local options=("$@")
+
+  echo -e "\n${BOLD}$question${RESET}"
+  for i in "${!options[@]}"; do
+    printf "  ${CYAN}%d)${RESET} %s\n" "$((i+1))" "${options[$i]}"
+  done
+  printf "선택 [default: %s]: " "$default"
+  read -r choice
+  if [[ -z "$choice" ]]; then
+    echo "$default"
+  else
+    echo "${options[$((choice-1))]}"
+  fi
+}
+
+prompt_text() {
+  local question="$1"
+  local default="$2"
+  printf "\n${BOLD}%s${RESET}" "$question"
+  if [[ -n "$default" ]]; then
+    printf " [default: %s]" "$default"
+  fi
+  printf ": "
+  read -r answer
+  echo "${answer:-$default}"
+}
+
+prompt_yn() {
+  local question="$1"
+  local default="$2"  # Y or N
+  local suffix
+  if [[ "$default" == "Y" ]]; then suffix="[Y/n]"; else suffix="[y/N]"; fi
+  printf "\n${BOLD}%s${RESET} %s: " "$question" "$suffix"
+  read -r answer
+  answer="${answer:-$default}"
+  [[ "$answer" =~ ^[Yy]$ ]]
+}
+
+step "프로젝트 정보"
+
+if [[ -z "$PROJECT_TYPE" ]]; then
+  PROJECT_TYPE=$(prompt_select "프로젝트 종류는?" "maker" "maker" "client")
+fi
+
+if [[ -z "$LANG_POLICY" ]]; then
+  if [[ "$PROJECT_TYPE" == "maker" ]]; then
+    LANG_POLICY=$(prompt_select "언어 정책은?" "en" "en" "ko" "bilingual")
+  else
+    LANG_POLICY=$(prompt_select "언어 정책은? (클라이언트 요구사항)" "ko" "ko" "en" "bilingual")
+  fi
+fi
+
+if [[ -z "$VISIBILITY" ]]; then
+  if [[ "$PROJECT_TYPE" == "maker" ]]; then
+    VISIBILITY="public"
+  else
+    VISIBILITY="private"
+  fi
+fi
+
+PROJECT_PURPOSE=$(prompt_text "프로젝트 한 줄 설명 (영문 권장)" "")
+
+if [[ $WITH_GITHUB -eq 1 ]] && [[ -z "$GITHUB_ORG" ]]; then
+  DEFAULT_ORG=""
+  if [[ "$PROJECT_TYPE" == "maker" ]]; then
+    DEFAULT_ORG="SnapPlug"
+  fi
+  GITHUB_ORG=$(prompt_text "GitHub 조직/사용자명" "$DEFAULT_ORG")
+fi
+
+# ---------- 요약 + 확인 ----------
+step "셋업 계획"
+cat <<EOF
+  프로젝트:        ${BOLD}$PROJECT_NAME${RESET}
+  종류:            $PROJECT_TYPE
+  언어 정책:       $LANG_POLICY
+  설명:            ${PROJECT_PURPOSE:-<나중에 작성>}
+  인증 generator:  $([ $WITH_AUTH -eq 1 ] && echo "예" || echo "아니오")
+  배포 템플릿:     $([ $WITH_DEPLOY_TEMPLATE -eq 1 ] && echo "예" || echo "아니오")
+  GitHub 레포:     $([ $WITH_GITHUB -eq 1 ] && echo "$GITHUB_ORG/$PROJECT_NAME ($VISIBILITY)" || echo "건너뜀")
+EOF
+
+if ! prompt_yn "이대로 진행할까요?" "Y"; then
+  warn "취소했습니다."
+  exit 0
+fi
+
+# ============================================================================
+# 실제 셋업 시작
+# ============================================================================
+
+# ---------- Step 1: rails new ----------
+step "1/7 Rails 8 앱 생성"
+rails new "$PROJECT_NAME" --css tailwind
+cd "$PROJECT_NAME"
+success "Rails 앱 생성 완료"
+
+# ---------- Step 2: .gitignore 강화 ----------
+step "2/7 .gitignore 강화"
+cat >> .gitignore <<'EOF'
+
+# AI 코딩 도구 / 캐시
+.gstack/
+.claude/cache/
+EOF
+success ".gitignore 강화"
+
+# ---------- Step 3: CLAUDE.md ----------
+step "3/7 CLAUDE.md 생성"
+
+write_claude_md_maker() {
+  cat > CLAUDE.md <<EOF
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## 언어 정책 (계층 분리)
+
+| 레이어 | 언어 |
+|---|---|
+| 사용자 ↔ Claude 대화 | **한글** |
+| 내부 메모, CLAUDE.md, 코드 주석 | **한글** (코드 식별자, 커밋 메시지는 영문) |
+| **사이트 UI / 카피 / 메타데이터** | **영문 only** |
+| 마케팅 콘텐츠 (X / 블로그 / 영상) | **영문 only** |
+
+이유: 글로벌 영어 메이커 시장 타겟. 사이트 · SaaS · 콘텐츠 모두 영어여야 마케팅 깔때기 동작.
+
+## 운영 사이클 (단일 루프)
+
+마케팅 + 세일즈 + 개발 + 서비스 운영 + 유지보수가 **하나의 사이클**.
+
+- 빌드 인 퍼블릭: 의미 있는 개발 단계마다 X 콘텐츠
+- OSMU: 한 콘텐츠를 X 스레드 → 블로그 → 영상 → 뉴스레터 재사용
+- 마케팅 카피는 \`/go-viral-or-die\` 스킬 사용
+
+## 프로젝트 목적
+
+$PROJECT_PURPOSE
+
+## 기술 스택 (확정)
+
+핵심 철학: **단순함 = AI 친화**. Rails 8 기본값에서 벗어나지 않는다.
+
+| 영역 | 선택 |
+|---|---|
+| 프레임워크 | Rails 8 |
+| Ruby | 3.3 이상 |
+| DB | SQLite (Solid 트리오) |
+| 인증 | Rails 8 내장 generator |
+| 백그라운드 잡 | Solid Queue |
+| 캐시 | Solid Cache |
+| WebSocket | Solid Cable |
+| CSS | Tailwind CSS |
+| JS | Import maps + Turbo + Stimulus (Hotwire) |
+| 테스트 | Minitest |
+| 결제 | Polar (Merchant of Record, 도입 시) |
+| 배포 | Kamal 2 |
+
+외부 Redis/Node 빌드 체인 없음.
+
+## 자주 쓰는 명령
+
+\`\`\`bash
+bin/dev                 # 개발 서버 (Rails + Tailwind watcher)
+bin/rails console       # REPL
+bin/rails test          # 전체 테스트
+bin/rubocop             # 린트 (Rails Omakase)
+bin/brakeman            # 보안 정적 분석
+bin/bundler-audit       # gem 취약점 점검
+bin/kamal deploy        # 배포 (인프라 셋업 후)
+\`\`\`
+
+## 코드 스타일
+
+- Rails Omakase RuboCop 규칙 그대로
+- 컨트롤러 얇게, 비즈니스 로직은 모델에
+- Service Object 는 명백히 필요할 때만
+- 불변성 우선 (mutation 금지)
+- 800줄 / 함수 50줄 / 중첩 4단계 한계
+
+## 하지 말 것
+
+- Devise 도입 (내장 인증으로 충분)
+- npm / node_modules 도입 (Import maps 유지)
+- Postgres 도입 (소규모일 때 SQLite 로 충분)
+- Service Object 남발 (premature abstraction)
+- 새 패턴 발명 (Rails 관례를 따른다)
+EOF
+}
+
+write_claude_md_client() {
+  local lang_section=""
+  case "$LANG_POLICY" in
+    ko)
+      lang_section="| UI / 카피 / 코드 주석 | **한글** |"
+      ;;
+    en)
+      lang_section="| UI / 카피 / 코드 주석 | **영문** |"
+      ;;
+    bilingual)
+      lang_section="| UI / 카피 | **한글 + 영문 (i18n)** |
+| 코드 주석 / 메모 | **한글 또는 영문** |"
+      ;;
+  esac
+
+  cat > CLAUDE.md <<EOF
+# CLAUDE.md
+
+This file provides guidance to Claude Code when working with this repository.
+
+## 프로젝트 정보
+
+**$PROJECT_NAME** — $PROJECT_PURPOSE
+
+**클라이언트:** <클라이언트명 / 부서>
+**계약 기간:** <시작일 ~ 종료일>
+**주요 컨택:** <담당자명 / 이메일>
+
+## 언어 정책
+
+| 레이어 | 언어 |
+|---|---|
+| 사용자 ↔ Claude 대화 | 한글 |
+| 내부 메모 / 코드 식별자 / 커밋 | 영문 |
+$lang_section
+
+## 기술 스택 (확정)
+
+| 영역 | 선택 |
+|---|---|
+| 프레임워크 | Rails 8 |
+| Ruby | 3.3 이상 |
+| DB | SQLite (소규모) 또는 Postgres (대규모) |
+| 인증 | Rails 8 내장 generator |
+| CSS | Tailwind CSS |
+| JS | Hotwire (Turbo + Stimulus) + Import maps |
+| 테스트 | Minitest |
+| 배포 | Kamal 2 또는 클라이언트 인프라 |
+
+**중요 결정 사항:**
+- DB 선택 이유: <SQLite 충분 / Postgres 필요>
+- 배포 환경: <자체 호스팅 / 클라이언트 AWS / 기타>
+- 외부 통합: <결제, 이메일, 분석 등 명시>
+
+## 자주 쓰는 명령
+
+\`\`\`bash
+bin/dev                 # 개발 서버
+bin/rails console       # REPL
+bin/rails test          # 테스트
+bin/rubocop             # 린트
+bin/brakeman            # 보안 정적 분석
+\`\`\`
+
+## 코드 스타일
+
+- Rails Omakase 그대로
+- 클라이언트 코드 컨벤션 우선 (있다면)
+- 컨트롤러 얇게, 모델에 비즈니스 로직
+- 테스트 커버리지 70% 이상 목표
+- 보안: Brakeman + bundler-audit CI 통합
+
+## 협업 규칙
+
+- **브랜치 전략:** \`main\` 보호, feature 브랜치 + PR 리뷰
+- **커밋 규칙:** Conventional Commits (\`feat:\`, \`fix:\`, \`refactor:\`, \`docs:\`, \`test:\`, \`chore:\`)
+- **PR 리뷰:** 최소 1인 승인 후 머지
+- **민감 데이터:** 시크릿/PII 는 절대 커밋 금지, encrypted credentials 사용
+
+## 하지 말 것
+
+- 클라이언트 데이터를 로컬에 영구 보관 금지
+- 클라이언트 동의 없는 외부 서비스 통합 금지
+- 새 패턴 발명 (Rails 관례를 따른다)
+- 의존성 무분별 추가 (gem 추가 시 리뷰)
+
+## 인수 인계 체크리스트
+
+- [ ] README.md (셋업 + 실행 + 배포 절차)
+- [ ] ARCHITECTURE.md (주요 결정 + 다이어그램)
+- [ ] 환경 변수 목록 (.env.example)
+- [ ] 시드 데이터 (db/seeds.rb)
+- [ ] 운영 매뉴얼 (장애 대응, 백업 절차)
+- [ ] 보안 검토 (Brakeman 클린)
+EOF
+}
+
+if [[ "$PROJECT_TYPE" == "maker" ]]; then
+  write_claude_md_maker
+else
+  write_claude_md_client
+fi
+success "CLAUDE.md 생성 ($PROJECT_TYPE 템플릿)"
+
+# ---------- Step 4: 인증 generator ----------
+step "4/7 Rails 8 내장 인증 generator"
+if [[ $WITH_AUTH -eq 1 ]]; then
+  bin/rails db:create
+  bin/rails generate authentication
+  bin/rails db:migrate
+  success "인증 모델/컨트롤러 생성 + 마이그레이션"
+else
+  warn "인증 generator 건너뜀 (--no-auth)"
+fi
+
+# ---------- Step 5: 배포 템플릿 ----------
+step "5/7 배포 인프라 템플릿"
+if [[ $WITH_DEPLOY_TEMPLATE -eq 1 ]]; then
+
+  # config/deploy.yml — Kamal 가 이미 만들었으면 덮어쓰기 (placeholder 강화)
+  cat > config/deploy.yml <<EOF
+# Kamal 2 배포 설정 — $PROJECT_NAME
+# 첫 배포 전에 TODO 항목을 채우세요.
+
+service: $PROJECT_NAME
+
+# TODO: GitHub 조직/사용자명으로 변경
+image: ${GITHUB_ORG:-CHANGE_ME}/$PROJECT_NAME
+
+servers:
+  web:
+    # TODO: DigitalOcean droplet IP 입력
+    - 0.0.0.0
+
+proxy:
+  # TODO: Cloudflare Origin Cert 사용 (권장) 또는 Let's Encrypt
+  ssl:
+    certificate_pem: CERTIFICATE_PEM
+    private_key_pem: PRIVATE_KEY_PEM
+  hosts:
+    # TODO: 도메인 입력
+    - example.com
+    - www.example.com
+  app_port: 80
+
+registry:
+  server: ghcr.io
+  username: ${GITHUB_ORG:-CHANGE_ME}
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64
+
+env:
+  secret:
+    - RAILS_MASTER_KEY
+
+ssh:
+  user: root
+
+# SQLite + Active Storage 영속 — 매 배포마다 DB 가 날아가지 않게
+volumes:
+  - "${PROJECT_NAME}_storage:/rails/storage"
+
+# 에셋 핸드오버 (in-flight 요청 404 방지)
+asset_path: /rails/public/assets
+EOF
+
+  # .kamal/secrets — 커밋 안전 버전
+  mkdir -p .kamal
+  cat > .kamal/secrets <<EOF
+# Kamal 시크릿 — git 커밋 안전 (플레인텍스트 시크릿 없음)
+# 값은 ENV 또는 외부 파일에서 읽음.
+#
+# 필요한 것:
+#   RAILS_MASTER_KEY        — config/credentials.yml.enc 해독용
+#   KAMAL_REGISTRY_PASSWORD — GitHub PAT (write:packages)
+#   CERTIFICATE_PEM         — Cloudflare Origin Cert (PEM)
+#   PRIVATE_KEY_PEM         — Cloudflare Origin Private Key (PEM)
+#
+# 인증서 파일 권장 경로: ~/.config/${PROJECT_NAME}-cert/origin.{crt,key}
+
+RAILS_MASTER_KEY=\$(cat config/master.key)
+KAMAL_REGISTRY_PASSWORD=\$KAMAL_REGISTRY_PASSWORD
+CERTIFICATE_PEM=\$(cat ~/.config/${PROJECT_NAME}-cert/origin.crt)
+PRIVATE_KEY_PEM=\$(cat ~/.config/${PROJECT_NAME}-cert/origin.key)
+EOF
+
+  # DEPLOY.md — 배포 가이드
+  cat > DEPLOY.md <<EOF
+# Deployment Guide — $PROJECT_NAME
+
+## Prerequisites
+
+- DigitalOcean droplet (Ubuntu 24.04, \$6/mo basic)
+- Cloudflare account (DNS + Origin Cert)
+- GitHub PAT with \`write:packages\` scope
+
+## One-time Setup
+
+### 1. Cloudflare Origin Certificate
+
+\`\`\`bash
+mkdir -p ~/.config/${PROJECT_NAME}-cert
+# Cloudflare Dashboard → SSL/TLS → Origin Server → Create Certificate
+# Hostnames: *.example.com, example.com  |  Validity: 15 years
+# 다운로드한 파일을 다음 경로에 저장:
+#   ~/.config/${PROJECT_NAME}-cert/origin.crt
+#   ~/.config/${PROJECT_NAME}-cert/origin.key
+chmod 600 ~/.config/${PROJECT_NAME}-cert/*
+\`\`\`
+
+### 2. SSL/TLS Mode 설정
+
+Cloudflare Dashboard → SSL/TLS → Overview → **Full (strict)**
+
+### 3. DNS A 레코드
+
+\`\`\`
+A  example.com         <droplet-IP>  Proxied
+A  www.example.com     <droplet-IP>  Proxied
+\`\`\`
+
+### 4. 환경변수 (~/.zshrc)
+
+\`\`\`bash
+export KAMAL_REGISTRY_PASSWORD="ghp_..."   # GitHub PAT
+\`\`\`
+
+### 5. config/deploy.yml 의 TODO 항목 채우기
+
+- \`image:\` — GitHub 조직명
+- \`servers.web:\` — droplet IP
+- \`proxy.hosts:\` — 실제 도메인
+
+### 6. 첫 배포
+
+\`\`\`bash
+bin/kamal setup
+\`\`\`
+
+## 이후 배포
+
+\`\`\`bash
+bin/kamal deploy
+\`\`\`
+
+## 운영 명령
+
+\`\`\`bash
+bin/kamal app logs -f
+bin/kamal app exec --interactive --reuse "bin/rails console"
+bin/kamal shell
+bin/kamal proxy logs
+\`\`\`
+EOF
+
+  success "config/deploy.yml + .kamal/secrets + DEPLOY.md 생성"
+else
+  warn "배포 템플릿 건너뜀"
+fi
+
+# ---------- Step 6: 첫 git 커밋 ----------
+step "6/7 첫 git 커밋"
+git add .
+git commit -m "init: $PROJECT_NAME (Rails 8 + Tailwind + Kamal 2)
+
+Generated by new-saas v$VERSION
+Project type: $PROJECT_TYPE
+Language policy: $LANG_POLICY"
+success "초기 커밋 완료"
+
+# ---------- Step 7: GitHub 레포 ----------
+step "7/7 GitHub 레포 생성"
+if [[ $WITH_GITHUB -eq 1 ]]; then
+  if ! command -v gh >/dev/null 2>&1; then
+    warn "gh CLI 가 없습니다. GitHub 레포 생성 건너뜀."
+  else
+    REPO_FULL="$GITHUB_ORG/$PROJECT_NAME"
+    DESC="${PROJECT_PURPOSE:-$PROJECT_NAME}"
+
+    if gh repo view "$REPO_FULL" >/dev/null 2>&1; then
+      warn "레포가 이미 존재합니다: $REPO_FULL"
+    else
+      gh repo create "$REPO_FULL" --"$VISIBILITY" --description "$DESC" --source=. --push
+      success "GitHub 레포 생성 + push: https://github.com/$REPO_FULL"
+    fi
+  fi
+else
+  warn "GitHub 레포 건너뜀"
+fi
+
+# ---------- 완료 안내 ----------
+echo
+echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo -e "${BOLD}${GREEN}  ✓ $PROJECT_NAME 부트스트랩 완료!${RESET}"
+echo -e "${BOLD}${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
+echo
+echo "다음 단계:"
+echo
+echo "  ${CYAN}cd $PROJECT_NAME${RESET}"
+echo "  ${CYAN}bin/dev${RESET}                          # 로컬 서버 시작 → http://localhost:3000"
+echo
+echo "  ${CYAN}claude${RESET}                           # Claude Code 세션 시작 → CLAUDE.md 자동 로드"
+echo
+if [[ $WITH_DEPLOY_TEMPLATE -eq 1 ]]; then
+echo "  ${BOLD}배포 준비 (시간 있을 때):${RESET}"
+echo "    1. Cloudflare 에서 도메인 + Origin Cert 발급"
+echo "    2. DigitalOcean droplet 생성"
+echo "    3. config/deploy.yml 의 TODO 항목 채우기"
+echo "    4. ${CYAN}bin/kamal setup${RESET}"
+echo "    상세 가이드: ${CYAN}DEPLOY.md${RESET}"
+fi
+echo
+echo "  ${BOLD}참고 문서:${RESET}"
+echo "    - CLAUDE.md      — AI 코딩 가이드 (한 번 더 읽고 프로젝트 맥락 추가)"
+echo "    - .kamal/secrets — 시크릿 패턴 (실제 키는 ENV 로)"
+echo

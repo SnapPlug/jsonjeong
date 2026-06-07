@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next + Supabase + Vercel ↔ Rails 모놀리스 — 자리별 매핑</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e14;
+    --panel: #161b22;
+    --panel-2: #1c2128;
+    --panel-3: #21262d;
+    --border: #30363d;
+    --border-strong: #484f58;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --dim: #6e7681;
+
+    --next: #ffffff;
+    --vercel: #cccccc;
+    --supabase: #3ecf8e;
+    --rails: #cc0000;
+    --cloudflare: #f6821f;
+    --kamal: #58a6ff;
+    --do: #0080ff;
+
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --accent: #58a6ff;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 32px 16px;
+  }
+
+  .container { max-width: 1300px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  header h1 {
+    font-size: 2em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--supabase), var(--rails));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 1.05em;
+  }
+
+  h2 {
+    font-size: 1.5em;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* 상단 요약 박스 */
+  .summary {
+    background: linear-gradient(135deg, rgba(62, 207, 142, 0.08), rgba(204, 0, 0, 0.08));
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 20px 0 32px;
+    font-size: 1.02em;
+  }
+
+  /* 메가 도식: 왼쪽 3박스 → 오른쪽 1박스 */
+  .merge-diagram {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 20px;
+    align-items: stretch;
+    margin: 24px 0;
+  }
+  @media (max-width: 900px) {
+    .merge-diagram { grid-template-columns: 1fr; }
+    .merge-arrow { transform: rotate(90deg); padding: 20px; }
+  }
+
+  .stack-box {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stack-box.left { border-color: var(--supabase); }
+  .stack-box.right { border-color: var(--rails); }
+
+  .stack-box h3 {
+    font-size: 0.95em;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+    text-align: center;
+  }
+
+  .stack-box.left h3 { color: var(--supabase); }
+  .stack-box.right h3 { color: var(--rails); }
+
+  .service-block {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+
+  .service-block .service-name {
+    font-weight: 700;
+    font-size: 0.95em;
+    margin-bottom: 4px;
+  }
+  .service-block .service-roles {
+    font-size: 0.78em;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .service-block.next .service-name { color: var(--next); }
+  .service-block.vercel .service-name { color: var(--vercel); }
+  .service-block.supa .service-name { color: var(--supabase); }
+  .service-block.cf .service-name { color: var(--cloudflare); }
+  .service-block.rails .service-name { color: var(--rails); }
+  .service-block.do .service-name { color: var(--do); }
+  .service-block.kamal .service-name { color: var(--kamal); }
+
+  .merge-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    color: var(--border-strong);
+  }
+  .merge-arrow span {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+  }
+
+  /* 매핑 행 */
+  .mapping-section {
+    margin: 28px 0;
+  }
+
+  .section-header {
+    background: var(--panel-2);
+    border-left: 4px solid var(--accent);
+    padding: 10px 16px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    font-weight: 600;
+    font-size: 0.95em;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .mapping-row {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr;
+    gap: 12px;
+    align-items: stretch;
+    margin-bottom: 10px;
+  }
+  @media (max-width: 800px) {
+    .mapping-row { grid-template-columns: 1fr; gap: 6px; }
+    .row-arrow { display: none; }
+  }
+
+  .row-side {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .row-side.left { border-left: 3px solid var(--supabase); }
+  .row-side.right { border-left: 3px solid var(--rails); }
+
+  .row-role {
+    font-size: 0.72em;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  .row-tool {
+    font-size: 0.92em;
+    font-weight: 500;
+  }
+
+  .row-detail {
+    font-size: 0.78em;
+    color: var(--dim);
+    margin-top: 3px;
+  }
+
+  .row-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--border-strong);
+    font-size: 1.3em;
+  }
+
+  /* 트레이드오프 테이블 */
+  .tradeoff-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: var(--panel);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .tradeoff-table th,
+  .tradeoff-table td {
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92em;
+  }
+
+  .tradeoff-table th {
+    background: var(--panel-2);
+    color: var(--muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.78em;
+    letter-spacing: 0.05em;
+  }
+
+  .tradeoff-table th.col-next { color: var(--supabase); }
+  .tradeoff-table th.col-rails { color: var(--rails); }
+
+  .tradeoff-table tr:last-child td { border-bottom: none; }
+  .tradeoff-table tr:hover td { background: var(--panel-2); }
+
+  .tradeoff-table td:first-child {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* 결정 매트릭스 */
+  .decision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  @media (max-width: 720px) {
+    .decision-grid { grid-template-columns: 1fr; }
+  }
+
+  .decision-card {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .decision-card.left { border-color: var(--supabase); }
+  .decision-card.right { border-color: var(--rails); }
+
+  .decision-card h4 {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+    font-size: 1em;
+  }
+  .decision-card.left h4 { color: var(--supabase); }
+  .decision-card.right h4 { color: var(--rails); }
+
+  .decision-card ul {
+    padding-left: 20px;
+  }
+
+  .decision-card li {
+    margin: 8px 0;
+    font-size: 0.92em;
+  }
+
+  /* 한줄 요약 */
+  .quote-box {
+    background: var(--panel);
+    border-left: 4px solid var(--accent);
+    padding: 16px 22px;
+    margin: 24px 0;
+    border-radius: 4px;
+    font-style: italic;
+    font-size: 1.05em;
+  }
+  .quote-box strong { color: var(--accent); font-style: normal; }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85em;
+  }
+
+  .legend-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.78em;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .legend-pill.supabase { background: rgba(62, 207, 142, 0.15); color: var(--supabase); }
+  .legend-pill.rails { background: rgba(204, 0, 0, 0.15); color: var(--rails); }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Next + Supabase + Vercel ↔ Rails 모놀리스</h1>
+    <p>같은 자리, 다른 박스 — 자리별 1:1 매핑 도식</p>
+    <div style="margin-top: 12px;">
+      <span class="legend-pill supabase">▌ Next.js + Supabase + Vercel</span>
+      <span class="legend-pill rails">▌ Rails 모놀리스 (jsonjeong)</span>
+    </div>
+  </header>
+
+  <div class="summary">
+    <strong>핵심 한 줄 —</strong>
+    Next.js + Supabase + Vercel 이 <b>세 회사의 SaaS 로 분담</b>하는 일을, Rails 모놀리스는 <b>한 프레임워크 + 한 VPS</b>로 통째로 처리합니다.
+    자리(역할)는 동일하고, 채우는 박스가 다를 뿐입니다.
+  </div>
+
+  <!-- 1. 메가 도식 -->
+  <h2>1. 한 눈에 — 박스가 어떻게 합쳐지나</h2>
+  <div class="merge-diagram">
+    <div class="stack-box left">
+      <h3>Next.js + Supabase + Vercel</h3>
+
+      <div class="service-block vercel">
+        <div class="service-name">Vercel</div>
+        <div class="service-roles">DNS · CDN · SSL · 호스팅 · CI/CD · Env Vars · 프리뷰 배포</div>
+      </div>
+
+      <div class="service-block next">
+        <div class="service-name">Next.js</div>
+        <div class="service-roles">라우팅 · React SSR/SSG · API Routes · Server Actions · 빌드 · 미들웨어 · Tailwind</div>
+      </div>
+
+      <div class="service-block supa">
+        <div class="service-name">Supabase</div>
+        <div class="service-roles">Postgres · Auth(JWT) · Storage(S3) · Realtime · Edge Functions · RLS · 자동 REST API</div>
+      </div>
+
+      <p style="text-align: center; color: var(--muted); font-size: 0.85em; margin-top: auto; padding-top: 12px;">
+        세 SaaS 가 각 자리를 채움
+      </p>
+    </div>
+
+    <div class="merge-arrow">
+      <span>≡</span>
+    </div>
+
+    <div class="stack-box right">
+      <h3>Rails 모놀리스 (jsonjeong)</h3>
+
+      <div class="service-block cf">
+        <div class="service-name">Cloudflare</div>
+        <div class="service-roles">DNS · CDN · SSL Origin Cert</div>
+      </div>
+
+      <div class="service-block do">
+        <div class="service-name">DigitalOcean</div>
+        <div class="service-roles">VPS 호스팅 ($6/월)</div>
+      </div>
+
+      <div class="service-block kamal">
+        <div class="service-name">Kamal 2 + GHCR</div>
+        <div class="service-roles">Docker 빌드 · 이미지 저장소 · 배포 도구</div>
+      </div>
+
+      <div class="service-block rails">
+        <div class="service-name">Rails 8 앱 (단일 프로세스)</div>
+        <div class="service-roles">라우팅 · ERB+Hotwire · Active Record · 내장 인증 · SQLite · Solid Cache/Queue/Cable · Active Storage</div>
+      </div>
+
+      <p style="text-align: center; color: var(--muted); font-size: 0.85em; margin-top: auto; padding-top: 12px;">
+        Rails 앱 1개가 거의 모든 자리를 채움
+      </p>
+    </div>
+  </div>
+
+  <!-- 2. 자리별 매핑 -->
+  <h2>2. 자리별 매핑 (16개 슬롯)</h2>
+  <p style="color: var(--muted); margin-bottom: 16px;">왼쪽이 일반적인 바이브 코딩 스택, 오른쪽이 우리 선택. 같은 행 = 같은 자리.</p>
+
+  <!-- 엣지 / 인프라 -->
+  <div class="mapping-section">
+    <div class="section-header">🌐 엣지 · 호스팅 · 배포</div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">DNS</div>
+        <div class="row-tool">Vercel DNS</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">DNS</div>
+        <div class="row-tool">Cloudflare DNS</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">CDN</div>
+        <div class="row-tool">Vercel Edge Network</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">CDN</div>
+        <div class="row-tool">Cloudflare CDN</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">SSL / TLS</div>
+        <div class="row-tool">Vercel 자동 인증서</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">SSL / TLS</div>
+        <div class="row-tool">Cloudflare Origin Cert (15년)</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">호스팅</div>
+        <div class="row-tool">Vercel Serverless + Edge Functions</div>
+        <div class="row-detail">트래픽에 따라 자동 스케일</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">호스팅</div>
+        <div class="row-tool">DigitalOcean VPS</div>
+        <div class="row-detail">$6/월 고정 droplet</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">CI/CD</div>
+        <div class="row-tool">Vercel (git push → 자동 배포)</div>
+        <div class="row-detail">PR마다 프리뷰 URL 자동 생성</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">CI/CD</div>
+        <div class="row-tool">Kamal 2 (수동 <code>bin/kamal deploy</code>)</div>
+        <div class="row-detail">프리뷰 환경 별도 (미구축)</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">시크릿 / 환경변수</div>
+        <div class="row-tool">Vercel Environment Variables</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">시크릿 / 환경변수</div>
+        <div class="row-tool">Rails encrypted credentials + Kamal secrets</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 앱 / 프레임워크 -->
+  <div class="mapping-section">
+    <div class="section-header">🔧 앱 서버 · 프레임워크 · 라우팅</div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">앱 런타임</div>
+        <div class="row-tool">Node.js (Vercel Serverless)</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">앱 런타임</div>
+        <div class="row-tool">Ruby 3.3 + Puma + Thruster</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">웹 프레임워크</div>
+        <div class="row-tool">Next.js (React 기반)</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">웹 프레임워크</div>
+        <div class="row-tool">Rails 8</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">라우팅</div>
+        <div class="row-tool">Next.js file-based (<code>app/</code>)</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">라우팅</div>
+        <div class="row-tool">Rails <code>config/routes.rb</code></div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">API 엔드포인트</div>
+        <div class="row-tool">Next.js API Routes / Server Actions</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">API 엔드포인트</div>
+        <div class="row-tool">Rails 컨트롤러</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 프론트엔드 -->
+  <div class="mapping-section">
+    <div class="section-header">🎨 프론트엔드 · 렌더링</div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">렌더링 방식</div>
+        <div class="row-tool">React SSR + CSR 하이브리드</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">렌더링 방식</div>
+        <div class="row-tool">SSR (ERB) + Turbo 부분 갱신</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">컴포넌트 / 인터랙션</div>
+        <div class="row-tool">React 컴포넌트</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">컴포넌트 / 인터랙션</div>
+        <div class="row-tool">Stimulus + Turbo (Hotwire)</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">CSS</div>
+        <div class="row-tool">Tailwind CSS (npm)</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">CSS</div>
+        <div class="row-tool">Tailwind CSS (<code>tailwindcss-rails</code>)</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">JS 빌드</div>
+        <div class="row-tool">Webpack / Turbopack (Next 내장)</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">JS 빌드</div>
+        <div class="row-tool">Import maps (번들러 없음)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 데이터 -->
+  <div class="mapping-section">
+    <div class="section-header">💾 데이터 · 인증 · 권한</div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">메인 DB</div>
+        <div class="row-tool">Supabase Postgres (managed)</div>
+        <div class="row-detail">PostgREST 자동 API 제공</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">메인 DB</div>
+        <div class="row-tool">SQLite 단일 파일</div>
+        <div class="row-detail">Active Record ORM</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">인증</div>
+        <div class="row-tool">Supabase Auth (JWT, auth.users)</div>
+        <div class="row-detail">Magic Link, OAuth 기본 지원</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">인증</div>
+        <div class="row-tool">Rails 8 내장 generator + bcrypt</div>
+        <div class="row-detail">세션 기반, OAuth 직접 추가 필요</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">인가 (권한)</div>
+        <div class="row-tool">Supabase RLS (Row Level Security)</div>
+        <div class="row-detail">DB 레벨 SQL 정책</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">인가 (권한)</div>
+        <div class="row-tool">컨트롤러 <code>before_action</code> + 모델 메서드</div>
+        <div class="row-detail">앱 레벨 Ruby 코드</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">파일 스토리지</div>
+        <div class="row-tool">Supabase Storage (S3 호환)</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">파일 스토리지</div>
+        <div class="row-tool">Active Storage + 로컬 볼륨</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">실시간 (WebSocket)</div>
+        <div class="row-tool">Supabase Realtime (Postgres replication)</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">실시간 (WebSocket)</div>
+        <div class="row-tool">Solid Cable (Action Cable)</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">백그라운드 잡</div>
+        <div class="row-tool">Vercel Cron / Inngest / QStash (별도 SaaS)</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">백그라운드 잡</div>
+        <div class="row-tool">Solid Queue (DB)</div>
+      </div>
+    </div>
+
+    <div class="mapping-row">
+      <div class="row-side left">
+        <div class="row-role">캐시</div>
+        <div class="row-tool">Vercel Edge Cache + Upstash Redis (별도)</div>
+      </div>
+      <div class="row-arrow">↔</div>
+      <div class="row-side right">
+        <div class="row-role">캐시</div>
+        <div class="row-tool">Solid Cache (DB)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 트레이드오프 -->
+  <h2>3. 트레이드오프 비교</h2>
+  <table class="tradeoff-table">
+    <thead>
+      <tr>
+        <th>관점</th>
+        <th class="col-next">Next + Supabase + Vercel</th>
+        <th class="col-rails">Rails 모놀리스</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>시작 속도</td>
+        <td>클릭 몇 번이면 끝 (가입 → 프로젝트 생성 → 배포)</td>
+        <td>Docker / Kamal 학습 곡선 1~2일</td>
+      </tr>
+      <tr>
+        <td>운영 부담</td>
+        <td>0 (전부 매니지드)</td>
+        <td>VPS 본인 관리 (백업, 보안 패치)</td>
+      </tr>
+      <tr>
+        <td>스케일링</td>
+        <td>트래픽 폭증 자동 대응 (서버리스)</td>
+        <td>VPS 수직 확장 (대부분 충분, 수만 동접까지)</td>
+      </tr>
+      <tr>
+        <td>월 비용 (소규모)</td>
+        <td>Free tier → 트래픽 늘면 가파르게 상승 ($50~수백 $)</td>
+        <td>$6/월 고정 (DO droplet)</td>
+      </tr>
+      <tr>
+        <td>월 비용 (중규모)</td>
+        <td>Supabase Pro $25 + Vercel Pro $20 + DB row 비용 + 함수 호출 비용</td>
+        <td>$6~$24 (droplet 사이즈 업)</td>
+      </tr>
+      <tr>
+        <td>벤더 락인</td>
+        <td>강함 — Supabase 떠나기 어려움, Server Actions 는 Vercel 종속</td>
+        <td>없음 — Postgres/MySQL 어디든, VPS 어디든</td>
+      </tr>
+      <tr>
+        <td>데이터 주권</td>
+        <td>미국 회사 서버 (의료/금융/공공 분야는 이슈)</td>
+        <td>본인 서버 위치 선택 가능</td>
+      </tr>
+      <tr>
+        <td>인지 비용</td>
+        <td>3개 서비스 + JS 생태계 (npm 패키지 수십~수백)</td>
+        <td>1개 프레임워크 (관례 학습)</td>
+      </tr>
+      <tr>
+        <td>AI 코딩 적합도</td>
+        <td>패턴 분산 → AI 가 잘 모르면 혼란 가능</td>
+        <td>관례 강함 → AI 가 학습한 패턴 그대로 통함</td>
+      </tr>
+      <tr>
+        <td>실시간 / 협업 기능</td>
+        <td>Supabase Realtime 강력 (Postgres 변경 → 자동 푸시)</td>
+        <td>Action Cable 직접 구현 (코드량 많음)</td>
+      </tr>
+      <tr>
+        <td>모바일 앱 백엔드로</td>
+        <td>Supabase REST/RPC 즉시 사용 가능</td>
+        <td>JSON API 컨트롤러 직접 작성</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 4. 언제 어떤 걸 -->
+  <h2>4. 언제 어떤 걸 골라야 하나</h2>
+  <div class="decision-grid">
+
+    <div class="decision-card left">
+      <h4>Next + Supabase + Vercel 이 유리한 경우</h4>
+      <ul>
+        <li>React 생태계 의존이 명확 (기존 디자인 시스템, 컴포넌트 라이브러리)</li>
+        <li>모바일 앱 동시 개발 (Supabase 가 백엔드 역할)</li>
+        <li>실시간 협업 기능이 핵심 (Figma, Linear 류)</li>
+        <li>마케팅/랜딩 위주 + 잦은 PR 프리뷰가 필요</li>
+        <li>운영 인력 0, 인프라 신경 쓰기 싫음</li>
+        <li>해외 트래픽 글로벌 분산이 중요</li>
+      </ul>
+    </div>
+
+    <div class="decision-card right">
+      <h4>Rails 모놀리스가 유리한 경우</h4>
+      <ul>
+        <li>1인 메이커, 풀스택 단일 언어로 빠르게 (jsonjeong 같은 경우)</li>
+        <li>CRUD 비중이 높은 SaaS / 어드민 도구</li>
+        <li>벤더 락인 회피, 데이터 직접 소유</li>
+        <li>비용을 절대 통제하고 싶음 ($6 고정)</li>
+        <li>마크 루처럼 여러 작은 서비스를 빠르게 찍어내는 패턴</li>
+        <li>AI 코딩 시 관례 강한 프레임워크 선호</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="quote-box">
+    <strong>핵심 인사이트 —</strong>
+    "어떤 스택이 좋은가" 가 아니라 <b>"어떤 자리들을 몇 개의 박스로 합칠 것인가"</b> 가 진짜 의사결정입니다.
+    Next+Supabase+Vercel 은 3개 박스로, Rails 모놀리스는 1개 박스로 같은 자리를 채웁니다.
+    박스가 많아질수록 유연성과 매니지드 편의성이 늘고, 박스가 적어질수록 비용·인지 부담·벤더 락인이 줄어듭니다.
+  </div>
+
+  <h2>5. 우리(jsonjeong.com) 의 선택 근거</h2>
+  <ul style="padding-left: 24px; margin-top: 12px;">
+    <li style="margin: 8px 0;"><b>1인 메이커</b> — 박스를 줄여야 인지 부담 최소화</li>
+    <li style="margin: 8px 0;"><b>여러 SaaS 를 별도 레포로 찍어내는 마크 루 패턴</b> — 박스 적은 템플릿이 복붙하기 쉬움</li>
+    <li style="margin: 8px 0;"><b>AI 코딩 적합도</b> — Rails Omakase 관례가 강해 Claude Code 가 패턴을 잘 잡음</li>
+    <li style="margin: 8px 0;"><b>비용 통제</b> — $6 droplet 고정, 매출 0 단계에서 부담 없음</li>
+    <li style="margin: 8px 0;"><b>벤더 락인 회피</b> — 미국 SaaS 의존 0, 매각 가능 (마크 루 매각 사례)</li>
+  </ul>
+
+  <footer>
+    스택 비교 문서 · 2026-05-15 · jsonjeong.com<br>
+    <em>같은 자리, 다른 박스 — 정답은 없고 트레이드오프만 있음</em>
+  </footer>
+
+</div>
+
+</body>
+</html>

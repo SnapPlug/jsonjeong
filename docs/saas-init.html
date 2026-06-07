@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rails 8 + AI 코딩 프로젝트 부트스트랩 가이드</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e14;
+    --panel: #161b22;
+    --panel-2: #1c2128;
+    --panel-3: #21262d;
+    --border: #30363d;
+    --border-strong: #484f58;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --dim: #6e7681;
+
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #f0883e;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #bc8cff;
+    --maker: #58a6ff;
+    --client: #bc8cff;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    padding: 32px 16px 80px;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+
+  header h1 {
+    font-size: 2em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--accent), var(--purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p { color: var(--muted); font-size: 1.05em; }
+
+  .meta-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    font-size: 0.85em;
+  }
+  .meta-bar span {
+    background: var(--panel);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  h2 {
+    font-size: 1.5em;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  h3 {
+    font-size: 1.1em;
+    margin: 24px 0 12px;
+    color: var(--accent);
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 32px;
+  }
+
+  .toc-title {
+    font-size: 0.8em;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+
+  .toc ol { padding-left: 24px; }
+  .toc li { margin: 4px 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--accent); }
+
+  /* Hero callout — 한 줄 사용법 */
+  .hero {
+    background: linear-gradient(135deg, rgba(88,166,255,0.1), rgba(188,140,255,0.1));
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 24px 0 36px;
+  }
+
+  .hero-label {
+    font-size: 0.78em;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
+
+  .hero pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 14px 16px;
+    font-size: 1.05em;
+    margin: 8px 0;
+  }
+
+  /* 카드 / 박스 */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 14px 0;
+  }
+
+  .card h3 { margin-top: 0; }
+
+  /* Maker vs Client 분기 */
+  .split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  @media (max-width: 760px) {
+    .split { grid-template-columns: 1fr; }
+  }
+
+  .split-card {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+
+  .split-card.maker { border-color: var(--maker); }
+  .split-card.client { border-color: var(--client); }
+
+  .split-card h4 {
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .split-card.maker h4 { color: var(--maker); }
+  .split-card.client h4 { color: var(--client); }
+
+  .split-card ul { padding-left: 22px; }
+  .split-card li { margin: 4px 0; font-size: 0.92em; }
+
+  pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    font-size: 0.85em;
+    line-height: 1.5;
+    margin: 8px 0;
+  }
+
+  code {
+    font-family: "SF Mono", Menlo, Monaco, monospace;
+    background: var(--panel-3);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.85em;
+    color: var(--orange);
+  }
+
+  pre code { background: transparent; padding: 0; color: var(--text); }
+
+  /* Step boxes */
+  .step {
+    display: flex;
+    gap: 16px;
+    margin: 14px 0;
+    padding: 14px 18px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+
+  .step-num {
+    flex-shrink: 0;
+    background: var(--panel-3);
+    color: var(--accent);
+    font-family: "SF Mono", Menlo, monospace;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    border: 1px solid var(--border);
+  }
+
+  .step-content { flex: 1; }
+  .step-content h4 { margin-bottom: 8px; font-size: 1em; }
+
+  /* Tip / Warn boxes */
+  .tip, .warn, .gotcha {
+    padding: 8px 14px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 0.9em;
+  }
+
+  .tip { background: rgba(88,166,255,0.08); border-left: 3px solid var(--accent); }
+  .tip::before { content: "💡 "; }
+
+  .warn { background: rgba(240,136,62,0.08); border-left: 3px solid var(--orange); }
+  .warn::before { content: "⚠ "; }
+
+  .gotcha { background: rgba(248,81,73,0.08); border-left: 3px solid var(--red); }
+  .gotcha::before { content: "🔥 "; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    background: var(--panel);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92em;
+  }
+
+  th {
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  /* Inline flags */
+  .flag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 0.82em;
+    background: var(--panel-3);
+    color: var(--accent);
+    border: 1px solid var(--border);
+  }
+
+  /* Install banner */
+  .install-banner {
+    background: var(--panel);
+    border: 2px dashed var(--accent);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+
+  .install-banner-label {
+    font-size: 0.78em;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85em;
+  }
+
+  a { color: var(--accent); }
+
+  ul { padding-left: 22px; }
+  ul li { margin: 4px 0; }
+
+  h2 { scroll-margin-top: 20px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Rails 8 + AI 코딩 프로젝트 부트스트랩</h1>
+    <p>새 SaaS 든 고객사 프로젝트든, 빈 디렉터리에서 vibe coding 시작까지 — 매번 30분 루틴</p>
+    <div class="meta-bar">
+      <span>Stack: Rails 8 + SQLite + Hotwire + Tailwind + Kamal 2</span>
+      <span>For: Maker · Client</span>
+      <span>Version: 1.0.0</span>
+    </div>
+  </header>
+
+  <!-- Hero — 한 줄 사용법 -->
+  <div class="hero">
+    <div class="hero-label">한 줄 사용법 (스크립트 설치 후)</div>
+<pre><code>new-saas &lt;project-name&gt;</code></pre>
+    <p style="margin-top: 10px; color: var(--muted);">
+      인터랙티브 프롬프트로 <b>maker / client</b> · 언어 정책 · GitHub 옵션을 묻고 자동 부트스트랩합니다.
+    </p>
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <ol>
+      <li><a href="#once">머신 셋업 (평생 1회)</a></li>
+      <li><a href="#install">new-saas 스크립트 설치</a></li>
+      <li><a href="#use">스크립트 사용법</a></li>
+      <li><a href="#claude-md">CLAUDE.md 템플릿 (Maker vs Client)</a></li>
+      <li><a href="#manual">수동 단계 (백업 / 스크립트 없을 때)</a></li>
+      <li><a href="#deploy">배포 단계 (선택)</a></li>
+      <li><a href="#troubleshoot">자주 마주치는 함정</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. Machine setup -->
+  <h2 id="once">1. 머신 셋업 (평생 1회)</h2>
+  <p>새 노트북/머신에서만 한 번. 이미 셋업된 환경이면 건너뜁니다.</p>
+
+  <div class="card">
+<pre><code># 패키지 매니저
+brew install mise gh
+
+# Docker Desktop (Kamal 배포용)
+brew install --cask docker
+
+# ~/.zshrc 에 mise 활성화 + PATH
+cat &gt;&gt; ~/.zshrc &lt;&lt;'EOF'
+eval "$(mise activate zsh)"
+export PATH="$HOME/bin:$PATH"
+EOF
+source ~/.zshrc
+
+# Ruby 3.3 + Rails 8
+mise install ruby@3.3
+mise use --global ruby@3.3
+gem install rails -v "~> 8.1"
+
+# GitHub 인증
+gh auth login</code></pre>
+  </div>
+
+  <div class="warn">
+    Docker Desktop 은 첫 실행 시 동의 클릭 1회 필요. <code>docker ps</code> 가 에러 없이 빈 테이블을 출력하면 OK.
+  </div>
+
+  <!-- 2. Install script -->
+  <h2 id="install">2. <code>new-saas</code> 스크립트 설치</h2>
+
+  <p>스크립트 자체는 이 레포의 <a href="new-saas">docs/new-saas</a> 에 있습니다. <code>~/bin/</code> 에 복사:</p>
+
+  <div class="install-banner">
+    <div class="install-banner-label">설치 (한 번만)</div>
+<pre><code>mkdir -p ~/bin
+cp /Users/jason/jason/docs/new-saas ~/bin/new-saas
+chmod +x ~/bin/new-saas
+
+# PATH 확인 (~/.zshrc 에 이미 추가했다면 source 만)
+source ~/.zshrc
+new-saas --help</code></pre>
+  </div>
+
+  <div class="tip">
+    스크립트는 자체 완결형. Rails / git / (옵션) gh CLI 만 있으면 동작합니다. 다른 머신으로 옮길 때 이 파일 하나만 복사하면 됩니다.
+  </div>
+
+  <!-- 3. Use script -->
+  <h2 id="use">3. 스크립트 사용법</h2>
+
+  <h3>3-1. 인터랙티브 (권장)</h3>
+<pre><code>cd ~/projects
+new-saas snapdeck</code></pre>
+  <p>스크립트가 5개 질문을 묻고 자동으로 다음을 수행:</p>
+  <ol>
+    <li><code>rails new snapdeck --css tailwind</code></li>
+    <li>CLAUDE.md 생성 (maker/client 템플릿 분기)</li>
+    <li>.gitignore 강화 (AI 캐시 무시)</li>
+    <li>Rails 8 내장 인증 generator (선택)</li>
+    <li>Kamal/Cloudflare 배포 템플릿 (config/deploy.yml + .kamal/secrets + DEPLOY.md)</li>
+    <li>첫 git 커밋</li>
+    <li>GitHub 레포 생성 + push (선택)</li>
+  </ol>
+
+  <h3>3-2. 비대화형 (CI / 일괄 작업)</h3>
+<pre><code># 자체 메이커 프로젝트 (public)
+new-saas snapdeck \
+  --type maker \
+  --lang en \
+  --github-org SnapPlug
+
+# 고객사 프로젝트 (private)
+new-saas acme-portal \
+  --type client \
+  --lang ko \
+  --private \
+  --github-org acme-corp
+
+# GitHub 레포 생성 없이 로컬만
+new-saas experiment --no-github
+
+# 인증 generator 건너뛰기
+new-saas landing-page --no-auth</code></pre>
+
+  <h3>3-3. 옵션 레퍼런스</h3>
+  <table>
+    <thead>
+      <tr><th>옵션</th><th>설명</th><th>Default</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="flag">--type</span></td><td><code>maker</code> 또는 <code>client</code></td><td>프롬프트</td></tr>
+      <tr><td><span class="flag">--lang</span></td><td><code>ko</code> / <code>en</code> / <code>bilingual</code></td><td>프롬프트</td></tr>
+      <tr><td><span class="flag">--github-org</span></td><td>GitHub 조직/사용자명</td><td>프롬프트</td></tr>
+      <tr><td><span class="flag">--private</span></td><td>Private 레포</td><td>maker=public, client=private</td></tr>
+      <tr><td><span class="flag">--public</span></td><td>Public 레포</td><td>—</td></tr>
+      <tr><td><span class="flag">--no-auth</span></td><td>Rails 인증 generator 건너뛰기</td><td>인증 포함</td></tr>
+      <tr><td><span class="flag">--no-github</span></td><td>GitHub 레포 생성 건너뛰기</td><td>생성함</td></tr>
+      <tr><td><span class="flag">--no-deploy-template</span></td><td>Kamal/Cloudflare 템플릿 건너뛰기</td><td>포함함</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 4. CLAUDE.md templates -->
+  <h2 id="claude-md">4. CLAUDE.md 템플릿 비교</h2>
+
+  <p>스크립트가 <code>--type</code> 에 따라 두 가지 CLAUDE.md 를 생성합니다.</p>
+
+  <div class="split">
+
+    <div class="split-card maker">
+      <h4>🚀 Maker 템플릿</h4>
+      <ul>
+        <li><b>언어 정책</b>: 사이트/카피 영문 only, 대화 한글</li>
+        <li><b>운영 사이클</b>: 빌드 인 퍼블릭, OSMU, /go-viral-or-die</li>
+        <li><b>"하지 말 것"</b>: Devise, npm, Postgres, Service Object 남발</li>
+        <li><b>스택 결정</b>: Rails 8 + SQLite + Polar(MoR) 확정</li>
+        <li><b>가시성</b>: Public 기본</li>
+      </ul>
+    </div>
+
+    <div class="split-card client">
+      <h4>🏢 Client 템플릿</h4>
+      <ul>
+        <li><b>클라이언트 정보 필드</b>: 담당자/계약/컨택</li>
+        <li><b>언어 정책</b>: ko/en/bilingual 선택 (i18n 옵션)</li>
+        <li><b>협업 규칙</b>: Conventional Commits, PR 리뷰, 보호 브랜치</li>
+        <li><b>인수 인계 체크리스트</b>: README, ARCHITECTURE, .env.example, 보안 검토</li>
+        <li><b>가시성</b>: Private 기본</li>
+        <li><b>"하지 말 것"</b>: 클라이언트 데이터 로컬 보관, 무단 통합</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="tip">
+    두 템플릿 모두 <b>Rails Omakase / Hotwire / Tailwind / Kamal</b> 같은 기술 스택 부분은 동일. 다른 건 운영/협업 컨텍스트 뿐.
+  </div>
+
+  <!-- 5. Manual steps -->
+  <h2 id="manual">5. 수동 단계 (백업용)</h2>
+
+  <p>스크립트가 안 될 때 / 다른 머신에서 / 학습용으로 단계별 수동 명령:</p>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h4>Rails 앱 생성</h4>
+<pre><code>cd ~/projects
+rails new &lt;name&gt; --css tailwind
+cd &lt;name&gt;</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h4>CLAUDE.md 작성</h4>
+      <p>위 두 템플릿 중 하나를 복붙. <code>&lt;프로젝트명&gt;</code>, <code>&lt;목적&gt;</code> 치환.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h4>인증 generator (선택)</h4>
+<pre><code>bin/rails db:create
+bin/rails generate authentication
+bin/rails db:migrate</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content">
+      <h4>.gitignore 강화</h4>
+<pre><code>echo "
+# AI 코딩 캐시
+.gstack/
+.claude/cache/" &gt;&gt; .gitignore</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">5</div>
+    <div class="step-content">
+      <h4>첫 커밋</h4>
+<pre><code>git add .
+git commit -m "init: rails 8 + tailwind + kamal 2"</code></pre>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">6</div>
+    <div class="step-content">
+      <h4>GitHub 레포</h4>
+<pre><code>gh repo create &lt;org&gt;/&lt;name&gt; --public --source=. --push \
+  --description "&lt;한 줄 설명&gt;"</code></pre>
+    </div>
+  </div>
+
+  <!-- 6. Deploy -->
+  <h2 id="deploy">6. 배포 단계 (시간 있을 때)</h2>
+
+  <p>MVP 코딩이 끝나고 배포 가능한 상태가 되면. 스크립트가 만든 <code>DEPLOY.md</code> 에 상세 가이드.</p>
+
+  <ol>
+    <li><b>도메인</b> — Cloudflare Registrar 에서 구매</li>
+    <li><b>Origin Cert</b> — Cloudflare SSL/TLS → Origin Server → Create (와일드카드, 15년)</li>
+    <li><b>인증서 보관</b> — <code>~/.config/&lt;project&gt;-cert/origin.{crt,key}</code></li>
+    <li><b>SSL 모드</b> — Cloudflare SSL/TLS → <b>Full (strict)</b></li>
+    <li><b>DNS</b> — A 레코드 (apex + www + 필요한 서브도메인) → droplet IP, Proxied</li>
+    <li><b>DigitalOcean droplet</b> — Ubuntu 24.04, $6/월, SSH key 등록</li>
+    <li><b>GHCR PAT</b> — GitHub PAT (<code>write:packages</code>) → <code>KAMAL_REGISTRY_PASSWORD</code> ENV</li>
+    <li><b>config/deploy.yml</b> 의 TODO 항목 채우기 (image org, IP, hosts)</li>
+    <li><b>첫 배포</b> — <code>bin/kamal setup</code></li>
+    <li><b>이후</b> — <code>bin/kamal deploy</code></li>
+  </ol>
+
+  <div class="warn">
+    <code>volumes</code> 설정 안 하면 매 배포마다 SQLite DB 가 날아갑니다. 스크립트가 자동으로 추가하지만, 수동 작성 시 잊지 말 것.
+  </div>
+
+  <!-- 7. Troubleshoot -->
+  <h2 id="troubleshoot">7. 자주 마주치는 함정</h2>
+
+  <div class="gotcha">
+    <b>"Let's Encrypt 발급 실패"</b> — Cloudflare proxied 모드에서 ACME challenge 가 막힘. → Cloudflare Origin Cert 사용 (스크립트 템플릿 기본값).
+  </div>
+
+  <div class="gotcha">
+    <b>"배포 후 DB 가 비어있음"</b> — <code>volumes</code> 설정 누락. <code>config/deploy.yml</code> 에 <code>"&lt;name&gt;_storage:/rails/storage"</code> 있는지 확인.
+  </div>
+
+  <div class="gotcha">
+    <b>"브라우저 에셋 404"</b> — <code>asset_path: /rails/public/assets</code> 누락 시 무중단 배포 중 in-flight 요청이 구버전 에셋을 못 찾음.
+  </div>
+
+  <div class="gotcha">
+    <b>"이미지 push 401 Unauthorized"</b> — GitHub PAT 의 <code>write:packages</code> 스코프 누락. PAT 재발급 + <code>KAMAL_REGISTRY_PASSWORD</code> 환경변수 확인.
+  </div>
+
+  <div class="gotcha">
+    <b>"<code>config/master.key</code> 가 커밋됨"</b> — Rails 8 의 <code>.gitignore</code> 에 <code>/config/*.key</code> 가 있는지 확인. 이미 커밋했다면 <b>즉시 키 재생성 + 히스토리 정리</b>.
+  </div>
+
+  <div class="tip">
+    스크립트가 만든 <code>.kamal/secrets</code> 는 <b>플레인텍스트 시크릿이 없습니다</b>. 모든 값을 ENV 또는 외부 파일에서 읽도록 설계됨 — 그래서 git 커밋 안전.
+  </div>
+
+  <!-- 마지막: 추천 폴더 구조 -->
+  <h2>8. 추천 폴더 구조</h2>
+
+  <div class="card">
+<pre><code>~/projects/
+  ├── jsonjeong/         # 인덱스 사이트 (maker)
+  ├── snapdeck/          # 메이커 SaaS 1
+  ├── snapteam/          # 메이커 SaaS 2
+  ├── acme-portal/       # 고객사 프로젝트 1
+  └── beta-corp-app/     # 고객사 프로젝트 2
+
+~/.config/
+  ├── jsonjeong-cert/    # 프로젝트별 Cloudflare Origin Cert
+  ├── snapdeck-cert/
+  └── acme-portal-cert/  # 고객사는 별도 보관 (인계 시 안전)
+
+~/bin/
+  └── new-saas           # 이 스크립트</code></pre>
+  </div>
+
+  <footer>
+    Rails 8 + AI 코딩 부트스트랩 가이드 · v1.0.0 · 2026-05-15<br>
+    <em>한 번 셋업, 매번 30분 — 자체든 고객사든 동일 흐름</em>
+  </footer>
+
+</div>
+
+</body>
+</html>

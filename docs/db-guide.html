@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rails 8 + SQLite DB 운영 가이드 — jsonjeong.com</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e14;
+    --panel: #161b22;
+    --panel-2: #1c2128;
+    --panel-3: #21262d;
+    --border: #30363d;
+    --border-strong: #484f58;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --dim: #6e7681;
+
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #f0883e;
+    --red: #f85149;
+    --yellow: #d29922;
+    --purple: #bc8cff;
+
+    --dev: #58a6ff;
+    --test: #d29922;
+    --prod: #ff7b72;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.65;
+    padding: 32px 16px 80px;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+    margin-bottom: 32px;
+  }
+
+  header h1 {
+    font-size: 2em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #3fb950, #58a6ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p { color: var(--muted); font-size: 1.05em; }
+
+  .meta-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    font-size: 0.85em;
+  }
+  .meta-bar span {
+    background: var(--panel);
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  h2 {
+    font-size: 1.5em;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+    scroll-margin-top: 20px;
+  }
+
+  h3 {
+    font-size: 1.1em;
+    margin: 24px 0 12px;
+    color: var(--accent);
+  }
+
+  /* TOC */
+  .toc {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin-bottom: 32px;
+  }
+
+  .toc-title {
+    font-size: 0.8em;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 10px;
+  }
+
+  .toc ol { padding-left: 24px; }
+  .toc li { margin: 4px 0; }
+  .toc a { color: var(--text); text-decoration: none; }
+  .toc a:hover { color: var(--accent); }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, rgba(63,185,80,0.1), rgba(88,166,255,0.1));
+    border: 1px solid var(--green);
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin: 20px 0 32px;
+  }
+
+  .hero strong { color: var(--green); }
+
+  /* 카드 */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 22px;
+    margin: 14px 0;
+  }
+
+  pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-size: 0.85em;
+    line-height: 1.55;
+    margin: 8px 0;
+  }
+
+  code {
+    font-family: "SF Mono", Menlo, Monaco, monospace;
+    background: var(--panel-3);
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 0.85em;
+    color: var(--orange);
+  }
+
+  pre code { background: transparent; padding: 0; color: var(--text); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    background: var(--panel);
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.92em;
+  }
+
+  th {
+    background: var(--panel-2);
+    color: var(--muted);
+    font-size: 0.8em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  /* 환경별 DB 카드 */
+  .env-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 16px 0;
+  }
+  @media (max-width: 760px) {
+    .env-grid { grid-template-columns: 1fr; }
+  }
+
+  .env-card {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+
+  .env-card.dev { border-color: var(--dev); }
+  .env-card.test { border-color: var(--test); }
+  .env-card.prod { border-color: var(--prod); }
+
+  .env-name {
+    font-size: 0.78em;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+
+  .env-card.dev .env-name { color: var(--dev); }
+  .env-card.test .env-name { color: var(--test); }
+  .env-card.prod .env-name { color: var(--prod); }
+
+  .env-file {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 0.85em;
+    color: var(--text);
+    background: var(--panel-2);
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin: 8px 0;
+    word-break: break-all;
+  }
+
+  .env-desc { font-size: 0.85em; color: var(--muted); }
+
+  /* 라이프사이클 도식 */
+  .lifecycle {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  .lifecycle pre {
+    background: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    color: var(--text);
+    font-size: 0.78em;
+    line-height: 1.4;
+  }
+
+  /* Tip / Warn */
+  .tip, .warn, .gotcha {
+    padding: 10px 14px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-size: 0.9em;
+  }
+
+  .tip { background: rgba(88,166,255,0.08); border-left: 3px solid var(--accent); }
+  .tip::before { content: "💡 "; }
+
+  .warn { background: rgba(240,136,62,0.08); border-left: 3px solid var(--orange); }
+  .warn::before { content: "⚠ "; }
+
+  .gotcha { background: rgba(248,81,73,0.08); border-left: 3px solid var(--red); }
+  .gotcha::before { content: "🔥 "; }
+
+  /* SQL vs Ruby 비교 */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+  @media (max-width: 720px) {
+    .compare-grid { grid-template-columns: 1fr; }
+  }
+
+  .compare-card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+
+  .compare-label {
+    font-size: 0.78em;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .compare-card.ruby .compare-label { color: var(--accent); }
+  .compare-card.sql .compare-label { color: var(--orange); }
+
+  .compare-card pre {
+    background: var(--bg);
+    margin: 0;
+    font-size: 0.82em;
+  }
+
+  /* Backup options */
+  .backup-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+  @media (max-width: 720px) {
+    .backup-grid { grid-template-columns: 1fr; }
+  }
+
+  .backup-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+  }
+
+  .backup-card.recommended {
+    border-color: var(--green);
+    background: rgba(63, 185, 80, 0.04);
+  }
+
+  .backup-card h4 {
+    margin-bottom: 8px;
+    font-size: 1em;
+  }
+
+  .backup-card.recommended h4::after {
+    content: " ⭐ 추천";
+    color: var(--green);
+    font-size: 0.78em;
+    font-weight: 600;
+  }
+
+  .meta-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 6px;
+    font-size: 0.82em;
+    color: var(--muted);
+  }
+  .meta-row span { background: var(--panel-2); padding: 2px 8px; border-radius: 4px; }
+
+  /* Migration flow */
+  .flow {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 16px 0;
+  }
+
+  .flow-step {
+    flex-shrink: 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    min-width: 160px;
+    text-align: center;
+  }
+
+  .flow-step .num {
+    background: var(--panel-3);
+    color: var(--accent);
+    font-family: "SF Mono", Menlo, monospace;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75em;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .flow-step .label {
+    font-size: 0.85em;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .flow-step .cmd {
+    font-family: "SF Mono", Menlo, monospace;
+    font-size: 0.72em;
+    color: var(--accent);
+    margin-top: 4px;
+    word-break: break-all;
+  }
+
+  .flow-arrow {
+    align-self: center;
+    color: var(--border-strong);
+    font-size: 1.3em;
+    flex-shrink: 0;
+  }
+
+  footer {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85em;
+  }
+
+  a { color: var(--accent); }
+  ul { padding-left: 22px; }
+  ul li { margin: 4px 0; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Rails 8 + SQLite DB 운영 가이드</h1>
+    <p>DB 가 어디 저장되고, 어떻게 다루고, 어떻게 운영하는가 — 전체 라이프사이클</p>
+    <div class="meta-bar">
+      <span>Stack: Rails 8 + SQLite + Active Record</span>
+      <span>For: jsonjeong.com 및 모든 Rails 모놀리스</span>
+    </div>
+  </header>
+
+  <div class="hero">
+    <strong>핵심 한 줄 —</strong>
+    SQLite 의 본질은 <b>"DB 가 디렉터리 안의 파일 한 개"</b>.
+    그래서 백업 = 파일 복사, 리셋 = 파일 삭제, 이관 = 파일 옮기기.
+    Active Record 가 그 파일과의 모든 대화를 Ruby 객체로 추상화합니다.
+  </div>
+
+  <!-- TOC -->
+  <div class="toc">
+    <div class="toc-title">목차</div>
+    <ol>
+      <li><a href="#location">물리적 위치 — DB 가 어디 있나</a></li>
+      <li><a href="#envs">환경별 DB 분리 (dev / test / prod)</a></li>
+      <li><a href="#active-record">코드에서 사용 — Active Record</a></li>
+      <li><a href="#migration">스키마 변경 — 마이그레이션</a></li>
+      <li><a href="#ops">운영 명령</a></li>
+      <li><a href="#backup">백업 전략</a></li>
+      <li><a href="#lifecycle">전체 라이프사이클 도식</a></li>
+      <li><a href="#vs">SQLite vs Postgres/Supabase</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. 물리적 위치 -->
+  <h2 id="location">1. 물리적 위치 — DB 가 어디 있나</h2>
+
+  <div class="compare-grid">
+    <div class="compare-card sql">
+      <div class="compare-label">SQLite 의 본질</div>
+      <p style="font-size: 0.92em; line-height: 1.55;">
+        DB = <b>디렉터리 안의 파일 하나</b>.<br>
+        앱과 같은 프로세스에서 파일 시스템 호출로 읽고 씀.
+      </p>
+    </div>
+    <div class="compare-card sql">
+      <div class="compare-label">Postgres / MySQL 의 본질</div>
+      <p style="font-size: 0.92em; line-height: 1.55;">
+        DB = <b>별도 프로세스 (서버)</b> + 그 프로세스가 관리하는 파일들.<br>
+        앱이 5432 같은 포트로 네트워크 통신.
+      </p>
+    </div>
+  </div>
+
+  <h3>로컬 (내 맥)</h3>
+<pre><code>~/projects/jsonjeong/
+  └── storage/
+      ├── development.sqlite3      ← 개발용 DB (실제 데이터)
+      ├── development.sqlite3-shm  ← 공유 메모리 (트랜잭션)
+      ├── development.sqlite3-wal  ← Write-Ahead Log (성능)
+      ├── test.sqlite3             ← 테스트 실행 시 생성/삭제
+      └── ...</code></pre>
+
+  <h3>프로덕션 (DigitalOcean droplet)</h3>
+<pre><code>도커 컨테이너 안:
+  /rails/storage/
+      ├── production.sqlite3            ← 메인 DB
+      ├── production_cache.sqlite3      ← Solid Cache
+      ├── production_queue.sqlite3      ← Solid Queue
+      └── production_cable.sqlite3      ← Solid Cable
+
+도커 컨테이너 밖 (호스트 파일시스템):
+  /var/lib/docker/volumes/jsonjeong_storage/_data/
+      └── 같은 파일들이 영속 볼륨에 보관</code></pre>
+
+  <div class="warn">
+    컨테이너는 매 배포마다 새 것으로 교체되지만, 영속 볼륨이 호스트에 마운트돼서 DB 파일은 살아남습니다.
+    <code>config/deploy.yml</code> 의 <code>volumes:</code> 설정이 결정적 — 빠뜨리면 매 배포마다 데이터 전부 날아감.
+  </div>
+
+  <!-- 2. 환경별 DB -->
+  <h2 id="envs">2. 환경별 DB 분리</h2>
+
+  <p>Rails 는 자동으로 3개 환경의 DB 를 완전히 분리합니다.</p>
+
+  <div class="env-grid">
+
+    <div class="env-card dev">
+      <div class="env-name">Development</div>
+      <div class="env-file">storage/development.sqlite3</div>
+      <div class="env-desc">로컬 개발 (<code>bin/dev</code>). 자유롭게 데이터 만들고 지움.</div>
+    </div>
+
+    <div class="env-card test">
+      <div class="env-name">Test</div>
+      <div class="env-file">storage/test.sqlite3</div>
+      <div class="env-desc">테스트 실행 시 (<code>bin/rails test</code>). 매번 자동 리셋.</div>
+    </div>
+
+    <div class="env-card prod">
+      <div class="env-name">Production</div>
+      <div class="env-file">/rails/storage/production.sqlite3</div>
+      <div class="env-desc">배포된 서버. 영속 볼륨에 보관. <b>실제 사용자 데이터.</b></div>
+    </div>
+
+  </div>
+
+  <h3>config/database.yml — Rails 8 기본값</h3>
+<pre><code>default: &default
+  adapter: sqlite3
+  pool: &lt;%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %&gt;
+  timeout: 5000
+
+development:
+  &lt;&lt;: *default
+  database: storage/development.sqlite3
+
+test:
+  &lt;&lt;: *default
+  database: storage/test.sqlite3
+
+production:
+  primary: { &lt;&lt;: *default, database: storage/production.sqlite3 }
+  cache:   { &lt;&lt;: *default, database: storage/production_cache.sqlite3 }
+  queue:   { &lt;&lt;: *default, database: storage/production_queue.sqlite3 }
+  cable:   { &lt;&lt;: *default, database: storage/production_cable.sqlite3 }</code></pre>
+
+  <div class="tip">
+    프로덕션엔 DB 파일이 <b>4개</b> — 메인 + Solid Cache + Queue + Cable. 캐시가 폭증해도 메인 DB 가 안 느려집니다.
+  </div>
+
+  <!-- 3. Active Record -->
+  <h2 id="active-record">3. 코드에서 사용 — Active Record</h2>
+
+  <p>SQL 을 직접 안 만집니다. Active Record (Rails 의 ORM) 가 객체로 추상화.</p>
+
+  <h3>스키마 (db/schema.rb — 자동 생성)</h3>
+<pre><code>ActiveRecord::Schema[8.1].define(version: 2026_05_13_030203) do
+  create_table "subscribers", force: :cascade do |t|
+    t.string   "email", null: false
+    t.string   "source", default: "site", null: false
+    t.string   "status", default: "pending", null: false
+    t.datetime "beehiiv_synced_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], unique: true
+  end
+end</code></pre>
+
+  <h3>모델 (app/models/subscriber.rb)</h3>
+<pre><code>class Subscriber &lt; ApplicationRecord
+  # 그냥 클래스 하나. 컬럼 정의 안 써도 schema.rb 에서 자동 감지.
+end</code></pre>
+
+  <h3>사용 — Ruby ↔ SQL</h3>
+
+  <div class="compare-grid">
+    <div class="compare-card ruby">
+      <div class="compare-label">Ruby 코드 (Active Record)</div>
+<pre><code>Subscriber.create!(
+  email: "x@y.com",
+  source: "newsletter"
+)
+
+Subscriber.find_by(email: "x@y.com")
+
+Subscriber.where(status: "pending").count
+
+sub = Subscriber.find(1)
+sub.update!(status: "active")
+
+sub.destroy!</code></pre>
+    </div>
+
+    <div class="compare-card sql">
+      <div class="compare-label">자동 번역된 SQL</div>
+<pre><code>INSERT INTO subscribers
+  (email, source, ...)
+  VALUES (...);
+
+SELECT * FROM subscribers
+  WHERE email = 'x@y.com' LIMIT 1;
+
+SELECT COUNT(*) FROM subscribers
+  WHERE status = 'pending';
+
+UPDATE subscribers
+  SET status = 'active', updated_at = ...
+  WHERE id = 1;
+
+DELETE FROM subscribers WHERE id = 1;</code></pre>
+    </div>
+  </div>
+
+  <!-- 4. Migration -->
+  <h2 id="migration">4. 스키마 변경 — 마이그레이션</h2>
+
+  <p>DB 구조 바꿀 때 <b>ALTER TABLE 직접 안 함.</b> 마이그레이션 파일로 git 관리.</p>
+
+  <div class="flow">
+    <div class="flow-step">
+      <div class="num">1</div>
+      <div class="label">생성</div>
+      <div class="cmd">bin/rails g migration AddPaidToSubscribers paid:boolean</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="num">2</div>
+      <div class="label">파일 자동 생성</div>
+      <div class="cmd">db/migrate/<br>20260520_*.rb</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="num">3</div>
+      <div class="label">로컬 적용</div>
+      <div class="cmd">bin/rails db:migrate</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="num">4</div>
+      <div class="label">커밋</div>
+      <div class="cmd">git commit</div>
+    </div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-step">
+      <div class="num">5</div>
+      <div class="label">배포 시 자동 적용</div>
+      <div class="cmd">bin/kamal deploy</div>
+    </div>
+  </div>
+
+  <h3>마이그레이션 파일 예시</h3>
+<pre><code># db/migrate/20260520_add_paid_to_subscribers.rb
+class AddPaidToSubscribers &lt; ActiveRecord::Migration[8.1]
+  def change
+    add_column :subscribers, :paid, :boolean, default: false, null: false
+  end
+end</code></pre>
+
+  <p>적용하면 자동으로 <code>db/schema.rb</code> 가 업데이트되고, 다음 SQL 이 실행됩니다:</p>
+<pre><code>ALTER TABLE subscribers ADD COLUMN paid BOOLEAN DEFAULT 0 NOT NULL;</code></pre>
+
+  <div class="tip">
+    <b>되돌리기:</b> <code>bin/rails db:rollback</code> — 가장 최근 마이그레이션 한 단계 취소.<br>
+    <b>핵심:</b> 모든 팀원/서버가 같은 변경을 같은 순서로 적용. git 으로 관리되니까.
+  </div>
+
+  <!-- 5. Ops -->
+  <h2 id="ops">5. 운영 명령</h2>
+
+  <h3>로컬에서 데이터 확인</h3>
+<pre><code># Rails console (Ruby REPL)
+bin/rails console
+&gt; Subscriber.count
+&gt; Subscriber.last
+&gt; Subscriber.where(status: "pending")
+
+# 또는 SQLite CLI 로 직접
+sqlite3 storage/development.sqlite3
+sqlite&gt; SELECT * FROM subscribers;
+sqlite&gt; .schema subscribers
+sqlite&gt; .tables
+sqlite&gt; .exit</code></pre>
+
+  <h3>프로덕션 데이터 확인</h3>
+<pre><code># 라이브 컨테이너에서 Rails console
+bin/kamal app exec --interactive --reuse "bin/rails console"
+&gt; Subscriber.count
+
+# 또는 컨테이너 bash 진입
+bin/kamal shell
+$ sqlite3 /rails/storage/production.sqlite3
+sqlite&gt; SELECT COUNT(*) FROM subscribers;</code></pre>
+
+  <h3>시드 데이터</h3>
+<pre><code># db/seeds.rb
+User.create!(email_address: "admin@example.com", password: "...")
+
+# 실행
+bin/rails db:seed</code></pre>
+
+  <h3>DB 리셋 (개발 전용)</h3>
+<pre><code>bin/rails db:drop db:create db:migrate db:seed
+# storage/development.sqlite3 삭제 후 처음부터</code></pre>
+
+  <div class="gotcha">
+    <b>프로덕션에서 절대 db:drop 금지!</b> 모든 사용자 데이터가 즉시 사라집니다.
+    프로덕션 console 진입 시엔 <code>destroy_all</code>, <code>delete_all</code> 같은 명령도 신중하게.
+  </div>
+
+  <!-- 6. Backup -->
+  <h2 id="backup">6. 백업 전략</h2>
+
+  <div class="gotcha">
+    <b>jsonjeong 의 현재 백업 전략: 없음 (TODO).</b>
+    droplet 디스크 사망 = 모든 데이터 손실. 사용자가 늘기 전에 반드시 구축할 것.
+  </div>
+
+  <h3>최소한의 수동 백업</h3>
+<pre><code># 프로덕션 DB 파일을 로컬로 scp
+scp root@&lt;droplet-IP&gt;:/var/lib/docker/volumes/jsonjeong_storage/_data/production.sqlite3 \
+    ~/backups/jsonjeong-$(date +%F).sqlite3
+
+# 또는 Kamal shell 안에서 압축
+bin/kamal shell
+$ sqlite3 /rails/storage/production.sqlite3 ".backup /tmp/backup.sqlite3"
+$ gzip /tmp/backup.sqlite3</code></pre>
+
+  <div class="warn">
+    <code>cp</code> 로 live 파일을 복사하면 WAL 모드라 손상 위험. SQLite 의 <code>.backup</code> 명령이 안전.
+  </div>
+
+  <h3>자동 백업 옵션</h3>
+  <div class="backup-grid">
+
+    <div class="backup-card recommended">
+      <h4>Litestream</h4>
+      <p>SQLite 변경을 실시간으로 S3/R2 에 스트리밍 복제. 손실 거의 0.</p>
+      <div class="meta-row">
+        <span>비용: $0~ (R2 무료)</span>
+        <span>복잡도: 중</span>
+        <span>RPO: ≤ 1초</span>
+      </div>
+    </div>
+
+    <div class="backup-card">
+      <h4>cron + scp</h4>
+      <p>매일 droplet에서 SQLite .backup 후 로컬/S3 로 전송.</p>
+      <div class="meta-row">
+        <span>비용: $0</span>
+        <span>복잡도: 낮</span>
+        <span>RPO: 24시간</span>
+      </div>
+    </div>
+
+    <div class="backup-card">
+      <h4>Solid Queue 잡</h4>
+      <p>Rails 안에서 매일 잡으로 R2 업로드. Rails-네이티브.</p>
+      <div class="meta-row">
+        <span>비용: $0~</span>
+        <span>복잡도: 중</span>
+        <span>RPO: 24시간</span>
+      </div>
+    </div>
+
+    <div class="backup-card">
+      <h4>DO Snapshots</h4>
+      <p>DigitalOcean droplet 전체 스냅샷. 클릭 1번이지만 비용 발생.</p>
+      <div class="meta-row">
+        <span>비용: ~$1/월</span>
+        <span>복잡도: 낮</span>
+        <span>RPO: 주 1회</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 7. Lifecycle -->
+  <h2 id="lifecycle">7. 전체 라이프사이클 도식</h2>
+
+  <div class="lifecycle">
+<pre>   개발 (내 맥)                                프로덕션 (DO droplet)
+   ─────────────                              ──────────────────
+
+   bin/dev                                    bin/kamal deploy
+     │                                          │
+     ▼                                          ▼
+   Rails 앱                                   Rails 앱 (docker container)
+     │ Active Record                            │ Active Record
+     ▼                                          ▼
+   storage/development.sqlite3                /rails/storage/production.sqlite3
+                                                │
+                                                ▼ (volume mount)
+                                              호스트 파일시스템 영속 볼륨
+                                                │
+                                                ▼ (백업 — TODO)
+                                              Litestream → R2/S3
+
+
+   마이그레이션 흐름:
+   ──────────────
+   bin/rails g migration AddX     →  db/migrate/*.rb 파일 생성
+   bin/rails db:migrate           →  로컬 DB 에 ALTER TABLE 적용
+   git commit                     →  마이그레이션 파일 커밋
+   git push / bin/kamal deploy    →  서버에서 자동으로 db:migrate 실행
+                                     (Kamal 의 prepared release hook)
+
+
+   데이터 흐름:
+   ──────────
+   브라우저  →  Rails 컨트롤러  →  Active Record  →  SQLite 파일
+                                       ↑
+                       Ruby 객체 ←─────┘ (자동 변환)</pre>
+  </div>
+
+  <!-- 8. vs Postgres -->
+  <h2 id="vs">8. SQLite vs Postgres / Supabase</h2>
+
+  <table>
+    <thead>
+      <tr><th>관점</th><th>SQLite (우리)</th><th>Postgres (Supabase)</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>저장 형태</td>
+        <td>디렉터리 안 파일 1~4개</td>
+        <td>별도 서버 프로세스 + 데이터 디렉터리</td>
+      </tr>
+      <tr>
+        <td>앱과의 통신</td>
+        <td>같은 프로세스 (파일 시스템 호출, μs)</td>
+        <td>TCP 5432 (네트워크, ms)</td>
+      </tr>
+      <tr>
+        <td>백업 단위</td>
+        <td>파일 복사 / <code>.backup</code> 명령</td>
+        <td><code>pg_dump</code> / 매니지드 자동 백업</td>
+      </tr>
+      <tr>
+        <td>동시 쓰기</td>
+        <td>직렬화 (1개씩) — WAL 모드로 읽기는 무제한</td>
+        <td>진짜 동시 (MVCC)</td>
+      </tr>
+      <tr>
+        <td>확장</td>
+        <td>수직 (큰 디스크)</td>
+        <td>수평 (read replica, sharding)</td>
+      </tr>
+      <tr>
+        <td>운영 부담</td>
+        <td>0 — 그냥 파일</td>
+        <td>별도 인스턴스, 백업 설정, 버전 관리</td>
+      </tr>
+      <tr>
+        <td>비용</td>
+        <td>$0 (droplet 디스크에 같이)</td>
+        <td>Supabase Free → Pro $25/월 + row/storage</td>
+      </tr>
+      <tr>
+        <td>이관</td>
+        <td>파일 복사 = 이관 완료</td>
+        <td>pg_dump → pg_restore (수십 분)</td>
+      </tr>
+      <tr>
+        <td>적합한 규모</td>
+        <td>1인 메이커 ~ 수만 동접</td>
+        <td>수십만+ 동접, 멀티 리전, 복잡 쿼리</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip">
+    <b>단일 서버 / 수만 RPM 이하라면 SQLite 가 압도적으로 단순하고 빠릅니다.</b>
+    37signals 의 Basecamp, marclou.com 등이 실제 SQLite 프로덕션 운영. 1인 메이커 서비스엔 정답.
+    Postgres 가 필요해지는 시점은 한참 후 — premature optimization 회피.
+  </div>
+
+  <!-- 한 줄 요약 -->
+  <h2>한 줄 요약</h2>
+  <div class="hero">
+    <strong>SQLite + Active Record + 마이그레이션 + 영속 볼륨.</strong><br>
+    DB 가 "파일 하나" 라는 사실이 모든 운영을 단순하게 만든다 — <b>복사하면 백업, 삭제하면 리셋, 그게 다.</b>
+    복잡도가 필요해질 때만 Postgres 로 이관하면 되고, 그날은 보통 영영 오지 않는다.
+  </div>
+
+  <footer>
+    DB 운영 가이드 · 2026-05-15 · jsonjeong.com<br>
+    <em>다음 SaaS 레포(snapdeck 등)도 동일 패턴 — DB 파일 하나, 마이그레이션 git 으로 관리.</em>
+  </footer>
+
+</div>
+
+</body>
+</html>

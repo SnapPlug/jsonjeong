@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next + Supabase + Vercel vs Rails 모놀리스 — 역할별 색 분류 비교</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0e14;
+    --panel: #161b22;
+    --panel-2: #1c2128;
+    --panel-3: #21262d;
+    --border: #30363d;
+    --border-strong: #484f58;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --dim: #6e7681;
+
+    --vercel: #ffffff;
+    --next: #58a6ff;
+    --supabase: #3ecf8e;
+    --cloudflare: #f6821f;
+    --kamal: #58a6ff;
+    --rails: #ff7b72;
+
+    /* 역할별 색상 */
+    --r-infra:    #f0883e;
+    --r-server:   #bc8cff;
+    --r-frontend: #58a6ff;
+    --r-backend:  #ff7b72;
+    --r-db:       #3fb950;
+    --r-auth:     #d29922;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+
+  .container { max-width: 1200px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  header h1 {
+    font-size: 1.8em;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--supabase), var(--rails));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  header p {
+    color: var(--muted);
+    font-size: 1em;
+  }
+
+  /* 역할 범례 */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 24px 0 32px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: var(--panel-2);
+    border-radius: 20px;
+    font-size: 0.85em;
+    border: 1px solid var(--border);
+  }
+
+  .legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .legend-dot.infra    { background: var(--r-infra); }
+  .legend-dot.server   { background: var(--r-server); }
+  .legend-dot.frontend { background: var(--r-frontend); }
+  .legend-dot.backend  { background: var(--r-backend); }
+  .legend-dot.db       { background: var(--r-db); }
+  .legend-dot.auth     { background: var(--r-auth); }
+
+  .legend-label { color: var(--text); }
+
+  /* 두 메가 박스 (수직 배치) */
+  .mega-box {
+    background: var(--panel);
+    border: 2px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .mega-box.stack-a { border-color: var(--supabase); }
+  .mega-box.stack-b { border-color: var(--rails); }
+
+  .mega-title {
+    text-align: center;
+    font-size: 1.4em;
+    font-weight: 700;
+    margin-bottom: 24px;
+    padding-bottom: 14px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .mega-box.stack-a .mega-title { color: var(--supabase); }
+  .mega-box.stack-b .mega-title { color: var(--rails); }
+
+  /* 스택 A: 3개 박스 가로 배치 */
+  .saas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 760px) {
+    .saas-grid { grid-template-columns: 1fr; }
+  }
+
+  .saas-box {
+    background: var(--panel-2);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 16px;
+  }
+
+  .saas-box.vercel { border-color: var(--vercel); }
+  .saas-box.next   { border-color: var(--next); }
+  .saas-box.supa   { border-color: var(--supabase); }
+
+  .saas-name {
+    font-size: 1.15em;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .saas-box.vercel .saas-name { color: var(--vercel); }
+  .saas-box.next   .saas-name { color: var(--next); }
+  .saas-box.supa   .saas-name { color: var(--supabase); }
+
+  /* 항목 리스트 — 역할별 색상 */
+  .role-list { list-style: none; }
+  .role-list li {
+    padding: 6px 10px;
+    font-size: 0.9em;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+    border-radius: 6px;
+    border-left: 3px solid transparent;
+    background: rgba(255,255,255,0.02);
+  }
+
+  .role-list li .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .role-list li.r-infra    { border-left-color: var(--r-infra); }
+  .role-list li.r-infra .dot    { background: var(--r-infra); }
+  .role-list li.r-infra    { background: rgba(240, 136, 62, 0.06); }
+
+  .role-list li.r-server   { border-left-color: var(--r-server); }
+  .role-list li.r-server .dot   { background: var(--r-server); }
+  .role-list li.r-server   { background: rgba(188, 140, 255, 0.06); }
+
+  .role-list li.r-frontend { border-left-color: var(--r-frontend); }
+  .role-list li.r-frontend .dot { background: var(--r-frontend); }
+  .role-list li.r-frontend { background: rgba(88, 166, 255, 0.06); }
+
+  .role-list li.r-backend  { border-left-color: var(--r-backend); }
+  .role-list li.r-backend .dot  { background: var(--r-backend); }
+  .role-list li.r-backend  { background: rgba(255, 123, 114, 0.06); }
+
+  .role-list li.r-db       { border-left-color: var(--r-db); }
+  .role-list li.r-db .dot       { background: var(--r-db); }
+  .role-list li.r-db       { background: rgba(63, 185, 80, 0.06); }
+
+  .role-list li.r-auth     { border-left-color: var(--r-auth); }
+  .role-list li.r-auth .dot     { background: var(--r-auth); }
+  .role-list li.r-auth     { background: rgba(210, 153, 34, 0.06); }
+
+  .caption {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9em;
+    margin-top: 20px;
+    font-style: italic;
+  }
+
+  /* 가운데 vs 구분자 */
+  .vs-divider {
+    text-align: center;
+    margin: 8px 0 24px;
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    position: relative;
+  }
+  .vs-divider::before,
+  .vs-divider::after {
+    content: "";
+    display: inline-block;
+    width: 80px;
+    height: 1px;
+    background: var(--border);
+    vertical-align: middle;
+    margin: 0 16px;
+  }
+
+  /* 스택 B: 왼쪽 작은 박스 두 개 + 오른쪽 큰 박스 */
+  .monolith-grid {
+    display: grid;
+    grid-template-columns: 260px 60px 1fr;
+    gap: 0;
+    align-items: stretch;
+  }
+  @media (max-width: 760px) {
+    .monolith-grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .arrow-col { display: none; }
+  }
+
+  .left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    justify-content: center;
+  }
+
+  .infra-box {
+    background: var(--panel-2);
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 14px;
+  }
+
+  .infra-box.cloudflare { border-color: var(--cloudflare); }
+  .infra-box.kamal { border-color: var(--kamal); }
+
+  .infra-name {
+    font-size: 1em;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .infra-box.cloudflare .infra-name { color: var(--cloudflare); }
+  .infra-box.kamal .infra-name { color: var(--kamal); }
+
+  /* 화살표 컬럼 */
+  .arrow-col {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    padding: 20px 0;
+  }
+  .arrow-col .arr {
+    font-size: 1.6em;
+    color: var(--border-strong);
+    font-weight: 300;
+  }
+
+  /* Rails 큰 박스 */
+  .rails-box {
+    background: var(--panel-2);
+    border: 2px solid var(--rails);
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+
+  .rails-name {
+    font-size: 1.15em;
+    font-weight: 700;
+    color: var(--rails);
+    text-align: center;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .rails-list {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 12px;
+  }
+  @media (max-width: 480px) {
+    .rails-list { grid-template-columns: 1fr; }
+  }
+
+  /* 통계 박스 (역할별 비율) */
+  .stats-section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin: 32px 0;
+  }
+
+  .stats-title {
+    font-size: 1em;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: var(--text);
+    text-align: center;
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  @media (max-width: 720px) {
+    .stats-grid { grid-template-columns: 1fr; }
+  }
+
+  .stat-stack-name {
+    font-size: 0.85em;
+    color: var(--muted);
+    text-align: center;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .stat-bar {
+    display: flex;
+    height: 30px;
+    border-radius: 6px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .stat-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.78em;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+  }
+
+  .stat-seg.r-infra    { background: var(--r-infra); }
+  .stat-seg.r-server   { background: var(--r-server); }
+  .stat-seg.r-frontend { background: var(--r-frontend); }
+  .stat-seg.r-backend  { background: var(--r-backend); }
+  .stat-seg.r-db       { background: var(--r-db); }
+  .stat-seg.r-auth     { background: var(--r-auth); }
+
+  .stat-note {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.82em;
+    margin-top: 6px;
+  }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.85em;
+  }
+
+  @media print {
+    body { background: white; color: black; padding: 20px; }
+    .mega-box, .saas-box, .infra-box, .rails-box, .legend, .stats-section {
+      background: white !important;
+      border-color: #888 !important;
+    }
+    .role-list li { background: #f9f9f9 !important; color: black; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <h1>Next + Supabase + Vercel  vs  Rails 모놀리스</h1>
+    <p>같은 자리, 다른 박스 — 항목을 <b>역할별 색상</b>으로 분류해 비교</p>
+  </header>
+
+  <!-- 역할 범례 -->
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot infra"></span><span class="legend-label">Infra / Edge</span></div>
+    <div class="legend-item"><span class="legend-dot server"></span><span class="legend-label">Server / Runtime</span></div>
+    <div class="legend-item"><span class="legend-dot frontend"></span><span class="legend-label">Frontend</span></div>
+    <div class="legend-item"><span class="legend-dot backend"></span><span class="legend-label">Backend</span></div>
+    <div class="legend-item"><span class="legend-dot db"></span><span class="legend-label">DB / Data</span></div>
+    <div class="legend-item"><span class="legend-dot auth"></span><span class="legend-label">Auth / 권한</span></div>
+  </div>
+
+  <!-- 스택 A: Next + Supabase + Vercel -->
+  <div class="mega-box stack-a">
+    <div class="mega-title">Next.js + Supabase + Vercel</div>
+
+    <div class="saas-grid">
+
+      <div class="saas-box vercel">
+        <div class="saas-name">Vercel</div>
+        <ul class="role-list">
+          <li class="r-infra"><span class="dot"></span>DNS</li>
+          <li class="r-infra"><span class="dot"></span>CDN</li>
+          <li class="r-infra"><span class="dot"></span>SSL</li>
+          <li class="r-infra"><span class="dot"></span>Hosting</li>
+          <li class="r-infra"><span class="dot"></span>CI/CD</li>
+          <li class="r-infra"><span class="dot"></span>Env Vars</li>
+          <li class="r-infra"><span class="dot"></span>Preview</li>
+        </ul>
+      </div>
+
+      <div class="saas-box next">
+        <div class="saas-name">Next.js</div>
+        <ul class="role-list">
+          <li class="r-frontend"><span class="dot"></span>Routing (file-based)</li>
+          <li class="r-frontend"><span class="dot"></span>React SSR</li>
+          <li class="r-backend"><span class="dot"></span>API Routes</li>
+          <li class="r-frontend"><span class="dot"></span>Build</li>
+          <li class="r-frontend"><span class="dot"></span>Tailwind</li>
+        </ul>
+      </div>
+
+      <div class="saas-box supa">
+        <div class="saas-name">Supabase</div>
+        <ul class="role-list">
+          <li class="r-db"><span class="dot"></span>Postgres DB</li>
+          <li class="r-auth"><span class="dot"></span>Auth (JWT)</li>
+          <li class="r-db"><span class="dot"></span>Storage (S3)</li>
+          <li class="r-db"><span class="dot"></span>Realtime</li>
+          <li class="r-backend"><span class="dot"></span>Edge Functions</li>
+          <li class="r-auth"><span class="dot"></span>RLS (권한)</li>
+          <li class="r-backend"><span class="dot"></span>REST API (자동)</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="caption">세 회사의 SaaS 가 각자 자리를 채움</div>
+  </div>
+
+  <!-- vs 구분자 -->
+  <div class="vs-divider">vs</div>
+
+  <!-- 스택 B: Rails 모놀리스 -->
+  <div class="mega-box stack-b">
+    <div class="mega-title">Rails 모놀리스</div>
+
+    <div class="monolith-grid">
+
+      <div class="left-col">
+        <div class="infra-box cloudflare">
+          <div class="infra-name">Cloudflare</div>
+          <ul class="role-list">
+            <li class="r-infra"><span class="dot"></span>DNS</li>
+            <li class="r-infra"><span class="dot"></span>CDN</li>
+            <li class="r-infra"><span class="dot"></span>SSL Cert</li>
+          </ul>
+        </div>
+
+        <div class="infra-box kamal">
+          <div class="infra-name">Kamal 2</div>
+          <ul class="role-list">
+            <li class="r-infra"><span class="dot"></span>배포 CLI</li>
+            <li class="r-infra"><span class="dot"></span>Docker + GHCR</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="arrow-col">
+        <div class="arr">───►</div>
+        <div class="arr">───►</div>
+      </div>
+
+      <div class="rails-box">
+        <div class="rails-name">Rails 앱 (DigitalOcean)</div>
+        <ul class="role-list rails-list">
+          <li class="r-server"><span class="dot"></span>kamal-proxy (프록시)</li>
+          <li class="r-server"><span class="dot"></span>Thruster (HTTP 가속)</li>
+          <li class="r-server"><span class="dot"></span>Puma (앱 서버)</li>
+          <li class="r-backend"><span class="dot"></span>Rails (라우팅/컨트롤러)</li>
+          <li class="r-frontend"><span class="dot"></span>ERB + Hotwire (프론트)</li>
+          <li class="r-backend"><span class="dot"></span>Active Record (ORM)</li>
+          <li class="r-auth"><span class="dot"></span>내장 인증 (bcrypt)</li>
+          <li class="r-db"><span class="dot"></span>SQLite (DB)</li>
+          <li class="r-db"><span class="dot"></span>Solid Cache (캐시)</li>
+          <li class="r-db"><span class="dot"></span>Solid Queue (잡)</li>
+          <li class="r-db"><span class="dot"></span>Solid Cable (실시간)</li>
+          <li class="r-db"><span class="dot"></span>Active Storage (파일)</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="caption">한 박스(Rails 프로세스) 가 모든 자리를 채움</div>
+  </div>
+
+  <!-- 통계: 역할별 항목 수 비교 -->
+  <div class="stats-section">
+    <div class="stats-title">역할별 항목 분포 — "어떤 자리가 얼마나 차지하나"</div>
+
+    <div class="stats-grid">
+
+      <div>
+        <div class="stat-stack-name">Next + Supabase + Vercel (19개 항목)</div>
+        <div class="stat-bar" title="Vercel/Next/Supabase 항목 분포">
+          <!-- Infra 7, Frontend 4, Backend 3, DB 4, Auth 2 / 무Server -->
+          <div class="stat-seg r-infra"    style="width: 36.8%">Infra 7</div>
+          <div class="stat-seg r-frontend" style="width: 21.1%">FE 4</div>
+          <div class="stat-seg r-backend"  style="width: 15.8%">BE 3</div>
+          <div class="stat-seg r-db"       style="width: 21.1%">DB 4</div>
+          <div class="stat-seg r-auth"     style="width: 10.5%">Au 2</div>
+        </div>
+        <div class="stat-note">Server 자리는 Vercel 호스팅에 흡수되어 보이지 않음</div>
+      </div>
+
+      <div>
+        <div class="stat-stack-name">Rails 모놀리스 (17개 항목)</div>
+        <div class="stat-bar" title="Cloudflare/Kamal/Rails 항목 분포">
+          <!-- Infra 5, Server 3, Frontend 1, Backend 2, DB 5, Auth 1 -->
+          <div class="stat-seg r-infra"    style="width: 29.4%">Infra 5</div>
+          <div class="stat-seg r-server"   style="width: 17.6%">Sv 3</div>
+          <div class="stat-seg r-frontend" style="width: 5.9%">FE 1</div>
+          <div class="stat-seg r-backend"  style="width: 11.8%">BE 2</div>
+          <div class="stat-seg r-db"       style="width: 29.4%">DB 5</div>
+          <div class="stat-seg r-auth"     style="width: 5.9%">Au 1</div>
+        </div>
+        <div class="stat-note">Server 박스가 명시적 (kamal-proxy, Thruster, Puma)</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    스택 시각 비교 (역할별 색 분류) · 2026-05-15 · jsonjeong.com
+  </footer>
+
+</div>
+
+</body>
+</html>
