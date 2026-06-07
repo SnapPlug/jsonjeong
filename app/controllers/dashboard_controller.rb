@@ -11,10 +11,10 @@ class DashboardController < ApplicationController
     name: "Json Jeong",
     location: "Jeju, South Korea",
     revenue: "$0/month",
-    quote: "Quit corporate. Moved to Jeju. I shipped my first apps wide open — now I'm building the safety net I wish I'd had. $0 → $1K MRR, in public.",
+    quote: "I shipped my first apps wide open. Now I'm building the safety net — $0 → $1K MRR, in public.",
     newsletter_count: "1",
     newsletter_name: "Snap to It",
-    newsletter_tagline: "Weekly notes from a solo dev in Jeju: what I shipped, what broke, the security holes I keep finding, the real numbers. No fluff. No 47-agent diagrams.",
+    newsletter_tagline: "What I shipped, what broke, and the security holes I keep finding. No fluff.",
     threads_url: "https://www.threads.net/@snapplug.app",
     x_url: "https://x.com/jasonjeongio"
   }.freeze
@@ -27,8 +27,7 @@ class DashboardController < ApplicationController
     goal_mrr_usd: 1_000,
     headline: "The Public Bet",
     promise: "$0 → $1,000 MRR in 90 days.",
-    rules: "Started with 2 followers. No paid ads, no courses, no agency.",
-    threat: "If I miss it, you can quote-tweet this forever."
+    rules: "No ads, no audience, no agency. Miss it and quote-tweet me forever."
   }.freeze
 
   SERVICES = [
