@@ -8,7 +8,12 @@
     shipped:  "bg-brand-dark text-white"
   }[service.status] || "bg-black/5 text-ink/70"
 
-  mrr_label = "$#{number_with_delimiter(service.mrr_usd.to_i)}"
+  # Pre-revenue ($0): show the concept. Once it earns, flip to MRR like marclou.
+  footer_meta = if service.mrr_usd.to_i.positive?
+                  "$#{number_with_delimiter(service.mrr_usd.to_i)}/mo"
+                else
+                  service.concept
+                end
 
   cta_url = if service.path.present?
               service.path
@@ -42,8 +47,10 @@
       <span class="inline-flex items-center rounded-full <%= status_class %> text-xs font-semibold px-2 py-0.5">
         <%= status_emoji %> <%= status_label %>
       </span>
-      <span>·</span>
-      <span>MRR: <%= mrr_label %></span>
+      <% if footer_meta.present? %>
+        <span>·</span>
+        <span><%= footer_meta %></span>
+      <% end %>
     </span>
   </div>
 
