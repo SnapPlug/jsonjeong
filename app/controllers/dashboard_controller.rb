@@ -14,7 +14,9 @@ class DashboardController < ApplicationController
     quote: "Quit corporate. Moved to Jeju. I shipped my first apps wide open — now I'm building the safety net I wish I'd had. $0 → $1K MRR, in public.",
     newsletter_count: "1",
     newsletter_name: "Vibe Coding Notes",
-    newsletter_tagline: "Weekly notes from a solo dev in Jeju: what I shipped, what broke, the security holes I keep finding, the real numbers. No fluff. No 47-agent diagrams."
+    newsletter_tagline: "Weekly notes from a solo dev in Jeju: what I shipped, what broke, the security holes I keep finding, the real numbers. No fluff. No 47-agent diagrams.",
+    threads_url: "https://www.threads.net/@snapplug.app",
+    x_url: "https://x.com/jasonjeongio"
   }.freeze
 
   # Update PUBLIC_BET weekly. Keep this honest — do NOT inflate.
