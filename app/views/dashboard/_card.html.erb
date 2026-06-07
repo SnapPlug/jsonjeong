@@ -33,6 +33,10 @@
     <p class="text-sm text-ink/70 leading-relaxed"><%= service.subline %></p>
   <% end %>
 
+  <% if service.trust.present? %>
+    <p class="text-sm font-semibold text-ink leading-snug"><%= service.trust %></p>
+  <% end %>
+
   <div class="mt-auto pt-3 border-t border-black/[0.06] flex items-center justify-between gap-3 font-mono text-sm text-ink/70">
     <span class="inline-flex items-center gap-1.5">
       <span class="inline-flex items-center rounded-full <%= status_class %> text-xs font-semibold px-2 py-0.5">

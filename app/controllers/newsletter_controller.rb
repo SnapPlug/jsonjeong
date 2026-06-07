@@ -2,11 +2,11 @@ class NewsletterController < ApplicationController
   allow_unauthenticated_access only: [:show, :subscribe]
 
   NAME = "Vibe Coding Notes"
-  PROMISE = "Weekly notes from a solo dev in Jeju: what I shipped, what failed, " \
-            "the actual numbers. No fluff. No 47-agent diagrams."
+  PROMISE = "Weekly notes from a solo dev in Jeju: what I shipped, what broke, " \
+            "the security holes I keep finding, the real numbers. No fluff. No 47-agent diagrams."
 
   ALLOWED_SOURCES = %w[
-    newsletter_page sidebar snapdeck_card snapteam_card
+    newsletter_page sidebar snapdeck_card
   ].freeze
   DEFAULT_SOURCE = "newsletter_page".freeze
 

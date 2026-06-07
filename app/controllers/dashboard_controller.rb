@@ -3,16 +3,18 @@ class DashboardController < ApplicationController
 
   # Service status drives card badge color + CTA copy.
   # :planning → not started · :building → in progress · :shipped → live with paying users
-  Service = Data.define(:name, :tagline, :subline, :emoji, :status, :mrr_usd, :path, :cta_label, :cta_source)
+  Service = Data.define(:name, :tagline, :subline, :emoji, :status, :mrr_usd, :path, :cta_label, :cta_source, :trust) do
+    def initialize(trust: nil, **) = super
+  end
 
   PROFILE = {
     name: "Json Jeong",
     location: "Jeju, South Korea",
     revenue: "$0/month",
-    quote: "Quit corporate. Moved to Jeju. Cheating my way to $1K MRR with Rails + AI — 2 products, 90 days, no agents.",
+    quote: "Quit corporate. Moved to Jeju. I shipped my first apps wide open — now I'm building the safety net I wish I'd had. $0 → $1K MRR, in public.",
     newsletter_count: "1",
     newsletter_name: "Vibe Coding Notes",
-    newsletter_tagline: "Weekly notes from a solo dev in Jeju: what I shipped, what failed, the actual numbers. No fluff. No 47-agent diagrams."
+    newsletter_tagline: "Weekly notes from a solo dev in Jeju: what I shipped, what broke, the security holes I keep finding, the real numbers. No fluff. No 47-agent diagrams."
   }.freeze
 
   # Update PUBLIC_BET weekly. Keep this honest — do NOT inflate.
@@ -30,25 +32,15 @@ class DashboardController < ApplicationController
   SERVICES = [
     Service.new(
       name: "SnapDeck",
-      tagline: "Marie Kondo for your AI coding stack.",
-      subline: "Stop drowning in skills, plugins, and slash commands. Get the curated setup that actually fits how you build.",
-      emoji: "🃏",
+      tagline: "The security net for the apps you built with AI.",
+      subline: "RLS left wide open, keys exposed in the bundle, routes anyone can hit — SnapDeck catches it in plain English, before someone else does.",
+      trust: "Runs on your machine. Your keys never leave.",
+      emoji: "🔒",
       status: :planning,
       mrr_usd: 0,
       path: nil,
       cta_label: "Get early access →",
       cta_source: "snapdeck_card"
-    ),
-    Service.new(
-      name: "SnapTeam",
-      tagline: "Real humans who've shipped what you're stuck on.",
-      subline: "Not AI teammates. Not Discord noise. Match with vibe coders who solved your exact bug.",
-      emoji: "👥",
-      status: :planning,
-      mrr_usd: 0,
-      path: nil,
-      cta_label: "Join the waitlist →",
-      cta_source: "snapteam_card"
     )
   ].freeze
 
@@ -58,4 +50,3 @@ class DashboardController < ApplicationController
     @bet = PUBLIC_BET
   end
 end
-
