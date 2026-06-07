@@ -1,7 +1,7 @@
 class NewsletterController < ApplicationController
   allow_unauthenticated_access only: [:show, :subscribe]
 
-  NAME = "Vibe Coding Notes"
+  NAME = "Snap to It"
   PROMISE = "Weekly notes from a solo dev in Jeju: what I shipped, what broke, " \
             "the security holes I keep finding, the real numbers. No fluff. No 47-agent diagrams."
 
