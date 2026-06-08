@@ -3,8 +3,8 @@ class DashboardController < ApplicationController
 
   # Service status drives card badge color + CTA copy.
   # :planning → not started · :building → in progress · :shipped → live with paying users
-  Service = Data.define(:name, :tagline, :subline, :emoji, :status, :mrr_usd, :path, :cta_label, :cta_source, :trust, :concept) do
-    def initialize(trust: nil, concept: nil, **) = super
+  Service = Data.define(:name, :tagline, :subline, :emoji, :status, :mrr_usd, :path, :cta_label, :cta_source, :trust, :concept, :demo_video, :demo_poster) do
+    def initialize(trust: nil, concept: nil, demo_video: nil, demo_poster: nil, **) = super
   end
 
   PROFILE = {
@@ -37,6 +37,8 @@ class DashboardController < ApplicationController
       subline: "RLS left wide open, keys exposed in the bundle, routes anyone can hit — SnapDeck catches it in plain English, before someone else does.",
       trust: "Runs on your machine. Your keys never leave.",
       concept: "Security scanner",
+      demo_video: "/snapdeck-demo.mp4",
+      demo_poster: "/snapdeck-demo-poster.jpg",
       emoji: "🔒",
       status: :planning,
       mrr_usd: 0,
