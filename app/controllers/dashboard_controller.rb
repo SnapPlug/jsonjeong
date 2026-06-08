@@ -37,7 +37,7 @@ class DashboardController < ApplicationController
       subline: "RLS left wide open, keys exposed in the bundle, routes anyone can hit — SnapDeck catches it in plain English, before someone else does.",
       trust: "Runs on your machine. Your keys never leave.",
       concept: "Security scanner",
-      demo_video: "/snapdeck-demo.mp4",
+      demo_video: "/snapdeck-demo.mp4?v=2",
       demo_poster: "/snapdeck-demo-poster.jpg",
       emoji: "🔒",
       status: :planning,
