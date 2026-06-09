@@ -21,6 +21,11 @@ Rails.application.routes.draw do
   constraints subdomain: /\A(www)?\z/ do
     root "dashboard#index"
 
+    # Crawler files served dynamically (short cache, not the 1-year asset cache)
+    get "/robots.txt" => "seo#robots", defaults: { format: "text" }
+    get "/sitemap.xml" => "seo#sitemap", defaults: { format: "xml" }
+    get "/llms.txt" => "seo#llms", defaults: { format: "text" }
+
     # Back-compat: /newsletter on apex 301s to newsletter subdomain
     get "newsletter", to: redirect { |_, req|
       base = req.host_with_port.sub(/\A(?:newsletter|www)\./, "")
