@@ -1,0 +1,20 @@
+# Json Jeong — jsonjeong.com
+
+> Security for the apps you built with AI. Json Jeong (Jason) is a solo developer in Jeju, South Korea, building tools that help vibe coders secure the apps they shipped with AI — before they get hacked.
+
+Vibe coding — building software mostly by prompting AI tools — ships fast but usually ships insecure. The same holes show up again and again: row-level security left disabled (anyone can read every user's row), API keys bundled into the client, admin routes with no auth check, and overly permissive CORS. These live in config and infrastructure, so the AI's own code review misses them.
+
+Json Jeong is building in public toward $1,000 MRR, documenting what ships, what breaks, and the security holes found along the way.
+
+## Products
+
+- [SnapDeck](https://jsonjeong.com): A desktop security scanner for apps built with AI. You drop your project folder; it scans locally and reports exposed keys, disabled row-level security, and unguarded routes in plain English, then fixes them. Everything runs on your machine — your source code and keys never leave your computer. macOS. Status: in development.
+
+## Newsletter
+
+- [Snap to It](https://newsletter.jsonjeong.com): Weekly notes from a solo dev — what shipped, what broke, and the security holes found along the way. No fluff.
+
+## Links
+
+- X / Twitter: https://x.com/jasonjeongio
+- Threads: https://www.threads.net/@snapplug.app
