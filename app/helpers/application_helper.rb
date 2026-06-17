@@ -1,7 +1,7 @@
 module ApplicationHelper
   SITE_NAME = "Jason Jeong"
-  SITE_TAGLINE = "Security for vibe-coded apps"
-  SITE_DESCRIPTION = "I help vibe coders secure the apps AI built — exposed keys, disabled RLS, unguarded routes, caught in plain English. Solo dev building in public from Jeju."
+  SITE_TAGLINE = "AI teammates for vibe coders — starting with app security"
+  SITE_DESCRIPTION = "I build AI teammates and ship them as products, in public from Jeju. The first secures the apps you built with AI — exposed keys, disabled RLS, unguarded routes, caught in plain English."
   SITE_PRODUCTION_URL = "https://jsonjeong.com".freeze
 
   # AEO/GEO: question-answer content surfaced both on-page (collapsible) and as
@@ -72,11 +72,11 @@ module ApplicationHelper
           "alternateName" => "Json Jeong",
           "url" => "#{SITE_PRODUCTION_URL}/",
           "image" => "#{SITE_PRODUCTION_URL}/icon.png",
-          "jobTitle" => "Indie developer & app security builder",
-          "description" => "Solo developer in Jeju, South Korea, building tools that help vibe coders secure the apps they shipped with AI.",
+          "jobTitle" => "Founder building AI teammates · app security for vibe coders",
+          "description" => "Founder in Jeju, South Korea. I build AI teammates and ship them as products in public — starting with security tools that help vibe coders find the holes in apps they built with AI.",
           "address" => { "@type" => "PostalAddress", "addressLocality" => "Jeju", "addressCountry" => "KR" },
-          "knowsAbout" => ["application security", "vibe coding", "Ruby on Rails", "row-level security", "Supabase"],
-          "sameAs" => ["https://x.com/jasonjeongio", "https://www.threads.net/@snapplug.app"]
+          "knowsAbout" => [ "AI agents", "AI automation", "application security", "vibe coding", "row-level security", "Supabase", "Ruby on Rails" ],
+          "sameAs" => [ "https://x.com/jasonjeongio", "https://www.threads.net/@snapplug.app" ]
         },
         {
           "@type" => "SoftwareApplication",

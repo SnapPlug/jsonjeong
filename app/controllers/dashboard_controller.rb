@@ -11,7 +11,7 @@ class DashboardController < ApplicationController
     name: "Json Jeong",
     location: "Jeju, South Korea",
     revenue: "$0/month",
-    quote: "I shipped my first apps wide open. Now I'm building the safety net — $0 → $1K MRR, in public.",
+    quote: "I build AI teammates for a living in Korea. Now I'm shipping them as products, in public — starting with the one that secures the apps you vibe-coded.",
     newsletter_count: "1",
     newsletter_name: "Snap to It",
     newsletter_tagline: "What I shipped, what broke, and the security holes I keep finding. No fluff.",
@@ -27,7 +27,7 @@ class DashboardController < ApplicationController
     goal_mrr_usd: 1_000,
     headline: "The Public Bet",
     promise: "$0 → $1,000 MRR in 90 days.",
-    rules: "No ads, no audience, no agency. Miss it and quote-tweet me forever."
+    rules: "No ads, no audience, no shortcuts. Miss it and quote-tweet me forever."
   }.freeze
 
   SERVICES = [
