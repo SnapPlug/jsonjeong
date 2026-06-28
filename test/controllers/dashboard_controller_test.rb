@@ -9,6 +9,6 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_match '"@type":"FAQPage"', response.body
     assert_match '"@type":"Person"', response.body
     # FAQ content is present in the DOM (collapsible, but crawlable)
-    assert_match "How do I know if my vibe-coded app is secure?", response.body
+    assert_match "내 바이브코딩 앱이 안전한지 어떻게 알 수 있나요?", response.body
   end
 end

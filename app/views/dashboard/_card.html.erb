@@ -1,6 +1,6 @@
 <%
   status_emoji = { planning: "🟡", building: "🔵", shipped: "🟢" }[service.status] || "⚪"
-  status_label = service.status.to_s.titleize
+  status_label = { planning: "준비 중", building: "개발 중", shipped: "출시" }[service.status] || service.status.to_s
 
   status_class = {
     planning: "bg-black/5 text-ink/70",
@@ -65,6 +65,6 @@
 
   <%= link_to cta_url,
         class: "inline-flex items-center justify-center rounded-lg bg-brand text-brand-dark text-sm font-semibold px-4 py-2 hover:opacity-90 transition" do %>
-    <%= service.cta_label || "Get notified →" %>
+    <%= service.cta_label || "소식 받기 →" %>
   <% end %>
 </div>

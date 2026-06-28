@@ -36,7 +36,7 @@
     <p class="mt-1.5 text-sm text-white/85 leading-relaxed"><%= bet[:rules] %></p>
 
     <div class="mt-3 font-mono text-[13px] text-white/90">
-      Day <%= bet[:day] %> / <%= bet[:total_days] %> · $<%= bet[:current_mrr_usd] %> of $<%= number_with_delimiter(bet[:goal_mrr_usd]) %> MRR
+      <%= bet[:day] %>일차 / <%= bet[:total_days] %>일 · 목표 $<%= number_with_delimiter(bet[:goal_mrr_usd]) %> 중 $<%= bet[:current_mrr_usd] %> MRR
     </div>
     <div class="mt-1 font-mono text-base text-brand tracking-wider">
       [<%= bet_progress_bar(bet[:current_mrr_usd], bet[:goal_mrr_usd]) %> <%= bet_progress_pct(bet[:current_mrr_usd], bet[:goal_mrr_usd]) %>%]
@@ -45,9 +45,9 @@
 <% end %>
 
 <p class="mt-4 font-semibold text-[15px]">
-  Join <%= profile[:newsletter_count] %> reader<%= profile[:newsletter_count].to_i == 1 ? "" : "s" %> of
-  <%= link_to "#{profile[:newsletter_name]}:", newsletter_subdomain_url,
+  <%= link_to profile[:newsletter_name], newsletter_subdomain_url,
         class: "text-brand underline underline-offset-4 decoration-2 hover:opacity-80" %>
+  뉴스레터를 구독 중인 <%= profile[:newsletter_count] %>명과 함께하세요
 </p>
 
 <p class="mt-2 text-[15px] leading-relaxed text-ink/90"><%= profile[:newsletter_tagline] %></p>
@@ -55,8 +55,8 @@
 <%= render "newsletter/subscribe_form",
       subscriber: Subscriber.new,
       source: "sidebar",
-      cta: "Follow the $1K bet",
-      placeholder: "Don't miss the public meltdown",
+      cta: "$1K 도전 따라가기",
+      placeholder: "공개 붕괴 생중계를 놓치지 마세요",
       url: newsletter_subscribe_path %>
 
 <div class="mt-4 flex items-center gap-3 text-muted">

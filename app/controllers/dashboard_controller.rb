@@ -9,12 +9,12 @@ class DashboardController < ApplicationController
 
   PROFILE = {
     name: "Json Jeong",
-    location: "Jeju, South Korea",
-    revenue: "$0/month",
-    quote: "I build AI teammates for a living in Korea. Now I'm shipping them as products, in public — starting with the one that secures the apps you vibe-coded.",
+    location: "대한민국 제주",
+    revenue: "월 매출 0원",
+    quote: "한국에서 AI 팀원을 만드는 일을 합니다. 이제 그걸 제품으로, 공개적으로 출시합니다 — 바이브코딩으로 만든 앱을 지켜주는 것부터.",
     newsletter_count: "1",
     newsletter_name: "Snap to It",
-    newsletter_tagline: "What I shipped, what broke, and the security holes I keep finding. No fluff.",
+    newsletter_tagline: "무엇을 출시했고, 무엇이 터졌고, 계속 발견하는 보안 구멍들. 군더더기 없이.",
     threads_url: "https://www.threads.net/@snapplug.app",
     x_url: "https://x.com/jasonjeongio"
   }.freeze
@@ -25,25 +25,25 @@ class DashboardController < ApplicationController
     total_days: 90,
     current_mrr_usd: 0,
     goal_mrr_usd: 1_000,
-    headline: "The Public Bet",
-    promise: "$0 → $1,000 MRR in 90 days.",
-    rules: "No ads, no audience, no shortcuts. Miss it and quote-tweet me forever."
+    headline: "공개 도전",
+    promise: "90일 안에 월 0원 → $1,000 MRR.",
+    rules: "광고 없이, 청중 없이, 편법 없이. 실패하면 영원히 인용해서 놀려도 됩니다."
   }.freeze
 
   SERVICES = [
     Service.new(
       name: "SnapDeck",
-      tagline: "The security net for the apps you built with AI.",
-      subline: "RLS left wide open, keys exposed in the bundle, routes anyone can hit — SnapDeck catches it in plain English, before someone else does.",
-      trust: "Runs on your machine. Your keys never leave.",
-      concept: "Security scanner",
+      tagline: "AI로 만든 앱을 위한 보안 안전망.",
+      subline: "활짝 열린 RLS, 번들에 노출된 키, 아무나 접근하는 라우트 — SnapDeck이 누가 먼저 찾기 전에 쉬운 말로 잡아냅니다.",
+      trust: "내 컴퓨터에서 실행됩니다. 키는 절대 밖으로 나가지 않습니다.",
+      concept: "보안 스캐너",
       demo_video: "/snapdeck-demo.mp4?v=2",
       demo_poster: "/snapdeck-demo-poster.jpg",
       emoji: "🔒",
       status: :planning,
       mrr_usd: 0,
       path: nil,
-      cta_label: "Get early access →",
+      cta_label: "얼리 액세스 신청 →",
       cta_source: "snapdeck_card"
     )
   ].freeze
