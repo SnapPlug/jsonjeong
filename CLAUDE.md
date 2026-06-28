@@ -2,16 +2,20 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## 언어 정책 (계층 분리)
+## 언어 정책 (한국어 전환 — 2026-06-17 전면 피벗)
 
 | 레이어 | 언어 |
 |---|---|
 | 사용자 ↔ Claude 대화 | **한글** |
 | 내부 메모, CLAUDE.md, 코드 주석 | **한글** (코드 식별자, 커밋 메시지는 영문) |
-| **사이트 UI / 카피 / 메타데이터 (jsonjeong.com 및 모든 세부 SaaS)** | **영문 only** |
-| 마케팅 콘텐츠 (X / 블로그 / 영상) | **영문 only** |
+| **jsonjeong.com 랜딩 — UI/카피/메타데이터** | **한국어** (`lang="ko"`, `og:locale ko_KR`) |
+| **제품 (SnapDeck 등) — UI/카피** | **한국어** |
+| 뉴스레터 (Snap to It / beehiiv) | **한국어** |
+| 마케팅 (X·Threads·블로그·영상) | **한국어** |
 
-이유: 글로벌 영어 1인 개발자/메이커 시장 타겟. 사이트·SaaS·콘텐츠 모두 영어여야 마케팅 깔때기 동작. 한국어 카피가 섞이면 글로벌 신뢰도 떨어짐. 다만 사용자와의 대화·메모는 한글이 효율적이라 분리.
+**브랜드·제품명은 영문 유지** (SnapDeck, SnapMusk, Snap Teleprompter, Snap to It, jsonjeong). 기술 용어(RLS, API, Supabase 등)도 영문 그대로.
+
+이유: **글로벌 영어 라인 폐기, 한국 시장으로 전면 피벗** (2026-06-17). 이전엔 jsonjeong·SnapDeck을 영어-글로벌(인디 바이브코더, X로 오디언스)로 운영했으나, 한국 시장·한국어로 통합. 모든 대외 카피(랜딩·뉴스레터·마케팅)는 한국어. @jasonjeongio X 계정의 영어 전략·기존 영어 콘텐츠는 한국어로 재정렬 대상.
 
 ## 운영 사이클 (단일 루프)
 

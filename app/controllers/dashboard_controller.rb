@@ -40,11 +40,47 @@ class DashboardController < ApplicationController
       demo_video: "/snapdeck-demo.mp4?v=2",
       demo_poster: "/snapdeck-demo-poster.jpg",
       emoji: "🔒",
-      status: :planning,
+      status: :building,
       mrr_usd: 0,
-      path: nil,
-      cta_label: "얼리 액세스 신청 →",
+      path: "https://snapdeck.jsonjeong.com",
+      cta_label: "사이트 보기 →",
       cta_source: "snapdeck_card"
+    ),
+    Service.new(
+      name: "SnapMusk",
+      tagline: "맥북 노치에 사는 AI 타임박싱 비서.",
+      subline: "'헤이 머스크' 한마디로 깨우고, 온디바이스 음성인식(WhisperKit)으로 받아적고, Claude가 하루를 타임박싱해줍니다.",
+      concept: "macOS 앱",
+      emoji: "🎙️",
+      status: :building,
+      mrr_usd: 0,
+      path: "https://github.com/SnapPlug/snapmusk",
+      cta_label: "GitHub →",
+      cta_source: "snapmusk_card"
+    ),
+    Service.new(
+      name: "Snap Teleprompter",
+      tagline: "맥북 노치를 텔레프롬프터로.",
+      subline: "노치 영역에 대본이 스르륵 흘러갑니다. 카메라를 보면서 자연스럽게 읽으세요.",
+      concept: "macOS 앱",
+      emoji: "📜",
+      status: :shipped,
+      mrr_usd: 0,
+      path: "https://github.com/SnapPlug/snap-teleprompter",
+      cta_label: "GitHub →",
+      cta_source: "teleprompter_card"
+    ),
+    Service.new(
+      name: "Supabase 바이브코딩 가이드",
+      tagline: "Claude Code로 Supabase 만들 때 터지는 문제 모음.",
+      subline: "바이브코딩으로 Supabase 백엔드를 짜다 만나는 문제와 해결책을 정리했습니다. 무료, 오픈소스.",
+      concept: "오픈소스 가이드",
+      emoji: "📖",
+      status: :shipped,
+      mrr_usd: 0,
+      path: "https://github.com/SnapPlug/supabase-vibe-coding-guide",
+      cta_label: "GitHub →",
+      cta_source: "guide_card"
     )
   ].freeze
 

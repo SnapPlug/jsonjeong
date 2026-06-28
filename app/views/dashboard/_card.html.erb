@@ -64,6 +64,8 @@
   </div>
 
   <%= link_to cta_url,
+        target: (service.path.present? ? "_blank" : nil),
+        rel: (service.path.present? ? "noopener" : nil),
         class: "inline-flex items-center justify-center rounded-lg bg-brand text-brand-dark text-sm font-semibold px-4 py-2 hover:opacity-90 transition" do %>
     <%= service.cta_label || "소식 받기 →" %>
   <% end %>
