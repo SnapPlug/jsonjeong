@@ -107,18 +107,4 @@ module ApplicationHelper
       end
     }
   end
-
-  # ASCII progress bar for the Public Bet box. 10 cells, ▰ filled / ▱ empty.
-  def bet_progress_bar(current, goal, cells: 10)
-    pct = goal.to_f.positive? ? (current.to_f / goal * 100) : 0.0
-    pct = pct.clamp(0, 100)
-    filled = (pct / 100.0 * cells).round
-    empty = cells - filled
-    ("▰" * filled) + ("▱" * empty)
-  end
-
-  def bet_progress_pct(current, goal)
-    return 0 unless goal.to_f.positive?
-    ((current.to_f / goal) * 100).round
-  end
 end

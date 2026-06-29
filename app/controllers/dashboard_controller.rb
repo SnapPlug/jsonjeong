@@ -19,17 +19,6 @@ class DashboardController < ApplicationController
     x_url: "https://x.com/jasonjeongio"
   }.freeze
 
-  # Update PUBLIC_BET weekly. Keep this honest — do NOT inflate.
-  PUBLIC_BET = {
-    day: 1,
-    total_days: 90,
-    current_mrr_usd: 0,
-    goal_mrr_usd: 1_000,
-    headline: "공개 도전",
-    promise: "90일 안에 월 0원 → $1,000 MRR.",
-    rules: "광고 없이, 청중 없이, 편법 없이. 실패하면 영원히 인용해서 놀려도 됩니다."
-  }.freeze
-
   SERVICES = [
     Service.new(
       name: "SnapDeck",
@@ -92,6 +81,5 @@ class DashboardController < ApplicationController
   def index
     @profile = PROFILE
     @services = SERVICES
-    @bet = PUBLIC_BET
   end
 end
