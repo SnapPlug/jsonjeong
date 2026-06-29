@@ -32,7 +32,7 @@
 
   <% if service.demo_video.present? %>
     <video
-      class="w-full rounded-xl border border-black/[0.06] bg-brand-dark aspect-video"
+      class="w-full rounded-xl border border-black/[0.06] bg-brand-dark aspect-video object-contain"
       autoplay muted loop playsinline
       poster="<%= service.demo_poster %>">
       <source src="<%= service.demo_video %>" type="video/mp4">
