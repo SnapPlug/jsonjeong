@@ -1,7 +1,7 @@
 module ApplicationHelper
   SITE_NAME = "Jason Jeong"
-  SITE_TAGLINE = "바이브코더를 위한 AI 팀원 — 앱 보안부터"
-  SITE_DESCRIPTION = "AI 팀원을 만들어 제품으로, 제주에서 공개적으로 출시합니다. 첫 제품은 AI로 만든 앱을 지킵니다 — 노출된 키, 꺼진 RLS, 방치된 라우트를 쉬운 말로 잡아냅니다."
+  SITE_TAGLINE = "AI 팀원을 만드는 바이브코더 · 제주"
+  SITE_DESCRIPTION = "바이브코더이자 AI 자동화 회사 대표. AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 출시하며 공개적으로 수익화합니다. 제주에서."
   SITE_PRODUCTION_URL = "https://jsonjeong.com".freeze
 
   # AEO/GEO: question-answer content surfaced both on-page (collapsible) and as
@@ -72,8 +72,8 @@ module ApplicationHelper
           "alternateName" => "Json Jeong",
           "url" => "#{SITE_PRODUCTION_URL}/",
           "image" => "#{SITE_PRODUCTION_URL}/icon.png",
-          "jobTitle" => "AI 팀원을 만드는 창업자 · 바이브코더를 위한 앱 보안",
-          "description" => "대한민국 제주의 창업자. AI 팀원을 만들어 제품으로 공개적으로 출시합니다 — 바이브코딩으로 만든 앱의 구멍을 찾아주는 보안 도구부터 시작합니다.",
+          "jobTitle" => "AI 팀원을 만드는 바이브코더 · AI 자동화 회사 대표",
+          "description" => "대한민국 제주의 1인 개발자이자 AI 자동화 회사 대표. AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 출시하며 공개적으로 수익화합니다.",
           "address" => { "@type" => "PostalAddress", "addressLocality" => "Jeju", "addressCountry" => "KR" },
           "knowsAbout" => [ "AI agents", "AI automation", "application security", "vibe coding", "row-level security", "Supabase", "Ruby on Rails" ],
           "sameAs" => [ "https://x.com/jasonjeongio", "https://www.threads.net/@snapplug.app" ]
