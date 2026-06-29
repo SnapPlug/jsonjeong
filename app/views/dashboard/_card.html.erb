@@ -37,6 +37,9 @@
       poster="<%= service.demo_poster %>">
       <source src="<%= service.demo_video %>" type="video/mp4">
     </video>
+  <% elsif service.card_image.present? %>
+    <%= image_tag service.card_image, alt: service.name,
+          class: "w-full rounded-xl border border-black/[0.06] bg-brand-dark aspect-video object-cover", loading: "lazy" %>
   <% end %>
 
   <% if service.tagline.present? %>

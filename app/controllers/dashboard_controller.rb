@@ -3,8 +3,8 @@ class DashboardController < ApplicationController
 
   # Service status drives card badge color + CTA copy.
   # :planning → not started · :building → in progress · :shipped → live with paying users
-  Service = Data.define(:name, :tagline, :subline, :emoji, :status, :mrr_usd, :path, :cta_label, :cta_source, :trust, :concept, :demo_video, :demo_poster) do
-    def initialize(trust: nil, concept: nil, demo_video: nil, demo_poster: nil, **) = super
+  Service = Data.define(:name, :tagline, :subline, :emoji, :status, :mrr_usd, :path, :cta_label, :cta_source, :trust, :concept, :demo_video, :demo_poster, :card_image) do
+    def initialize(trust: nil, concept: nil, demo_video: nil, demo_poster: nil, card_image: nil, **) = super
   end
 
   PROFILE = {
@@ -54,7 +54,7 @@ class DashboardController < ApplicationController
       demo_video: "/snapmusk-demo.mp4",
       demo_poster: "/snapmusk-demo-poster.jpg",
       emoji: "🎙️",
-      status: :building,
+      status: :shipped,
       mrr_usd: 0,
       path: "https://github.com/SnapPlug/snapmusk",
       cta_label: "GitHub →",
@@ -79,6 +79,7 @@ class DashboardController < ApplicationController
       tagline: "Claude Code로 Supabase 만들 때 터지는 문제 모음.",
       subline: "바이브코딩으로 Supabase 백엔드를 짜다 만나는 문제와 해결책을 정리했습니다. 무료, 오픈소스.",
       concept: "오픈소스 가이드",
+      card_image: "/guide-card.png",
       emoji: "📖",
       status: :shipped,
       mrr_usd: 0,
