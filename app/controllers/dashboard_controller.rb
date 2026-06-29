@@ -11,7 +11,7 @@ class DashboardController < ApplicationController
     name: "Json Jeong",
     location: "대한민국 제주",
     revenue: "월 매출 0원",
-    quote: "한국에서 AI 팀원을 만드는 일을 합니다. 이제 그걸 제품으로, 공개적으로 출시합니다 — 바이브코딩으로 만든 앱을 지켜주는 것부터.",
+    quote: "바이브코더이자 AI 자동화 회사를 운영하는 1인 개발자입니다. AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 출시하며 공개적으로 수익화해 나갑니다.",
     newsletter_count: "1",
     newsletter_name: "Snap to It",
     newsletter_tagline: "무엇을 출시했고, 무엇이 터졌고, 계속 발견하는 보안 구멍들. 군더더기 없이.",
