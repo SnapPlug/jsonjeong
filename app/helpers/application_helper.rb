@@ -1,12 +1,20 @@
 module ApplicationHelper
   SITE_NAME = "Jason Jeong"
-  SITE_TAGLINE = "AI 팀원을 만드는 바이브코더 · 제주"
-  SITE_DESCRIPTION = "바이브코더이자 AI 자동화 회사 대표. 사람을 대신할 AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 공개적으로 만들어 갑니다. 제주에서."
+  SITE_TAGLINE = "현장에서 문제를 먼저 정의하는 AI 자동화 컨설턴트 · 제주"
+  SITE_DESCRIPTION = "AI 자동화 회사 SnapPlug 대표. 공장과 사무실에 직접 가서 문제부터 정의하고, 답에 AI가 없으면 없다고 말합니다. 직원을 대체하지 않고 조직에 저항 없이 안착하는 자동화를 만듭니다. 제주에서."
   SITE_PRODUCTION_URL = "https://jsonjeong.com".freeze
 
   # AEO/GEO: question-answer content surfaced both on-page (collapsible) and as
   # FAQPage structured data. Single source so the two never drift.
   FAQS = [
+    {
+      q: "AI 자동화 컨설팅은 어떻게 진행하나요?",
+      a: "'AI로 뭘 할까'가 아니라 '뭐가 문제인가'에서 시작합니다. 현장에 직접 가서 실무진의 이야기를 듣고 문제를 정의한 뒤, 답이 여럿이어도 되는 일은 AI로, 숫자가 정확해야 하는 일은 코드로, 판단이 필요한 일은 사람에게 남깁니다. 답에 AI가 없으면 없다고 말씀드립니다."
+    },
+    {
+      q: "직원들이 자동화를 반대하면 어떻게 하나요?",
+      a: "직원의 일을 대체하려는 자동화는 조용히 묻힙니다. 그래서 기존 업무는 최대한 건드리지 않고 반복 업무의 누수만 줄이는 방식으로 설계하고, 도입 후 직원의 일이 실제로 줄어드는지를 기준으로 삼습니다. 직원 저항을 줄이는 것까지가 컨설팅입니다."
+    },
     {
       q: "내 바이브코딩 앱이 안전한지 어떻게 알 수 있나요?",
       a: "AI로 만든 앱은 대부분 똑같은 구멍 몇 개를 안고 출시됩니다: 꺼진 RLS(행 수준 보안), 클라이언트에 박힌 API 키, 인증 체크 없는 라우트. SnapDeck 같은 스캐너가 프로젝트 폴더를 로컬에서 읽어, 누가 먼저 찾기 전에 쉬운 말로 알려줍니다."
@@ -72,8 +80,8 @@ module ApplicationHelper
           "alternateName" => "Json Jeong",
           "url" => "#{SITE_PRODUCTION_URL}/",
           "image" => "#{SITE_PRODUCTION_URL}/icon.png",
-          "jobTitle" => "AI 팀원을 만드는 바이브코더 · AI 자동화 회사 대표",
-          "description" => "대한민국 제주의 바이브코더이자 AI 자동화 회사 대표. 사람을 대신할 AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 공개적으로 만들어 갑니다.",
+          "jobTitle" => "AI 자동화 컨설턴트 · SnapPlug 대표",
+          "description" => "대한민국 제주의 AI 자동화 컨설턴트, SnapPlug 대표. 제조·유통 현장에 직접 가서 문제부터 정의하고, 직원을 대체하지 않고 조직에 저항 없이 안착하는 자동화를 설계합니다. 필요한 도구는 직접 만들어 공개합니다.",
           "address" => { "@type" => "PostalAddress", "addressLocality" => "Jeju", "addressCountry" => "KR" },
           "knowsAbout" => [ "AI agents", "AI automation", "application security", "vibe coding", "row-level security", "Supabase", "Ruby on Rails" ],
           "worksFor" => { "@id" => "#{SITE_PRODUCTION_URL}/#org" },
@@ -83,7 +91,7 @@ module ApplicationHelper
           "@type" => "Organization",
           "@id" => "#{SITE_PRODUCTION_URL}/#org",
           "name" => "SnapPlug",
-          "description" => "AI 팀원(AI 에이전트)을 만들고 제품으로 출시하는 AI 자동화 회사. 대표작으로 SnapDeck(바이브코딩 앱 보안 스캐너), SnapMusk, Snap Teleprompter가 있습니다.",
+          "description" => "제조·유통 기업의 AI 자동화 컨설팅(AX)과 실용 도구를 만드는 회사. 현장에서 문제를 먼저 정의하고, 직원 저항 없이 안착하는 자동화를 설계합니다. 대표작으로 SnapDeck(바이브코딩 앱 보안 스캐너), SnapMusk, Snap Teleprompter가 있습니다.",
           "founder" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" },
           "sameAs" => [ "https://github.com/SnapPlug", "https://www.threads.net/@snapplug.app" ]
         },

@@ -10,10 +10,10 @@ class DashboardController < ApplicationController
   PROFILE = {
     name: "Json Jeong",
     location: "대한민국 제주",
-    quote: "바이브코더이자 AI 자동화 회사를 운영하는 1인 개발자입니다. 사람을 대신할 AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 출시하며 공개적으로 만들어 나갑니다.",
+    quote: "AI 자동화 회사 SnapPlug를 운영합니다. 공장과 사무실에 직접 가서 문제부터 정의하고, 답에 AI가 없으면 없다고 말하는 컨설턴트입니다. 직원의 일을 대체하는 게 아니라 반복 업무의 누수를 줄여, 조직에 저항 없이 안착하는 자동화를 만듭니다. 필요한 도구는 직접 만들어 공개합니다.",
     newsletter_count: "1",
     newsletter_name: "Snap to It",
-    newsletter_tagline: "AI 팀원을 만들어 제품으로 내놓는 여정. 무엇이 통하고 무엇이 터지는지 매주 공개합니다.",
+    newsletter_tagline: "AI 자동화 컨설팅 현장에서 보고 들은 것들만 씁니다. 제안서를 접은 이야기, AI가 능사가 아닌 이유 — 전부 실제 사례입니다.",
     threads_url: "https://www.threads.net/@snapplug.app",
     x_url: "https://x.com/jasonjeongio"
   }.freeze
