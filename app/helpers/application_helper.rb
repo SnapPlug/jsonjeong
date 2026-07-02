@@ -76,7 +76,7 @@ module ApplicationHelper
           "description" => "대한민국 제주의 1인 개발자이자 AI 자동화 회사 대표. AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 출시하며 공개적으로 수익화합니다.",
           "address" => { "@type" => "PostalAddress", "addressLocality" => "Jeju", "addressCountry" => "KR" },
           "knowsAbout" => [ "AI agents", "AI automation", "application security", "vibe coding", "row-level security", "Supabase", "Ruby on Rails" ],
-          "sameAs" => [ "https://x.com/jasonjeongio", "https://www.threads.net/@snapplug.app" ]
+          "sameAs" => [ "https://x.com/jasonjeongio", "https://www.threads.net/@snapplug.app", "https://github.com/SnapPlug" ]
         },
         {
           "@type" => "SoftwareApplication",
@@ -85,7 +85,35 @@ module ApplicationHelper
           "applicationCategory" => "SecurityApplication",
           "operatingSystem" => "macOS",
           "description" => "AI로 만든 앱을 위한 데스크톱 보안 스캐너. 프로젝트 폴더를 끌어다 놓으면 SnapDeck이 노출된 키, 꺼진 RLS, 방치된 라우트를 쉬운 말로 찾아냅니다 — 로컬에서 실행되어 키가 컴퓨터를 떠나지 않습니다.",
+          "url" => "https://snapdeck.jsonjeong.com",
           "offers" => { "@type" => "Offer", "price" => "0", "priceCurrency" => "USD" },
+          "creator" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" }
+        },
+        {
+          "@type" => "SoftwareApplication",
+          "name" => "SnapMusk",
+          "applicationCategory" => "ProductivityApplication",
+          "operatingSystem" => "macOS",
+          "description" => "맥북 노치에 사는 AI 타임박싱 비서. '헤이 머스크' 웨이크워드, 온디바이스 음성인식(WhisperKit), Claude로 하루를 타임박싱합니다.",
+          "url" => "https://github.com/SnapPlug/snapmusk",
+          "creator" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" }
+        },
+        {
+          "@type" => "SoftwareApplication",
+          "name" => "Snap Teleprompter",
+          "applicationCategory" => "UtilitiesApplication",
+          "operatingSystem" => "macOS",
+          "description" => "맥북 노치 영역에 대본이 스크롤되는 텔레프롬프터 앱. 카메라를 보면서 자연스럽게 읽을 수 있습니다.",
+          "url" => "https://github.com/SnapPlug/snap-teleprompter",
+          "creator" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" }
+        },
+        {
+          "@type" => "SoftwareSourceCode",
+          "name" => "Supabase 바이브코딩 가이드",
+          "description" => "Claude Code(바이브코딩)로 Supabase 백엔드를 개발할 때 만나는 문제와 해결책 모음. 무료, 오픈소스.",
+          "codeRepository" => "https://github.com/SnapPlug/supabase-vibe-coding-guide",
+          "url" => "https://github.com/SnapPlug/supabase-vibe-coding-guide",
+          "about" => "Supabase",
           "creator" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" }
         }
       ]
