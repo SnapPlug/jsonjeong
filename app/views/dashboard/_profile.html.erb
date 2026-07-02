@@ -20,9 +20,6 @@
       <span class="inline-flex items-center gap-1">
         <span aria-hidden="true">📍</span><%= profile[:location] %>
       </span>
-      <span class="inline-flex items-center gap-1">
-        <span aria-hidden="true">💵</span><%= profile[:revenue] %>
-      </span>
     </div>
   </div>
 </div>
@@ -41,8 +38,8 @@
 <%= render "newsletter/subscribe_form",
       subscriber: Subscriber.new,
       source: "sidebar",
-      cta: "$1K 도전 따라가기",
-      placeholder: "공개 붕괴 생중계를 놓치지 마세요",
+      cta: "여정 구독하기",
+      placeholder: "AI 팀원을 만드는 과정을 받아보세요",
       url: newsletter_subscribe_path %>
 
 <div class="mt-4 flex items-center gap-3 text-muted">

@@ -1,7 +1,7 @@
 module ApplicationHelper
   SITE_NAME = "Jason Jeong"
   SITE_TAGLINE = "AI 팀원을 만드는 바이브코더 · 제주"
-  SITE_DESCRIPTION = "바이브코더이자 AI 자동화 회사 대표. AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 출시하며 공개적으로 수익화합니다. 제주에서."
+  SITE_DESCRIPTION = "바이브코더이자 AI 자동화 회사 대표. 사람을 대신할 AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 공개적으로 만들어 갑니다. 제주에서."
   SITE_PRODUCTION_URL = "https://jsonjeong.com".freeze
 
   # AEO/GEO: question-answer content surfaced both on-page (collapsible) and as
@@ -73,7 +73,7 @@ module ApplicationHelper
           "url" => "#{SITE_PRODUCTION_URL}/",
           "image" => "#{SITE_PRODUCTION_URL}/icon.png",
           "jobTitle" => "AI 팀원을 만드는 바이브코더 · AI 자동화 회사 대표",
-          "description" => "대한민국 제주의 1인 개발자이자 AI 자동화 회사 대표. AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 출시하며 공개적으로 수익화합니다.",
+          "description" => "대한민국 제주의 바이브코더이자 AI 자동화 회사 대표. 사람을 대신할 AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 공개적으로 만들어 갑니다.",
           "address" => { "@type" => "PostalAddress", "addressLocality" => "Jeju", "addressCountry" => "KR" },
           "knowsAbout" => [ "AI agents", "AI automation", "application security", "vibe coding", "row-level security", "Supabase", "Ruby on Rails" ],
           "worksFor" => { "@id" => "#{SITE_PRODUCTION_URL}/#org" },
