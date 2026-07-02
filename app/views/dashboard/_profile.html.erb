@@ -42,6 +42,22 @@
       placeholder: "컨설팅 현장 이야기를 받아보세요",
       url: newsletter_subscribe_path %>
 
+<% if defined?(newsletter_issues) && newsletter_issues.present? %>
+  <div class="mt-5">
+    <p class="text-xs font-semibold tracking-wide text-muted uppercase">최근 글</p>
+    <ul class="mt-2 space-y-2">
+      <% newsletter_issues.each do |issue| %>
+        <li class="text-[14px] leading-snug">
+          <a href="<%= issue[:url] %>" target="_blank" rel="noopener"
+             class="text-ink/90 hover:text-brand transition underline underline-offset-4 decoration-1 decoration-ink/20 hover:decoration-brand">
+            <span class="text-muted mr-1">#<%= issue[:no] %></span><%= issue[:title] %>
+          </a>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
 <div class="mt-4 flex items-center gap-3 text-muted">
   <a href="<%= profile[:threads_url] %>" aria-label="Threads" target="_blank" rel="noopener me" class="hover:text-ink transition">
     <svg viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5" aria-hidden="true">
