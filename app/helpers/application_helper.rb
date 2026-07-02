@@ -76,7 +76,16 @@ module ApplicationHelper
           "description" => "대한민국 제주의 1인 개발자이자 AI 자동화 회사 대표. AI 팀원을 만들어 제품으로 내놓고, 세상에 도움 되는 아이디어를 계속 출시하며 공개적으로 수익화합니다.",
           "address" => { "@type" => "PostalAddress", "addressLocality" => "Jeju", "addressCountry" => "KR" },
           "knowsAbout" => [ "AI agents", "AI automation", "application security", "vibe coding", "row-level security", "Supabase", "Ruby on Rails" ],
+          "worksFor" => { "@id" => "#{SITE_PRODUCTION_URL}/#org" },
           "sameAs" => [ "https://x.com/jasonjeongio", "https://www.threads.net/@snapplug.app", "https://github.com/SnapPlug" ]
+        },
+        {
+          "@type" => "Organization",
+          "@id" => "#{SITE_PRODUCTION_URL}/#org",
+          "name" => "SnapPlug",
+          "description" => "AI 팀원(AI 에이전트)을 만들고 제품으로 출시하는 AI 자동화 회사. 대표작으로 SnapDeck(바이브코딩 앱 보안 스캐너), SnapMusk, Snap Teleprompter가 있습니다.",
+          "founder" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" },
+          "sameAs" => [ "https://github.com/SnapPlug", "https://www.threads.net/@snapplug.app" ]
         },
         {
           "@type" => "SoftwareApplication",
