@@ -21,7 +21,9 @@ class DashboardController < ApplicationController
   # 발행된 뉴스레터 (최신순). 발행 워크플로마다 여기에 한 줄 추가 후 배포.
   # ponytail: 정적 목록 — beehiiv RSS는 Cloudflare 뒤라 서버 fetch가 취약, 발행이 수동이라 갱신 지점이 이미 있음
   NEWSLETTER_ISSUES = [
+    { no: 4, title: "그건 저항이 아니라 공포였습니다", url: "https://newsletter.jsonjeong.com/p/new-post" },
     { no: 3, title: "\"AI로 해주세요\"라는 요청에, 코드로 답했습니다", url: "https://newsletter.jsonjeong.com/p/ai" },
+    { no: 2, title: "AI가 렌즈 사진을 자꾸 오판했다", url: "https://newsletter.jsonjeong.com/p/ai-18ca" },
     { no: 1, title: "제안서를 접었습니다 — \"이거 매일 시키면 사람 죽어요\"", url: "https://newsletter.jsonjeong.com/p/post" }
   ].freeze
 
