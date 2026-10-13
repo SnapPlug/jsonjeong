@@ -25,6 +25,18 @@
 | 5 키트 | snaptalk·jsonjeong에 `/health`(db·queue·disk JSON `failed[]`), 예외→텔레그램 구독(10분 제한), Kamal pre-deploy(bundler-audit·brakeman)·post-deploy(텔레그램) 훅. 로컬바이브랩에 복사 | `rails runner 'raise'` → 텔레그램 1통, 배포 → 🚀 한 줄 |
 | 6 정리 | Vercel 프로젝트·Turso·cron-job.org·Gmail 앱 비밀번호 삭제, observer 저장소 보관, CLAUDE.md·개선안 문서 갱신 | 청구 0 |
 
+## 진행 (2026-10-14 07:00 KST)
+
+| 단계 | 상태 |
+|---|---|
+| 0 준비 | 반출·VERCEL_TOKEN·snapdeck 제거 완료. **Jason 몫 3개(텔레그램 방·Healthchecks.io·DNS)는 대기** — 값이 오면 `~/.config/overload/{telegram_chat_id,healthchecks_url}`에 넣고 `kamal deploy` 한 번 더 |
+| 1 모델 | 완료. 서버 임포트 완료(18·23·42·수금 36,280,000) |
+| 2 화면 | 완료. 원 서버 직결로 302→로그인 200 확인. DNS 전이라 브라우저 확인은 아직 |
+| 3 체크 | 완료. 스케줄러 5분 가동 중, 감시 9곳. URL 체크 리다이렉트 추종 수정(6차 배포) |
+| 4 배포 | 완료(6회). 3차 배포가 Solid Queue 스키마·연결 설정 부재로 jsonjeong.com을 약 15분 죽였고 5차에서 복구 — 원인·교훈은 pickerel 개선안 §9 |
+| 5 키트 | snaptalk·jsonjeong 완료. 로컬바이브랩은 10/19 스캐폴드 때 snaptalk 파일 복사 |
+| 6 정리 | 일주일 병행 뒤(10/21 이후) |
+
 ## 규칙
 
 - 테스트 먼저(Minitest). 각 단계 끝에 `bin/rails test` 전체 통과 후 커밋.
