@@ -1,0 +1,11 @@
+acme:
+  name: 에이스상사
+  kind: vercel_supabase
+  status: active
+  health_url: https://acme.example.com/health
+  vercel_project_id: prj_acme
+
+channel_only:
+  name: 채널톡만
+  kind: channeltalk
+  status: completed

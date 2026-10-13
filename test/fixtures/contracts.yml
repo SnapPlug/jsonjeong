@@ -1,0 +1,7 @@
+acme_first:
+  client: acme
+  name: 에이스 1차 구축
+  amount: 2000000
+  starts_on: 2026-09-01
+  ends_on: 2027-12-31
+  status: in_progress

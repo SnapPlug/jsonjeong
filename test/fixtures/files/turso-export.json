@@ -1,0 +1,23 @@
+{
+ "projects": [
+  {"id": "P1", "name": "더온실", "type": "vercel_supabase", "status": "active", "description": "", "notes": null,
+   "vercel_project_id": "prj_theonsil", "vercel_team_id": "team_x", "supabase_project_id": "abcdefgh",
+   "health_check_url": "https://theonsil.co.kr/api/health", "created_at": "2026-05-06T01:00:00.000Z"},
+  {"id": "P2", "name": "완전체", "type": "channeltalk", "status": "active", "description": "채널톡 CS", "notes": "메모",
+   "vercel_project_id": null, "vercel_team_id": null, "supabase_project_id": null,
+   "health_check_url": null, "created_at": "2026-09-28T01:00:00.000Z"}
+ ],
+ "contracts": [
+  {"id": "C1", "project_id": "P1", "client_name": " 더온실 반려동물 장례 플랫폼 구축 계약", "business_number": "123-45-67890",
+   "total_amount": 2000000, "start_date": "2026-05-20", "end_date": "2026-06-20", "status": "completed", "notes": null,
+   "created_at": "2026-05-20T01:00:00.000Z"},
+  {"id": "C2", "project_id": "P2", "client_name": "주식회사 완전체 채널톡 CS AI 자동화 시스템 구축", "business_number": null,
+   "total_amount": 3000000, "start_date": "2026-09-28", "end_date": "2026-10-12", "status": "completed", "notes": null,
+   "created_at": "2026-09-28T01:00:00.000Z"}
+ ],
+ "payments": [
+  {"id": "Y1", "contract_id": "C1", "type": "deposit", "amount": 1000000, "due_date": "2026-05-20", "paid_at": "2026-05-21", "status": "paid", "created_at": "2026-05-20T01:00:00.000Z"},
+  {"id": "Y2", "contract_id": "C1", "type": "balance", "amount": 1000000, "due_date": "2026-06-20", "paid_at": "2026-06-22", "status": "paid", "created_at": "2026-05-20T01:00:00.000Z"},
+  {"id": "Y3", "contract_id": "C2", "type": "balance", "amount": 3000000, "due_date": "2026-10-12", "paid_at": null, "status": "pending", "created_at": "2026-09-28T01:00:00.000Z"}
+ ]
+}

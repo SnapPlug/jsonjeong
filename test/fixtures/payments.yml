@@ -1,0 +1,14 @@
+acme_deposit:
+  contract: acme_first
+  kind: deposit
+  amount: 1000000
+  due_on: 2026-09-01
+  paid_on: 2026-09-01
+  status: paid
+
+acme_balance:
+  contract: acme_first
+  kind: balance
+  amount: 1000000
+  due_on: 2027-12-31
+  status: pending
