@@ -1,0 +1,19 @@
+# Solid Queue — Puma 안에서 돈다(SOLID_QUEUE_IN_PUMA). 서버 RAM이 1GB라 프로세스를 최소로:
+# 워커 1개(헬스체크·"지금 체크"), 스케줄러(config/recurring.yml). 디스패처는 두지 않는다 —
+# 예약(wait:)·동시성 제어 잡이 없어서 쓸 일이 없고, 프로세스 하나가 100MB쯤 든다. 필요해지면 그때 추가.
+default: &default
+  dispatchers: []
+  workers:
+    - queues: "*"
+      threads: 2
+      processes: 1
+      polling_interval: 2
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default
