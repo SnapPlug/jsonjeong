@@ -43,6 +43,7 @@ builder:
 env:
   clear:
     SOLID_QUEUE_IN_PUMA: true   # ops 헬스체크 반복 작업(config/recurring.yml)을 Puma 안에서 돌린다
+    OPS_EMAIL: json.jeong@snapplug.app   # 관제 로그인 계정. 비밀번호는 OPS_PASSWORD(secret)
   secret:
     - RAILS_MASTER_KEY
     - VERCEL_TOKEN
