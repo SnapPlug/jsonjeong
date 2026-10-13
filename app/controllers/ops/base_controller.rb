@@ -6,7 +6,8 @@ module Ops
 
     private
       def sidebar_clients
-        @sidebar_clients ||= Client.active.order(:name)
+        # 진행중 먼저, 완료·일시중지는 뒤에. 완료된 고객사도 계약 기록을 봐야 하니 숨기지 않는다.
+        @sidebar_clients ||= Client.order(Arel.sql("CASE status WHEN 'active' THEN 0 ELSE 1 END"), :name)
       end
 
       def sidebar_health

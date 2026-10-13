@@ -59,6 +59,18 @@ class Ops::ContractsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "계약 목록은 완료된 고객사의 계약까지 전부 보여준다" do
+    clients(:channel_only).contracts.create!(name: "옛 채널톡 구축", amount: 1_500_000, starts_on: Date.new(2026, 2, 1), ends_on: Date.new(2026, 2, 28), status: "completed")
+
+    get "/contracts"
+
+    assert_response :success
+    assert_match "옛 채널톡 구축", response.body
+    assert_match "에이스 1차 구축", response.body
+    assert_match "3,500,000원", response.body          # 총 계약 금액
+    assert_select "aside a", text: "채널톡만"           # 사이드바에 완료 고객사도
+  end
+
   test "계약 상태를 바꾼다" do
     patch "/contracts/#{contracts(:acme_first).id}", params: { contract: { status: "completed" } }
     assert_redirected_to "/clients/#{clients(:acme).id}"

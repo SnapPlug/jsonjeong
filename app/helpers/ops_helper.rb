@@ -51,9 +51,12 @@ module OpsHelper
   end
 
   # 사이드바 항목. 현재 페이지면 밝게.
-  def nav_link(label, path, dot: nil)
+  def nav_link(label, path, dot: nil, dim: false)
     active = current_page?(path)
-    classes = active ? "bg-zinc-800 text-zinc-100" : "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-100"
+    classes = if active then "bg-zinc-800 text-zinc-100"
+    elsif dim then "text-zinc-600 hover:bg-zinc-800/60 hover:text-zinc-300"
+    else "text-zinc-400 hover:bg-zinc-800/60 hover:text-zinc-100"
+    end
     link_to path, class: "flex items-center gap-2 rounded-md px-2 py-1.5 text-[13px] #{classes}" do
       safe_join([ (tag.span(class: "h-1.5 w-1.5 shrink-0 rounded-full #{dot}") if dot), tag.span(label, class: "truncate") ].compact)
     end

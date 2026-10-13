@@ -23,7 +23,7 @@ Rails.application.routes.draw do
     scope module: :ops, as: :ops do
       root "dashboard#index"
       resources :clients, only: %i[show update]
-      resources :contracts, only: %i[new create update]
+      resources :contracts, only: %i[index new create update]
       resources :payments, only: :update
       resource :health_check, only: :create
     end

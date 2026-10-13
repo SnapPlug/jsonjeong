@@ -2,6 +2,14 @@ module Ops
   class ContractsController < BaseController
     SCHEDULES = %w[half thirds none manual].freeze
 
+    # 계약현황 전체. 완료된 고객사까지 한 화면에.
+    def index
+      @contracts = Contract.includes(:client, :payments).order(starts_on: :desc, created_at: :desc)
+      @total = @contracts.sum(&:amount)
+      @paid = Payment.paid.sum(:amount)
+      @unpaid = Payment.unpaid.sum(:amount)
+    end
+
     def new
       @contract = Contract.new(starts_on: Date.current, ends_on: Date.current + 1.month)
       @client_name = params[:client_name]

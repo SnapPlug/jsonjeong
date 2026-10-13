@@ -26,10 +26,11 @@
           </div>
           <nav class="flex-1 space-y-0.5 overflow-y-auto px-2 py-2">
             <%= nav_link "홈", ops_root_path %>
+            <%= nav_link "계약", ops_contracts_path %>
             <%= nav_link "새 계약", new_ops_contract_path %>
             <div class="px-2 pb-1 pt-4 text-[11px] font-medium uppercase tracking-wide text-zinc-500">고객사</div>
             <% sidebar_clients.each do |client| %>
-              <%= nav_link client.name, ops_client_path(client), dot: health_dot(client) %>
+              <%= nav_link client.name, ops_client_path(client), dot: health_dot(client), dim: !client.active? %>
             <% end %>
           </nav>
           <div class="border-t border-zinc-800 p-2">
@@ -43,6 +44,7 @@
           <header class="flex h-12 items-center gap-4 border-b border-zinc-800 px-4 md:hidden">
             <%= link_to "Overload", ops_root_path, class: "text-sm font-semibold text-zinc-100" %>
             <%= link_to "홈", ops_root_path, class: "text-zinc-400 hover:text-zinc-100" %>
+            <%= link_to "계약", ops_contracts_path, class: "text-zinc-400 hover:text-zinc-100" %>
             <%= link_to "새 계약", new_ops_contract_path, class: "text-zinc-400 hover:text-zinc-100" %>
             <span class="flex-1"></span>
             <%= button_to "로그아웃", session_path, method: :delete, class: "text-zinc-500 hover:text-zinc-200 cursor-pointer" %>

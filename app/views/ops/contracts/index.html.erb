@@ -1,0 +1,44 @@
+<% content_for :title, "계약" %>
+
+<div class="flex flex-wrap items-center gap-3">
+  <div>
+    <h1 class="text-lg font-semibold text-zinc-100">계약</h1>
+    <p class="mt-0.5 text-xs text-zinc-500">전체 <%= @contracts.size %>건 · 최근 시작순</p>
+  </div>
+  <span class="flex-1"></span>
+  <%= link_to "새 계약", new_ops_contract_path, class: OpsHelper::SECONDARY_BUTTON %>
+</div>
+
+<section class="grid grid-cols-3 gap-3">
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+    <p class="text-xs text-zinc-500">총 계약 금액</p>
+    <p class="mt-1.5 text-xl font-semibold text-zinc-100"><%= won(@total) %></p>
+  </div>
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+    <p class="text-xs text-zinc-500">수금 완료</p>
+    <p class="mt-1.5 text-xl font-semibold text-green-400"><%= won(@paid) %></p>
+  </div>
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+    <p class="text-xs text-zinc-500">미수금</p>
+    <p class="mt-1.5 text-xl font-semibold <%= @unpaid > 0 ? "text-yellow-400" : "text-zinc-100" %>"><%= won(@unpaid) %></p>
+  </div>
+</section>
+
+<section class="divide-y divide-zinc-800 rounded-lg border border-zinc-800 bg-zinc-900">
+  <% @contracts.each do |contract| %>
+    <% paid = contract.payments.select(&:paid?).sum(&:amount) %>
+    <div class="flex flex-wrap items-center gap-3 px-4 py-2.5 hover:bg-zinc-800/40">
+      <%= link_to contract.client.name, ops_client_path(contract.client), class: "w-36 truncate font-medium text-zinc-100 hover:underline" %>
+      <div class="min-w-0 flex-1">
+        <p class="truncate text-zinc-200"><%= contract.name %></p>
+        <p class="text-xs text-zinc-500"><%= contract.starts_on %> ~ <%= contract.ends_on %></p>
+      </div>
+      <span class="w-28 text-right font-semibold text-zinc-100"><%= won(contract.amount) %></span>
+      <span class="w-32 text-right text-xs <%= paid >= contract.amount ? "text-green-400" : "text-zinc-500" %>">
+        <%= contract.payments.empty? ? "납부 일정 없음" : "수금 #{won(paid)}" %>
+      </span>
+      <%= status_badge contract.status, OpsHelper::CONTRACT_STATUSES %>
+    </div>
+  <% end %>
+  <% if @contracts.empty? %><p class="p-6 text-center text-zinc-500">계약이 없습니다</p><% end %>
+</section>
