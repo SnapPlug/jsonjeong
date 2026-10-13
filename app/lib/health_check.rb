@@ -33,17 +33,31 @@ module HealthCheck
     Rails.logger.warn("[health_check] heartbeat 실패: #{e.class} #{e.message}")
   end
 
-  # GET 한 번. 네트워크 오류는 예외 대신 error에 담아 돌려준다 — 원인(ENOTFOUND, 타임아웃…)이 로그에 남아야 한다.
+  MAX_REDIRECTS = 3
+
+  # GET. 리다이렉트는 3번까지 따라간다 — 앱 루트가 /login으로 보내는 것도 "살아 있음"이다
+  # (옛 Overload의 Node fetch가 그랬듯이). 네트워크 오류는 예외 대신 error에 담아 돌려준다 —
+  # 원인(ENOTFOUND, 타임아웃…)이 로그에 남아야 한다.
   def self.get(url, headers = {})
-    uri = URI(url)
     started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
-    response = Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https",
-                               open_timeout: TIMEOUT, read_timeout: TIMEOUT) do |http|
-      http.get(uri.request_uri, headers)
+    uri = URI(url)
+    response = nil
+    (MAX_REDIRECTS + 1).times do
+      response = request(uri, headers)
+      location = response["location"]
+      break unless response.code.to_i.between?(300, 399) && location
+      uri = URI.join(uri.to_s, location)
     end
     Response.new(code: response.code.to_i, body: response.body, ms: elapsed(started), error: nil)
   rescue => e
     Response.new(code: nil, body: nil, ms: elapsed(started), error: "#{e.class}: #{e.message}")
+  end
+
+  def self.request(uri, headers)
+    Net::HTTP.start(uri.host, uri.port, use_ssl: uri.scheme == "https",
+                    open_timeout: TIMEOUT, read_timeout: TIMEOUT) do |http|
+      http.get(uri.request_uri, headers)
+    end
   end
 
   def self.elapsed(started)

@@ -56,6 +56,28 @@ class HealthCheckTest < ActiveSupport::TestCase
     ENV.delete("VERCEL_TOKEN")
   end
 
+  FakeHttp = Struct.new(:code, :body, :location) do
+    def [](name) = name.to_s.casecmp?("location") ? location : nil
+  end
+
+  test "get은 리다이렉트를 따라가 마지막 응답을 돌려준다" do
+    hops = [ FakeHttp.new("307", "", "/login"), FakeHttp.new("200", "<html>", nil) ]
+    seen = []
+    stubbing(HealthCheck, :request, ->(uri, _headers) { seen << uri.to_s; hops.shift }) do
+      result = HealthCheck.get("https://x.example.com/")
+      assert_equal 200, result.code
+      assert_nil result.error
+    end
+    assert_equal [ "https://x.example.com/", "https://x.example.com/login" ], seen
+  end
+
+  test "get은 리다이렉트를 3번까지만 따라간다" do
+    loop_hop = FakeHttp.new("302", "", "https://x.example.com/again")
+    stubbing(HealthCheck, :request, ->(*) { loop_hop }) do
+      assert_equal 302, HealthCheck.get("https://x.example.com/").code
+    end
+  end
+
   test "run은 실패하면 한 번 더 본다" do
     calls = 0
     results = [ HealthCheck::Result.new(ok: false, status_code: 500, ms: 1, error: "HTTP 500"),
