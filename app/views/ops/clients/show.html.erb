@@ -1,78 +1,78 @@
 <% content_for :title, @client.name %>
 
 <div class="flex flex-wrap items-center gap-3">
-  <h1 class="text-xl font-semibold"><%= @client.name %></h1>
+  <h1 class="text-lg font-semibold text-zinc-100"><%= @client.name %></h1>
   <%= status_badge @client.status, OpsHelper::CLIENT_STATUSES %>
-  <span class="text-xs text-muted"><%= OpsHelper::CLIENT_KINDS[@client.kind] %></span>
+  <span class="text-xs text-zinc-500"><%= OpsHelper::CLIENT_KINDS[@client.kind] %></span>
   <span class="flex-1"></span>
-  <%= link_to "이 고객사에 새 계약", new_ops_contract_path(client_name: @client.name), class: "rounded border border-gray-300 bg-surface px-2 py-1 text-xs hover:bg-gray-50" %>
+  <%= link_to "이 고객사에 새 계약", new_ops_contract_path(client_name: @client.name), class: OpsHelper::SECONDARY_BUTTON %>
 </div>
 
-<section>
-  <h2 class="mb-2 text-sm font-medium text-muted">계약</h2>
-  <div class="divide-y divide-gray-100 rounded-lg bg-surface">
+<section class="space-y-2">
+  <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">계약</h2>
+  <div class="divide-y divide-zinc-800 rounded-lg border border-zinc-800 bg-zinc-900">
     <% @contracts.each do |contract| %>
-      <div class="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
+      <div class="flex flex-wrap items-center gap-3 px-4 py-2.5 hover:bg-zinc-800/40">
         <div class="min-w-0 flex-1">
-          <p class="font-medium"><%= contract.name %></p>
-          <p class="text-xs text-muted">
+          <p class="font-medium text-zinc-100"><%= contract.name %></p>
+          <p class="text-xs text-zinc-500">
             <%= contract.starts_on %> ~ <%= contract.ends_on %>
             <% if contract.business_number %> · <%= contract.business_number %><% end %>
             <% if contract.notes %> · <%= contract.notes %><% end %>
           </p>
         </div>
-        <span class="font-semibold"><%= won(contract.amount) %></span>
+        <span class="font-semibold text-zinc-100"><%= won(contract.amount) %></span>
         <%= status_form ops_contract_path(contract), "contract[status]", contract.status, OpsHelper::CONTRACT_STATUSES %>
       </div>
     <% end %>
-    <% if @contracts.empty? %><p class="p-5 text-center text-sm text-muted">계약이 없습니다</p><% end %>
+    <% if @contracts.empty? %><p class="p-6 text-center text-zinc-500">계약이 없습니다</p><% end %>
   </div>
 </section>
 
-<section>
-  <h2 class="mb-2 text-sm font-medium text-muted">납부</h2>
-  <div class="divide-y divide-gray-100 rounded-lg bg-surface">
+<section class="space-y-2">
+  <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">납부</h2>
+  <div class="divide-y divide-zinc-800 rounded-lg border border-zinc-800 bg-zinc-900">
     <% @payments.each do |payment| %>
-      <div class="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
-        <span class="min-w-0 flex-1 truncate"><%= payment.contract.name %> · <%= OpsHelper::PAYMENT_KINDS[payment.kind] %></span>
-        <span class="font-semibold"><%= won(payment.amount) %></span>
-        <span class="text-xs text-muted">마감 <%= payment.due_on %><% if payment.paid_on %> · 수금 <%= payment.paid_on %><% end %></span>
+      <div class="flex flex-wrap items-center gap-3 px-4 py-2.5 hover:bg-zinc-800/40">
+        <span class="min-w-0 flex-1 truncate text-zinc-200"><%= payment.contract.name %> · <%= OpsHelper::PAYMENT_KINDS[payment.kind] %></span>
+        <span class="font-semibold text-zinc-100"><%= won(payment.amount) %></span>
+        <span class="text-xs text-zinc-500">마감 <%= payment.due_on %><% if payment.paid_on %> · 수금 <%= payment.paid_on %><% end %></span>
         <%= status_form ops_payment_path(payment), "payment[status]", payment.status, OpsHelper::PAYMENT_STATUSES %>
       </div>
     <% end %>
-    <% if @payments.empty? %><p class="p-5 text-center text-sm text-muted">납부 일정이 없습니다</p><% end %>
+    <% if @payments.empty? %><p class="p-6 text-center text-zinc-500">납부 일정이 없습니다</p><% end %>
   </div>
 </section>
 
-<section>
-  <h2 class="mb-2 text-sm font-medium text-muted">서비스 정보 · 고객사 설정</h2>
-  <%= form_with model: @client, url: ops_client_path(@client), class: "grid grid-cols-1 gap-3 rounded-lg bg-surface p-4 text-sm md:grid-cols-2" do |f| %>
-    <label class="block">고객사명<%= f.text_field :name, class: "mt-1 w-full rounded border border-gray-300 px-2 py-1" %></label>
+<section class="space-y-2">
+  <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">서비스 정보 · 고객사 설정</h2>
+  <%= form_with model: @client, url: ops_client_path(@client), class: "grid grid-cols-1 gap-4 rounded-lg border border-zinc-800 bg-zinc-900 p-4 md:grid-cols-2" do |f| %>
+    <label class="block space-y-1.5"><span class="text-xs text-zinc-500">고객사명</span><%= f.text_field :name, class: OpsHelper::INPUT %></label>
     <div class="grid grid-cols-2 gap-3">
-      <label class="block">종류<%= f.select :kind, OpsHelper::CLIENT_KINDS.map { |k, v| [ v, k ] }, {}, class: "mt-1 w-full rounded border border-gray-300 px-2 py-1" %></label>
-      <label class="block">상태<%= f.select :status, OpsHelper::CLIENT_STATUSES.map { |k, v| [ v, k ] }, {}, class: "mt-1 w-full rounded border border-gray-300 px-2 py-1" %></label>
+      <label class="block space-y-1.5"><span class="text-xs text-zinc-500">종류</span><%= f.select :kind, OpsHelper::CLIENT_KINDS.map { |k, v| [ v, k ] }, {}, class: OpsHelper::INPUT + " cursor-pointer" %></label>
+      <label class="block space-y-1.5"><span class="text-xs text-zinc-500">상태</span><%= f.select :status, OpsHelper::CLIENT_STATUSES.map { |k, v| [ v, k ] }, {}, class: OpsHelper::INPUT + " cursor-pointer" %></label>
     </div>
-    <label class="block md:col-span-2">헬스체크 URL <span class="text-xs text-muted">(Rails는 /health, 2xx면 정상. JSON의 failed[]가 있으면 알림에 함께 실림)</span>
-      <%= f.url_field :health_url, placeholder: "https://example.com/health", class: "mt-1 w-full rounded border border-gray-300 px-2 py-1" %></label>
-    <label class="block">Vercel 프로젝트 ID<%= f.text_field :vercel_project_id, placeholder: "prj_...", class: "mt-1 w-full rounded border border-gray-300 px-2 py-1" %></label>
-    <label class="block">Vercel 팀 ID <span class="text-xs text-muted">(고객사 계정이면)</span><%= f.text_field :vercel_team_id, placeholder: "team_...", class: "mt-1 w-full rounded border border-gray-300 px-2 py-1" %></label>
-    <label class="block">Supabase 프로젝트 ref<%= f.text_field :supabase_ref, class: "mt-1 w-full rounded border border-gray-300 px-2 py-1" %></label>
-    <label class="block md:col-span-2">메모<%= f.text_area :notes, rows: 2, class: "mt-1 w-full rounded border border-gray-300 px-2 py-1" %></label>
-    <div class="md:col-span-2"><%= f.submit "저장", class: "rounded bg-brand-dark px-3 py-1.5 text-sm text-white cursor-pointer" %></div>
+    <label class="block space-y-1.5 md:col-span-2"><span class="text-xs text-zinc-500">헬스체크 URL <span class="text-zinc-600">— Rails는 /health. 2xx면 정상, JSON의 failed[]는 알림에 실림</span></span>
+      <%= f.url_field :health_url, placeholder: "https://example.com/health", class: OpsHelper::INPUT %></label>
+    <label class="block space-y-1.5"><span class="text-xs text-zinc-500">Vercel 프로젝트 ID</span><%= f.text_field :vercel_project_id, placeholder: "prj_...", class: OpsHelper::INPUT %></label>
+    <label class="block space-y-1.5"><span class="text-xs text-zinc-500">Vercel 팀 ID <span class="text-zinc-600">— 고객사 계정이면</span></span><%= f.text_field :vercel_team_id, placeholder: "team_...", class: OpsHelper::INPUT %></label>
+    <label class="block space-y-1.5"><span class="text-xs text-zinc-500">Supabase 프로젝트 ref</span><%= f.text_field :supabase_ref, class: OpsHelper::INPUT %></label>
+    <label class="block space-y-1.5 md:col-span-2"><span class="text-xs text-zinc-500">메모</span><%= f.text_area :notes, rows: 2, class: OpsHelper::INPUT %></label>
+    <div class="md:col-span-2"><%= f.submit "저장", class: OpsHelper::PRIMARY_BUTTON %></div>
   <% end %>
 </section>
 
 <% if @logs.any? %>
-  <section>
-    <h2 class="mb-2 text-sm font-medium text-muted">최근 체크</h2>
-    <div class="divide-y divide-gray-100 rounded-lg bg-surface text-xs">
+  <section class="space-y-2">
+    <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">최근 체크</h2>
+    <div class="divide-y divide-zinc-800 rounded-lg border border-zinc-800 bg-zinc-900 text-xs">
       <% @logs.each do |log| %>
         <div class="flex items-center gap-3 px-4 py-1.5">
-          <span class="h-1.5 w-1.5 rounded-full <%= log.ok ? "bg-green-500" : "bg-red-500" %>"></span>
-          <span class="w-24"><%= HealthLog::LABELS[log.check_type] %></span>
-          <span class="w-16 text-muted"><%= log.ms ? "#{log.ms}ms" : "" %></span>
-          <span class="flex-1 truncate text-red-600"><%= log.error %></span>
-          <span class="text-muted"><%= kst(log.checked_at) %></span>
+          <span class="h-1.5 w-1.5 rounded-full <%= ok_dot(log.ok) %>"></span>
+          <span class="w-24 text-zinc-300"><%= HealthLog::LABELS[log.check_type] %></span>
+          <span class="w-16 text-zinc-500"><%= log.ms ? "#{log.ms}ms" : "" %></span>
+          <span class="flex-1 truncate text-red-400"><%= log.error %></span>
+          <span class="text-zinc-600"><%= kst(log.checked_at) %></span>
         </div>
       <% end %>
     </div>

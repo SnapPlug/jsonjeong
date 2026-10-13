@@ -1,32 +1,63 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="h-full">
   <head>
     <title><%= content_for?(:title) ? yield(:title) : "Overload" %> · ops</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#09090b">
     <%= csrf_meta_tags %>
     <link rel="icon" href="/icon.png?v=3" type="image/png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <style>
+      /* ops 영역만 Pretendard. 공개 사이트 레이아웃은 그대로. 숫자는 고정폭(tnum)으로 표가 흔들리지 않게 */
+      body { font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-feature-settings: "tnum"; }
+      select option { background: #18181b; color: #e4e4e7; }
+      input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.6); }
+    </style>
   </head>
 
-  <body class="bg-page text-ink antialiased min-h-screen">
-    <header class="bg-brand-dark text-white">
-      <div class="mx-auto flex h-12 max-w-5xl items-center gap-5 px-4 text-sm">
-        <%= link_to "Overload", ops_root_path, class: "font-semibold" %>
-        <%= link_to "새 계약", new_ops_contract_path, class: "text-white/80 hover:text-white" %>
-        <span class="flex-1"></span>
-        <%= button_to "로그아웃", session_path, method: :delete, class: "text-white/60 hover:text-white cursor-pointer" %>
-      </div>
-    </header>
+  <body class="h-full bg-zinc-950 text-[13px] leading-5 text-zinc-300 antialiased">
+    <div class="flex min-h-full">
+      <% if authenticated? %>
+        <aside class="sticky top-0 hidden h-screen w-56 shrink-0 flex-col border-r border-zinc-800 bg-zinc-950 md:flex">
+          <div class="flex h-12 items-center px-4">
+            <%= link_to "Overload", ops_root_path, class: "text-sm font-semibold text-zinc-100" %>
+          </div>
+          <nav class="flex-1 space-y-0.5 overflow-y-auto px-2 py-2">
+            <%= nav_link "홈", ops_root_path %>
+            <%= nav_link "새 계약", new_ops_contract_path %>
+            <div class="px-2 pb-1 pt-4 text-[11px] font-medium uppercase tracking-wide text-zinc-500">고객사</div>
+            <% sidebar_clients.each do |client| %>
+              <%= nav_link client.name, ops_client_path(client), dot: health_dot(client) %>
+            <% end %>
+          </nav>
+          <div class="border-t border-zinc-800 p-2">
+            <%= button_to "로그아웃", session_path, method: :delete, class: "w-full rounded-md px-2 py-1.5 text-left text-[13px] text-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-200 cursor-pointer" %>
+          </div>
+        </aside>
+      <% end %>
 
-    <main class="mx-auto max-w-5xl space-y-8 px-4 py-6">
-      <% if notice %>
-        <p class="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-700"><%= notice %></p>
-      <% end %>
-      <% if alert %>
-        <p class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700"><%= alert %></p>
-      <% end %>
-      <%= yield %>
-    </main>
+      <div class="flex min-w-0 flex-1 flex-col">
+        <% if authenticated? %>
+          <header class="flex h-12 items-center gap-4 border-b border-zinc-800 px-4 md:hidden">
+            <%= link_to "Overload", ops_root_path, class: "text-sm font-semibold text-zinc-100" %>
+            <%= link_to "홈", ops_root_path, class: "text-zinc-400 hover:text-zinc-100" %>
+            <%= link_to "새 계약", new_ops_contract_path, class: "text-zinc-400 hover:text-zinc-100" %>
+            <span class="flex-1"></span>
+            <%= button_to "로그아웃", session_path, method: :delete, class: "text-zinc-500 hover:text-zinc-200 cursor-pointer" %>
+          </header>
+        <% end %>
+        <main class="mx-auto w-full max-w-5xl space-y-8 px-4 py-6 md:px-8">
+          <% if notice %>
+            <p class="rounded-md border border-green-500/20 bg-green-500/10 px-3 py-2 text-green-400"><%= notice %></p>
+          <% end %>
+          <% if alert %>
+            <p class="rounded-md border border-red-500/20 bg-red-500/10 px-3 py-2 text-red-400"><%= alert %></p>
+          <% end %>
+          <%= yield %>
+        </main>
+      </div>
+    </div>
   </body>
 </html>
