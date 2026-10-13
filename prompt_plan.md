@@ -35,7 +35,7 @@
 | 3 체크 | 완료. 스케줄러 5분 가동 중, 감시 9곳. URL 체크 리다이렉트 추종 수정(6차 배포) |
 | 4 배포 | 완료(6회). 3차 배포가 Solid Queue 스키마·연결 설정 부재로 jsonjeong.com을 약 15분 죽였고 5차에서 복구 — 원인·교훈은 pickerel 개선안 §9 |
 | 5 키트 | snaptalk·jsonjeong 완료. 로컬바이브랩은 10/19 스캐폴드 때 snaptalk 파일 복사 |
-| 6 정리 | 일주일 병행 뒤(10/21 이후) |
+| 6 정리 | 10/14 당겨 실행. Vercel 프로젝트 삭제·GitHub 보관 완료. Turso 삭제(로그인 대기)·cron-job.org·Gmail 앱 비밀번호는 Jason 계정 |
 
 ## 규칙
 
