@@ -1,0 +1,8 @@
+#!/bin/sh
+# 배포가 끝나면 Overload 텔레그램 방에 한 줄. 토큰은 ~/.config/overload/ 파일에서 읽는다. 없으면 조용히 끝.
+TOKEN=$(cat ~/.config/overload/telegram_bot_token 2>/dev/null)
+CHAT=$(cat ~/.config/overload/telegram_chat_id 2>/dev/null)
+[ -n "$TOKEN" ] && [ -n "$CHAT" ] || exit 0
+curl -s -o /dev/null -m 10 -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" \
+  -d chat_id="$CHAT" \
+  --data-urlencode text="🚀 jsonjeong $(echo "$KAMAL_VERSION" | cut -c1-7) 배포 · ${KAMAL_RUNTIME}초 · $KAMAL_PERFORMER"

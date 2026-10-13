@@ -1,0 +1,9 @@
+#!/bin/sh
+# 배포 전에 바뀐 것을 안다: 젬 취약점(bundler-audit)과 코드 보안 구멍(brakeman).
+# 둘 중 하나라도 걸리면 종료코드가 0이 아니라 Kamal이 배포를 멈춘다. 이유는 터미널에 찍힌다.
+set -e
+cd "$(dirname "$0")/../.."
+echo "[pre-deploy] bundler-audit"
+bin/bundler-audit check --update
+echo "[pre-deploy] brakeman"
+bin/brakeman -q --no-pager
