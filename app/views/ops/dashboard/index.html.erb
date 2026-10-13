@@ -5,22 +5,22 @@
   <p class="mt-0.5 text-xs text-zinc-500">계약현황과 서비스 상태</p>
 </div>
 
-<section class="grid grid-cols-2 gap-3 md:grid-cols-5">
+<section class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">진행 중 계약</p>
     <p class="mt-1.5 text-2xl font-semibold text-zinc-100"><%= @open_contracts %></p>
   </div>
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">미수금</p>
-    <p class="mt-1.5 text-2xl font-semibold <%= @unpaid.any?(&:overdue?) ? "text-red-400" : "text-yellow-400" %>"><%= won(@unpaid_total) %></p>
+    <p class="mt-1.5 text-xl font-semibold tabular-nums whitespace-nowrap <%= @unpaid.any?(&:overdue?) ? "text-red-400" : "text-yellow-400" %>"><%= won(@unpaid_total) %></p>
   </div>
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">이번 달 수금</p>
-    <p class="mt-1.5 text-2xl font-semibold text-zinc-100"><%= won(@paid_this_month) %></p>
+    <p class="mt-1.5 text-xl font-semibold tabular-nums whitespace-nowrap text-zinc-100"><%= won(@paid_this_month) %></p>
   </div>
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">올해 수금 <span class="text-zinc-600"><%= Date.current.year %></span></p>
-    <p class="mt-1.5 text-2xl font-semibold text-zinc-100"><%= won(@paid_this_year) %></p>
+    <p class="mt-1.5 text-xl font-semibold tabular-nums whitespace-nowrap text-zinc-100"><%= won(@paid_this_year) %></p>
   </div>
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">비정상 서비스</p>

@@ -12,15 +12,15 @@
 <section class="grid grid-cols-3 gap-3">
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">총 계약 금액</p>
-    <p class="mt-1.5 text-xl font-semibold text-zinc-100"><%= won(@total) %></p>
+    <p class="mt-1.5 text-xl font-semibold tabular-nums whitespace-nowrap text-zinc-100"><%= won(@total) %></p>
   </div>
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">수금 완료</p>
-    <p class="mt-1.5 text-xl font-semibold text-green-400"><%= won(@paid) %></p>
+    <p class="mt-1.5 text-xl font-semibold tabular-nums whitespace-nowrap text-green-400"><%= won(@paid) %></p>
   </div>
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">미수금</p>
-    <p class="mt-1.5 text-xl font-semibold <%= @unpaid > 0 ? "text-yellow-400" : "text-zinc-100" %>"><%= won(@unpaid) %></p>
+    <p class="mt-1.5 text-xl font-semibold <%= @unpaid > 0 ? "text-yellow-400" : "text-zinc-100" %> tabular-nums whitespace-nowrap"><%= won(@unpaid) %></p>
   </div>
 </section>
 
