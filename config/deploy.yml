@@ -49,6 +49,7 @@ env:
     - TELEGRAM_BOT_TOKEN
     - TELEGRAM_CHAT_ID
     - HEALTHCHECKS_URL
+    - OPS_PASSWORD
 
 # SSH defaults — droplet ships with `root`. Switch to a non-root user later if desired.
 ssh:

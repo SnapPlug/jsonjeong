@@ -19,6 +19,7 @@ class Ops::DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_match "에이스상사", response.body             # 감시 서비스
     assert_match "HTTP 503 — db", response.body
     assert_select "section h2", text: "미수금"
+    assert_match "올해 수금", response.body
   end
 
   test "ops 서브도메인이 아니면 공개 사이트가 나온다" do

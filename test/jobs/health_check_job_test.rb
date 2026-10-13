@@ -16,7 +16,7 @@ class HealthCheckJobTest < ActiveJob::TestCase
 
     messages = run_job(FAIL)
 
-    assert_equal [ "🔴 에이스상사 · URL\nHTTP 503 — db", "🔴 에이스상사 · Vercel 배포\nHTTP 503 — db" ], messages
+    assert_equal [ "🔴 에이스상사 · URL\nHTTP 503 — db", "🔴 에이스상사 · Vercel\nHTTP 503 — db" ], messages
   end
 
   test "2회 이상 실패 뒤 정상이면 복구를 알린다" do

@@ -84,7 +84,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **알림 규칙**(`HealthLog.transition`): 연속 2회째 실패에만 🔴, 2회 이상 실패 뒤 첫 정상에만 🟢. 8월에 오탐 3번 고쳐 정한 규칙 — 바꾸지 말 것
 - **텔레그램**: `app/lib/telegram.rb`(snaptalk 복사). Overload 전용 방. 앱 예외·배포 알림은 각 앱이 직접 보내고 여기는 헬스체크 결과만
 - **데드맨 스위치**: 잡이 한 바퀴 끝나면 `HEALTHCHECKS_URL`(Healthchecks.io)로 핑. 끊기면 그쪽이 텔레그램으로 알린다
-- **비밀값**: `.kamal/secrets`에서 `~/.config/overload/{vercel_token,telegram_bot_token,telegram_chat_id,healthchecks_url}` 파일을 읽는다. 저장소에 평문 없음
+- **비밀값**: `.kamal/secrets`에서 `~/.config/overload/{vercel_token,telegram_bot_token,telegram_chat_id,healthchecks_url,ops_password}` 파일을 읽는다. 저장소에 평문 없음
+- **로그인 계정**: `json.jeong@snapplug.app` 하나. 비밀번호는 `~/.config/overload/ops_password` 파일 → `OPS_PASSWORD` → 컨테이너 시작 때 `bin/rails ops:password`가 맞춘다. 바꾸려면 파일 수정 후 `kamal deploy`(또는 `kamal app boot`)
 - **URL 체크 약속**: 2xx면 정상. 응답이 JSON이고 `failed: []`가 있으면 그 항목이 알림에 실린다 (더온실 `/api/health`, Rails 앱의 `/health`가 이 형식)
 - 데이터 가져오기(한 번): `bin/rails overload:import[/path/turso-export.json]`
 

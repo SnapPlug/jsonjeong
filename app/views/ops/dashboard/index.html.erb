@@ -5,7 +5,7 @@
   <p class="mt-0.5 text-xs text-zinc-500">계약현황과 서비스 상태</p>
 </div>
 
-<section class="grid grid-cols-2 gap-3 md:grid-cols-4">
+<section class="grid grid-cols-2 gap-3 md:grid-cols-5">
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">진행 중 계약</p>
     <p class="mt-1.5 text-2xl font-semibold text-zinc-100"><%= @open_contracts %></p>
@@ -17,6 +17,10 @@
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">이번 달 수금</p>
     <p class="mt-1.5 text-2xl font-semibold text-zinc-100"><%= won(@paid_this_month) %></p>
+  </div>
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+    <p class="text-xs text-zinc-500">올해 수금 <span class="text-zinc-600"><%= Date.current.year %></span></p>
+    <p class="mt-1.5 text-2xl font-semibold text-zinc-100"><%= won(@paid_this_year) %></p>
   </div>
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">비정상 서비스</p>
@@ -58,20 +62,23 @@
     <div class="divide-y divide-zinc-800 rounded-lg border border-zinc-800 bg-zinc-900">
       <% @services.each do |client| %>
         <% logs = @latest[client.id] || {} %>
+        <% failures = logs.values.reject(&:ok) %>
         <div class="flex flex-wrap items-center gap-2 px-4 py-2.5 hover:bg-zinc-800/40">
           <%= link_to client.name, ops_client_path(client), class: "w-44 truncate font-medium text-zinc-100 hover:underline" %>
+          <%# 배지는 전부 같은 모양. 상태는 점 색 하나로만 말한다: 초록 정상 · 빨강 실패 · 회색 체크 전 %>
           <% client.checks.each do |check| %>
             <% log = logs[check] %>
-            <span class="inline-flex items-center gap-1.5 rounded border px-1.5 py-0.5 text-xs <%= log.nil? ? OpsHelper::GRAY : (log.ok ? OpsHelper::GREEN : OpsHelper::RED) %>">
-              <span class="h-1.5 w-1.5 rounded-full <%= ok_dot(log&.ok) %>"></span>
-              <%= HealthLog::LABELS[check] %>
-              <% if log&.ms %><span class="text-zinc-500"><%= log.ms %>ms</span><% end %>
+            <span class="inline-flex items-center gap-1.5 rounded-md border border-zinc-700 bg-zinc-800/60 px-2 py-0.5 text-xs text-zinc-300"
+                  title="<%= log ? "#{log.ms}ms · #{kst(log.checked_at)}" : "아직 체크 전" %>">
+              <span class="h-1.5 w-1.5 rounded-full <%= ok_dot(log&.ok) %>"></span><%= HealthLog::LABELS[check] %>
             </span>
-            <% if log && !log.ok %>
-              <span class="max-w-xs truncate text-xs text-red-400" title="<%= log.error %>"><%= log.error %></span>
-            <% end %>
           <% end %>
           <span class="flex-1"></span>
+          <% if failures.any? %>
+            <span class="max-w-sm truncate text-xs text-red-400" title="<%= failures.map { |l| "#{HealthLog::LABELS[l.check_type]}: #{l.error}" }.join(" · ") %>">
+              <%= failures.map { |l| "#{HealthLog::LABELS[l.check_type]}: #{l.error}" }.join(" · ") %>
+            </span>
+          <% end %>
           <span class="text-xs text-zinc-600"><%= logs.values.map(&:checked_at).max&.then { |t| kst(t) } || "아직 체크 전" %></span>
         </div>
       <% end %>
@@ -80,7 +87,10 @@
 </section>
 
 <section class="space-y-2">
-  <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">월 수금 · 최근 12개월 · 마감일 기준</h2>
+  <div class="flex items-center justify-between">
+    <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">월 수금 · 최근 12개월 · 마감일 기준</h2>
+    <span class="text-xs text-zinc-500">12개월 합계 <span class="font-medium text-zinc-200"><%= won(@last12_total) %></span></span>
+  </div>
   <% peak = [ @monthly.values.max.to_i, 1 ].max %>
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <div class="flex h-40 items-end gap-2">
