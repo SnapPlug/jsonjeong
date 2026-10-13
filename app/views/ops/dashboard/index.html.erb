@@ -1,0 +1,92 @@
+<% content_for :title, "홈" %>
+
+<section class="grid grid-cols-2 gap-3 md:grid-cols-4">
+  <div class="rounded-lg bg-surface p-4">
+    <p class="text-xs text-muted">진행 중 계약</p>
+    <p class="mt-1 text-2xl font-semibold"><%= @open_contracts %></p>
+  </div>
+  <div class="rounded-lg bg-surface p-4">
+    <p class="text-xs text-muted">미수금</p>
+    <p class="mt-1 text-2xl font-semibold <%= @unpaid.any?(&:overdue?) ? "text-red-600" : "" %>"><%= won(@unpaid_total) %></p>
+  </div>
+  <div class="rounded-lg bg-surface p-4">
+    <p class="text-xs text-muted">이번 달 수금</p>
+    <p class="mt-1 text-2xl font-semibold"><%= won(@paid_this_month) %></p>
+  </div>
+  <div class="rounded-lg bg-surface p-4">
+    <p class="text-xs text-muted">비정상 서비스</p>
+    <p class="mt-1 text-2xl font-semibold <%= @unhealthy > 0 ? "text-red-600" : "text-green-600" %>"><%= @unhealthy %></p>
+  </div>
+</section>
+
+<section>
+  <h2 class="mb-2 text-sm font-medium text-muted">미수금</h2>
+  <% if @unpaid.empty? %>
+    <p class="rounded-lg bg-surface p-5 text-center text-sm text-muted">미수금이 없습니다</p>
+  <% else %>
+    <div class="divide-y divide-gray-100 rounded-lg bg-surface">
+      <% @unpaid.each do |payment| %>
+        <div class="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
+          <%= link_to payment.contract.client.name, ops_client_path(payment.contract.client), class: "font-medium hover:underline" %>
+          <span class="text-muted truncate"><%= payment.contract.name %> · <%= OpsHelper::PAYMENT_KINDS[payment.kind] %></span>
+          <span class="flex-1"></span>
+          <span class="font-semibold"><%= won(payment.amount) %></span>
+          <span class="text-xs text-muted">마감 <%= payment.due_on %></span>
+          <% if days_overdue(payment.due_on) > 0 %>
+            <span class="text-xs font-medium text-red-600">+<%= days_overdue(payment.due_on) %>일</span>
+          <% end %>
+          <%= status_form ops_payment_path(payment), "payment[status]", payment.status, OpsHelper::PAYMENT_STATUSES %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</section>
+
+<section>
+  <div class="mb-2 flex items-center justify-between">
+    <h2 class="text-sm font-medium text-muted">서비스 상태</h2>
+    <%= button_to "지금 체크", ops_health_check_path, class: "rounded border border-gray-300 bg-surface px-2 py-1 text-xs cursor-pointer hover:bg-gray-50" %>
+  </div>
+  <% if @services.empty? %>
+    <p class="rounded-lg bg-surface p-5 text-center text-sm text-muted">감시 중인 서비스가 없습니다. 고객사 상세에서 서비스 정보를 넣으세요.</p>
+  <% else %>
+    <div class="divide-y divide-gray-100 rounded-lg bg-surface">
+      <% @services.each do |client| %>
+        <% logs = @latest[client.id] || {} %>
+        <div class="flex flex-wrap items-center gap-2 px-4 py-3 text-sm">
+          <%= link_to client.name, ops_client_path(client), class: "w-40 font-medium hover:underline" %>
+          <% client.checks.each do |check| %>
+            <% log = logs[check] %>
+            <span class="inline-flex items-center gap-1 rounded border px-1.5 py-0.5 text-xs <%= log.nil? ? "border-gray-200 text-gray-400" : (log.ok ? "border-green-200 bg-green-50 text-green-700" : "border-red-200 bg-red-50 text-red-700") %>">
+              <span class="h-1.5 w-1.5 rounded-full <%= log.nil? ? "bg-gray-300" : (log.ok ? "bg-green-500" : "bg-red-500") %>"></span>
+              <%= HealthLog::LABELS[check] %>
+              <% if log&.ms %><span class="text-gray-400"><%= log.ms %>ms</span><% end %>
+            </span>
+            <% if log && !log.ok %>
+              <span class="max-w-xs truncate text-xs text-red-600" title="<%= log.error %>"><%= log.error %></span>
+            <% end %>
+          <% end %>
+          <span class="flex-1"></span>
+          <span class="text-xs text-muted"><%= logs.values.map(&:checked_at).max&.then { |t| kst(t) } || "아직 체크 전" %></span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</section>
+
+<section>
+  <h2 class="mb-2 text-sm font-medium text-muted">월 수금 (최근 12개월 · 마감일 기준)</h2>
+  <% peak = [ @monthly.values.max.to_i, 1 ].max %>
+  <div class="rounded-lg bg-surface p-4">
+    <div class="flex h-40 items-end gap-2">
+      <% @months.each do |month| %>
+        <% amount = @monthly[month].to_i %>
+        <div class="flex flex-1 flex-col items-center justify-end gap-1 h-full" title="<%= month %> <%= won(amount) %>">
+          <span class="text-[10px] text-muted"><%= amount > 0 ? "#{amount / 10_000}만" : "" %></span>
+          <div class="w-full rounded-t bg-brand" style="height: <%= (amount * 100.0 / peak).round %>%"></div>
+          <span class="text-[10px] text-muted"><%= month[5..] %>월</span>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

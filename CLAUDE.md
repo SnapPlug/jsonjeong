@@ -69,8 +69,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - 이 레포(jsonjeong) 의 [DashboardController](app/controllers/dashboard_controller.rb) `SERVICES` 의 `path:` 는 **외부 URL** (예: `https://snapdeck.com`). 내부 라우트 X
 - 각 SaaS 레포는 자기 CLAUDE.md · DB · 인증 · 결제 보유. 공유 0
 - 인증 / 결제 / 파싱 등 헬퍼는 처음엔 복붙. 3번째 서비스 시점에 internal gem 추출 검토 (premature abstraction 회피)
+- **예외 — 내부 운영 도구(ops)**: `ops.jsonjeong.com`(계약현황·헬스체크 관제, 옛 Overload)은 이 레포 안에 둔다. 돈 안 받는 1인용 도구라 분리의 이유(결제·데이터·매각)가 없고, 서버 1GB RAM에서 컨테이너를 하나 더 띄우지 않기 위해서다 (2026-10-14 결정)
 
 **왜 모놀리스 아닌가:** 블래스트 반경 격리, 독립 배포, 도메인·브랜드 강화, 결제·데이터 완전 분리, 매각 가능 (마크 루 매각 사례). 초기에 모놀리스로 결정했으나 마크 루 패턴 재검토로 뒤집음 (2026-05-13).
+
+## Ops — 계약현황·헬스체크 관제 (`ops.jsonjeong.com`)
+
+옛 Overload(Next.js/Vercel/Turso)를 2026-10-14 이 레포로 옮긴 것. 질문은 둘뿐: "돈이 들어오는가", "서비스가 살아 있는가".
+
+- **라우트**: `config/routes.rb`의 `constraints subdomain: "ops"` 블록. 전부 로그인 필수(`Ops::BaseController` ← `ApplicationController`의 `Authentication`)
+- **모델**: `Client`(고객사 = 돈의 단위, 서비스 정보가 있으면 감시 대상) → `Contract` → `Payment`. `HealthLog`는 체크 기록
+- **화면**: 홈(숫자 4장·미수금·서비스 상태·월 수금 막대) · 고객사 상세 · 새 계약 폼 하나(고객사 datalist, 있으면 재계약·없으면 생성, 납부 50/50 자동). JS 없음
+- **헬스체크**: `HealthCheckJob` 5분마다(`config/recurring.yml`, Puma 안 Solid Queue). `app/lib/health_check/{url,vercel,supabase}.rb` — 전부 Net::HTTP GET 한 번 + 실패 시 2초 뒤 재시도
+- **알림 규칙**(`HealthLog.transition`): 연속 2회째 실패에만 🔴, 2회 이상 실패 뒤 첫 정상에만 🟢. 8월에 오탐 3번 고쳐 정한 규칙 — 바꾸지 말 것
+- **텔레그램**: `app/lib/telegram.rb`(snaptalk 복사). Overload 전용 방. 앱 예외·배포 알림은 각 앱이 직접 보내고 여기는 헬스체크 결과만
+- **데드맨 스위치**: 잡이 한 바퀴 끝나면 `HEALTHCHECKS_URL`(Healthchecks.io)로 핑. 끊기면 그쪽이 텔레그램으로 알린다
+- **비밀값**: `.kamal/secrets`에서 `~/.config/overload/{vercel_token,telegram_bot_token,telegram_chat_id,healthchecks_url}` 파일을 읽는다. 저장소에 평문 없음
+- **URL 체크 약속**: 2xx면 정상. 응답이 JSON이고 `failed: []`가 있으면 그 항목이 알림에 실린다 (더온실 `/api/health`, Rails 앱의 `/health`가 이 형식)
+- 데이터 가져오기(한 번): `bin/rails overload:import[/path/turso-export.json]`
 
 ## 환경
 

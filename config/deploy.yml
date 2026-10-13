@@ -23,6 +23,7 @@ proxy:
     - jsonjeong.com
     - www.jsonjeong.com
     - newsletter.jsonjeong.com
+    - ops.jsonjeong.com
   app_port: 80
 
 # GHCR image registry (free, scoped to the SnapPlug GH account).
@@ -40,8 +41,14 @@ builder:
 # Inject Rails master key so encrypted credentials decrypt at boot.
 # Future: BEEHIIV_API_KEY, POLAR_*, etc.
 env:
+  clear:
+    SOLID_QUEUE_IN_PUMA: true   # ops 헬스체크 반복 작업(config/recurring.yml)을 Puma 안에서 돌린다
   secret:
     - RAILS_MASTER_KEY
+    - VERCEL_TOKEN
+    - TELEGRAM_BOT_TOKEN
+    - TELEGRAM_CHAT_ID
+    - HEALTHCHECKS_URL
 
 # SSH defaults — droplet ships with `root`. Switch to a non-root user later if desired.
 ssh:

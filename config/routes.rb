@@ -18,6 +18,17 @@ Rails.application.routes.draw do
   end
 
   # Apex (no subdomain or www) — dashboard
+  # 내부 운영 도구 — 계약현황·헬스체크 관제 (옛 Overload). 로그인 필수.
+  constraints subdomain: "ops" do
+    scope module: :ops, as: :ops do
+      root "dashboard#index"
+      resources :clients, only: %i[show update]
+      resources :contracts, only: %i[new create update]
+      resources :payments, only: :update
+      resource :health_check, only: :create
+    end
+  end
+
   constraints subdomain: /\A(www)?\z/ do
     root "dashboard#index"
 

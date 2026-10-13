@@ -1,0 +1,12 @@
+# Solid Queue 반복 작업 (프로덕션만). Puma 안의 Solid Queue(SOLID_QUEUE_IN_PUMA)가 스케줄러를 띄운다.
+# 시각은 서버 시간(UTC). 3am/6am UTC = 낮 12시/오후 3시 KST — 그날 날짜가 KST와 같아 연체 판정에 문제없다.
+production:
+  health_check:
+    class: HealthCheckJob
+    schedule: every 5 minutes
+  purge_health_logs:
+    command: "HealthLog.purge!"
+    schedule: every day at 3am
+  mark_overdue:
+    command: "Payment.mark_overdue!; Contract.mark_overdue!"
+    schedule: every day at 6am

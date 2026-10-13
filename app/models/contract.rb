@@ -1,6 +1,8 @@
 class Contract < ApplicationRecord
   belongs_to :client
   has_many :payments, dependent: :destroy
+  # "직접 입력" 납부 행. 금액도 날짜도 비어 있으면 그 행은 없는 것으로 본다.
+  accepts_nested_attributes_for :payments, reject_if: ->(attrs) { attrs["amount"].blank? && attrs["due_on"].blank? }
 
   enum :status, %w[in_progress completed overdue cancelled].index_by(&:itself), default: "in_progress"
 

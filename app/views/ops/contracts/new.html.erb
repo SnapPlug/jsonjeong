@@ -1,0 +1,54 @@
+<% content_for :title, "새 계약" %>
+<% input = "mt-1 w-full rounded border border-gray-300 px-2 py-1" %>
+
+<h1 class="text-xl font-semibold">새 계약</h1>
+
+<% if @errors %>
+  <ul class="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+    <% @errors.each do |message| %><li><%= message %></li><% end %>
+  </ul>
+<% end %>
+
+<%= form_with url: ops_contracts_path, class: "space-y-4 rounded-lg bg-surface p-4 text-sm" do %>
+  <label class="block">고객사 <span class="text-xs text-muted">(있는 이름이면 재계약, 새 이름이면 함께 등록)</span>
+    <%= text_field_tag :client_name, @client_name, list: "client-names", required: true, autofocus: @client_name.blank?, autocomplete: "off", class: input %>
+    <datalist id="client-names">
+      <% @client_names.each do |name| %><option value="<%= name %>"></option><% end %>
+    </datalist>
+  </label>
+
+  <label class="block">계약명
+    <%= text_field_tag "contract[name]", @contract.name, required: true, placeholder: "예: AI 고객 상담 에이전트 구축", class: input %></label>
+
+  <div class="grid grid-cols-3 gap-3">
+    <label class="block">금액(원)<%= number_field_tag "contract[amount]", @contract.amount, min: 1, required: true, class: input %></label>
+    <label class="block">시작일<%= date_field_tag "contract[starts_on]", @contract.starts_on, required: true, class: input %></label>
+    <label class="block">종료일<%= date_field_tag "contract[ends_on]", @contract.ends_on, required: true, class: input %></label>
+  </div>
+
+  <fieldset class="space-y-1">
+    <legend class="mb-1 text-xs text-muted">납부 일정</legend>
+    <label class="block"><%= radio_button_tag :schedule, "half", @schedule == "half" %> 계약금 50% (시작일) · 잔금 50% (종료일)</label>
+    <label class="block"><%= radio_button_tag :schedule, "thirds", @schedule == "thirds" %> 계약금 30% · 중도금 40% (중간) · 잔금 30%</label>
+    <label class="block"><%= radio_button_tag :schedule, "none", @schedule == "none" %> 납부 일정 없이</label>
+    <label class="block"><%= radio_button_tag :schedule, "manual", @schedule == "manual" %> 직접 입력</label>
+    <div class="ml-5 mt-1 grid grid-cols-[4rem_1fr_1fr] items-center gap-2 text-xs">
+      <% OpsHelper::PAYMENT_KINDS.each_with_index do |(kind, label), i| %>
+        <span><%= label %></span>
+        <%= hidden_field_tag "contract[payments_attributes][#{i}][kind]", kind %>
+        <%= number_field_tag "contract[payments_attributes][#{i}][amount]", nil, min: 0, placeholder: "금액", class: "rounded border border-gray-300 px-2 py-1" %>
+        <%= date_field_tag "contract[payments_attributes][#{i}][due_on]", nil, class: "rounded border border-gray-300 px-2 py-1" %>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <details class="text-xs text-muted">
+    <summary class="cursor-pointer">사업자등록번호 · 메모</summary>
+    <div class="mt-2 grid grid-cols-1 gap-3 md:grid-cols-2">
+      <label class="block">사업자등록번호<%= text_field_tag "contract[business_number]", @contract.business_number, placeholder: "000-00-00000", class: "#{input} text-sm text-ink" %></label>
+      <label class="block">메모<%= text_field_tag "contract[notes]", @contract.notes, class: "#{input} text-sm text-ink" %></label>
+    </div>
+  </details>
+
+  <%= submit_tag "계약 등록", class: "rounded bg-brand-dark px-3 py-1.5 text-sm text-white cursor-pointer" %>
+<% end %>
