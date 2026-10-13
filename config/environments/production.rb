@@ -51,6 +51,10 @@ Rails.application.configure do
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   # config.active_job.queue_adapter = :resque
+  # Solid Queue — ops 헬스체크 반복 작업·"지금 체크" 잡. 큐 전용 SQLite(database.yml의 queue)를 쓴다.
+  # 이 두 줄이 없으면 Solid Queue가 primary DB에서 테이블을 찾다 죽고, Puma까지 같이 내려간다 (2026-10-14 사고).
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
