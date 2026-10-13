@@ -29,7 +29,7 @@
 
 | 단계 | 상태 |
 |---|---|
-| 0 준비 | 반출·VERCEL_TOKEN·snapdeck 제거 완료. 텔레그램 완료(봇 `@snapplug_overload_bot`, 채널 "Overload"). **Healthchecks.io·DNS는 대기** — 값이 오면 `~/.config/overload/healthchecks_url`에 넣고 `kamal app boot` |
+| 0 준비 | 반출·VERCEL_TOKEN·snapdeck 제거 완료. 텔레그램 완료(봇 `@snapplug_overload_bot`, 채널 "Overload"). Healthchecks.io 완료(핑 URL 주입, 서버 200). **DNS `ops` A 레코드만 대기** |
 | 1 모델 | 완료. 서버 임포트 완료(18·23·42·수금 36,280,000) |
 | 2 화면 | 완료. 원 서버 직결로 302→로그인 200 확인. DNS 전이라 브라우저 확인은 아직 |
 | 3 체크 | 완료. 스케줄러 5분 가동 중, 감시 9곳. URL 체크 리다이렉트 추종 수정(6차 배포) |
