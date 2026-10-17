@@ -23,7 +23,8 @@ class NewsletterController < ApplicationController
     if @subscriber.save
       SyncSubscriberToBeehiivJob.perform_later(@subscriber.id)
       respond_to do |format|
-        format.html { redirect_to newsletter_subdomain_url, notice: "You're in. Check your inbox." }
+        # 메인 옆 구독 칸에서 오면 다른 하위 도메인으로 간다. config.hosts가 *.jsonjeong.com만 받아 외부로 새지 않는다
+        format.html { redirect_to newsletter_subdomain_url, allow_other_host: true, notice: "You're in. Check your inbox." }
         format.turbo_stream { flash.now[:notice] = "You're in. Check your inbox." }
       end
     else
