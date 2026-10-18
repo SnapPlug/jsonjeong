@@ -11,22 +11,9 @@ class DashboardController < ApplicationController
     name: "Json Jeong",
     location: "대한민국 제주",
     quote: "AI 자동화 회사 SnapPlug를 운영합니다. 공장과 사무실에 직접 가서 문제부터 정의하고, 답에 AI가 없으면 없다고 말하는 컨설턴트입니다. 직원의 일을 대체하는 게 아니라 반복 업무의 누수를 줄여, 조직에 저항 없이 안착하는 자동화를 만듭니다. 필요한 도구는 직접 만들어 공개합니다.",
-    newsletter_count: "1",
-    newsletter_name: "Snap to It",
-    newsletter_tagline: "AI 자동화 컨설팅 현장에서 보고 들은 것들만 씁니다. 제안서를 접은 이야기, AI가 능사가 아닌 이유 — 전부 실제 사례입니다.",
     threads_url: "https://www.threads.net/@snapplug.app",
     x_url: "https://x.com/jasonjeongio"
   }.freeze
-
-  # 발행된 뉴스레터 (최신순). 발행 워크플로마다 여기에 한 줄 추가 후 배포.
-  # ponytail: 정적 목록 — beehiiv RSS는 Cloudflare 뒤라 서버 fetch가 취약, 발행이 수동이라 갱신 지점이 이미 있음
-  NEWSLETTER_ISSUES = [
-    { label: "특별", title: "대표 눈에 안 보이는 자동화 거리 15개 — 전체 공개", url: "https://newsletter.jsonjeong.com/p/15" },
-    { no: 4, title: "그건 저항이 아니라 공포였습니다", url: "https://newsletter.jsonjeong.com/p/new-post" },
-    { no: 3, title: "\"AI로 해주세요\"라는 요청에, 코드로 답했습니다", url: "https://newsletter.jsonjeong.com/p/ai" },
-    { no: 2, title: "AI가 렌즈 사진을 자꾸 오판했다", url: "https://newsletter.jsonjeong.com/p/ai-18ca" },
-    { no: 1, title: "제안서를 접었습니다 — \"이거 매일 시키면 사람 죽어요\"", url: "https://newsletter.jsonjeong.com/p/post" }
-  ].freeze
 
   SERVICES = [
     Service.new(
@@ -90,6 +77,5 @@ class DashboardController < ApplicationController
   def index
     @profile = PROFILE
     @services = SERVICES
-    @newsletter_issues = NEWSLETTER_ISSUES
   end
 end
