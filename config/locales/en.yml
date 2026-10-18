@@ -4,7 +4,7 @@ en:
     description: "Every idea I tested with AI, including the ones that failed. How many hours it took, what it cost, what it earned."
     quote: "I'm testing ideas one by one with AI, trying to make $100 a day. Most of them fail. I keep the failures too, with numbers: hours spent, money spent, money made."
     location: "Jeju, South Korea"
-    totals: "%{count} ideas"
+    ideas_label: "Ideas"
     hours: "Hours"
     cost: "Spent"
     revenue: "Earned"
@@ -16,6 +16,11 @@ en:
     batch:
       hundred: "$100 per Day · Oct 2026"
       earlier: "Before that"
+    batch_short:
+      hundred: "Oct 2026"
+      earlier: "Earlier"
+    spent_label: "spent"
+    earned_label: "earned"
     status:
       active: "Running"
       paused: "Paused"

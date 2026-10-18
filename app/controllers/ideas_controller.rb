@@ -3,7 +3,7 @@ class IdeasController < ApplicationController
   around_action :switch_locale
 
   def index
-    @ideas = Idea.all.group_by(&:batch)
+    @ideas = Idea.all
     @totals = Idea.totals
   end
 

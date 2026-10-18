@@ -115,12 +115,12 @@
   revenue_usd: 0
   url: https://apify.com/jsonjeong/lighthouse-site-monitor
   ko:
-    title: Apify Lighthouse 사이트 점검
+    title: Apify 속도 점검 도구
     summary: 웹사이트 속도를 정기적으로 재 주는 Apify 유료 도구. 한 번 점검에 $0.02.
     stuck: 스토어에 올렸지만 쓰는 사람이 없다. 비슷한 도구도 대부분 한 달 사용자 수십 명이다.
     human: Apify 가입과 지급 정보 등록은 직접 했다.
   en:
-    title: Apify Lighthouse site monitor
+    title: Apify speed monitor
     summary: A paid Apify tool that checks website speed on a schedule. $0.02 per check.
     stuck: Published on the store, nobody uses it. Most similar tools have a few dozen users a month.
     human: I signed up for Apify and added payout details myself.

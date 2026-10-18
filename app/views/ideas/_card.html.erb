@@ -1,58 +1,52 @@
+<%# nomads.com 카드: 사진 위에 숫자를 겹친다. 마우스를 올리거나(데스크톱) 눌러서 포커스하면(휴대폰) 자세한 내용이 덮인다. %>
 <%
-  status_class = {
-    "active" => "bg-brand/15 text-brand-dark",
-    "pivoted" => "bg-brand/15 text-brand-dark",
-    "released" => "bg-brand-dark text-white"
-  }.fetch(idea.status, "bg-black/5 text-ink/60")
-  has_retro = idea.retro?
-  period = [ idea.started_on.strftime("%Y-%m-%d"), idea.ongoing? ? t("archive.ongoing") : idea.ended_on.strftime("%Y-%m-%d") ].join(" → ")
+  href = idea.retro? ? idea_path(idea.slug) : idea.url
+  tag_name = href ? :a : :div
+  attrs = href ? { href: href } : { tabindex: 0 }
+  attrs.merge!(target: "_blank", rel: "noopener") if href && !idea.retro?
 %>
+<%= content_tag tag_name, **attrs, class: "group relative block aspect-[9/8] overflow-hidden rounded-2xl bg-brand-dark text-white shadow-sm outline-none focus-visible:ring-4 focus-visible:ring-brand" do %>
+  <%= idea_image idea, loading: "lazy", decoding: "async", class: "absolute inset-0 h-full w-full object-cover blur-[1.5px] transition duration-500 group-hover:scale-105" %>
+  <div class="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/80"></div>
 
-<article class="bg-surface rounded-2xl p-6 flex flex-col gap-3">
-  <div class="flex items-start justify-between gap-3">
-    <h3 class="text-base font-bold text-ink"><%= idea.title %></h3>
-    <span class="shrink-0 rounded-full <%= status_class %> text-xs font-semibold px-2 py-0.5"><%= t("archive.status.#{idea.status}") %></span>
+  <div class="absolute inset-x-0 top-0 flex items-start justify-between p-4 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
+    <span class="border-b-2 border-white/80 pb-0.5 text-sm font-bold"><%= t("archive.batch_short.#{idea.batch}") %></span>
+    <span class="text-right leading-none">
+      <span class="block text-2xl font-extrabold"><%= work_hours(idea.hours) %></span>
+      <span class="mt-1 block text-[11px] font-semibold opacity-90"><%= t("archive.hours") %></span>
+    </span>
   </div>
 
-  <p class="text-[15px] text-ink/90 leading-relaxed"><%= idea.summary %></p>
+  <div class="absolute inset-0 flex flex-col items-center justify-center px-6 text-center [text-shadow:0_2px_8px_rgb(0_0_0/0.7)]">
+    <h3 class="text-2xl font-extrabold leading-tight sm:text-[26px]"><%= idea.title %></h3>
+    <p class="mt-1 text-[15px] font-medium opacity-95"><%= t("archive.status.#{idea.status}") %></p>
+  </div>
 
-  <dl class="grid grid-cols-3 gap-2 rounded-xl bg-page px-3 py-3 text-center">
-    <div>
-      <dt class="text-xs text-muted"><%= t("archive.hours") %></dt>
-      <dd class="mt-0.5 font-mono text-lg font-bold text-ink"><%= work_hours(idea.hours) %></dd>
-    </div>
-    <div>
-      <dt class="text-xs text-muted"><%= t("archive.cost") %></dt>
-      <dd class="mt-0.5 font-mono text-lg font-bold text-ink"><%= usd(idea.cost_usd) %></dd>
-    </div>
-    <div>
-      <dt class="text-xs text-muted"><%= t("archive.revenue") %></dt>
-      <dd class="mt-0.5 font-mono text-lg font-bold text-ink"><%= usd(idea.revenue_usd) %></dd>
-    </div>
-  </dl>
+  <div class="absolute inset-x-0 bottom-0 flex items-end justify-between p-4 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
+    <span class="leading-none">
+      <span class="block text-lg font-bold"><%= usd(idea.cost_usd) %></span>
+      <span class="mt-1 block text-[11px] font-semibold uppercase opacity-90"><%= t("archive.spent_label") %></span>
+    </span>
+    <span class="text-right leading-none">
+      <span class="block text-2xl font-extrabold"><%= usd(idea.revenue_usd) %></span>
+      <span class="mt-1 block text-[11px] font-semibold uppercase opacity-90"><%= t("archive.earned_label") %></span>
+    </span>
+  </div>
 
-  <p class="font-mono text-xs text-muted"><%= period %> · <%= t("archive.hours_source.#{idea.hours_source}") %></p>
-
-  <% if idea.stuck.present? || idea.human.present? %>
-    <dl class="flex flex-col gap-1.5 text-sm leading-relaxed">
-      <% if idea.stuck.present? %>
-        <div><dt class="inline font-semibold text-ink"><%= t("archive.stuck") %></dt> <dd class="inline text-ink/80"><%= idea.stuck %></dd></div>
-      <% end %>
-      <% if idea.human.present? %>
-        <div><dt class="inline font-semibold text-ink"><%= t("archive.human") %></dt> <dd class="inline text-ink/80"><%= idea.human %></dd></div>
-      <% end %>
-    </dl>
-  <% end %>
-
-  <% if has_retro || idea.url %>
-    <div class="mt-auto pt-3 border-t border-black/[0.06] flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-semibold">
-      <% if has_retro %>
-        <%= link_to t("archive.retro"), idea_path(idea.slug), class: "text-brand-dark underline underline-offset-4 decoration-2 decoration-brand hover:opacity-80" %>
-      <% end %>
-      <% if idea.url %>
-        <%# url은 config/ideas.yml 값이고 https만 들어온다(IdeaTest가 막는다). %>
-        <a href="<%= idea.url %>" target="_blank" rel="noopener" class="text-muted hover:text-ink"><%= t("archive.visit") %></a>
-      <% end %>
-    </div>
-  <% end %>
-</article>
+  <div class="absolute inset-0 flex flex-col gap-2 overflow-y-auto bg-brand-dark p-5 text-left text-sm leading-relaxed opacity-0 transition duration-200 group-hover:opacity-100 group-focus:opacity-100 group-focus-visible:opacity-100">
+    <p class="text-base font-bold"><%= idea.title %></p>
+    <p class="text-white/90"><%= idea.summary %></p>
+    <% if idea.stuck.present? %>
+      <p><span class="font-semibold text-brand"><%= t("archive.stuck") %></span> <span class="text-white/85"><%= idea.stuck %></span></p>
+    <% end %>
+    <% if idea.human.present? %>
+      <p><span class="font-semibold text-brand"><%= t("archive.human") %></span> <span class="text-white/85"><%= idea.human %></span></p>
+    <% end %>
+    <p class="mt-auto pt-2 font-mono text-xs text-white/60">
+      <%= idea.started_on.strftime("%Y-%m-%d") %> → <%= idea.ongoing? ? t("archive.ongoing") : idea.ended_on.strftime("%Y-%m-%d") %> · <%= t("archive.hours_source.#{idea.hours_source}") %>
+    </p>
+    <% if href %>
+      <p class="font-semibold text-brand"><%= idea.retro? ? t("archive.retro") : t("archive.visit") %></p>
+    <% end %>
+  </div>
+<% end %>

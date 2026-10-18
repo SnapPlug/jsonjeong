@@ -4,7 +4,7 @@ ko:
     description: "AI와 검증한 아이디어를 실패한 것까지 전부 남깁니다. 몇 시간 걸렸고, 얼마 썼고, 얼마 벌었는지."
     quote: "하루 100달러를 벌어 보려고 AI와 아이디어를 하나씩 검증합니다. 대부분 실패합니다. 실패한 것까지 숫자로 남깁니다. 몇 시간 걸렸고, 얼마 썼고, 얼마 벌었는지."
     location: "대한민국 제주"
-    totals: "아이디어 %{count}개"
+    ideas_label: "아이디어"
     hours: "작업 시간"
     cost: "쓴 돈"
     revenue: "번 돈"
@@ -16,6 +16,11 @@ ko:
     batch:
       hundred: "$100 per Day · 2026년 10월"
       earlier: "그 이전"
+    batch_short:
+      hundred: "2026.10"
+      earlier: "그 이전"
+    spent_label: "쓴 돈"
+    earned_label: "번 돈"
     status:
       active: "진행 중"
       paused: "멈춤"

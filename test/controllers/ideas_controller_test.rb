@@ -18,6 +18,7 @@ class IdeasControllerTest < ActionDispatch::IntegrationTest
     assert_match '<html lang="en">', response.body
     assert_match "Hours", response.body
     assert_match 'href="/en/ideas/workoutbell"', response.body
+    assert_match "Ideas", response.body
   end
 
   test "retro page in both languages" do

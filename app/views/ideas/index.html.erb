@@ -1,42 +1,14 @@
 <%= render "head", title: t("archive.title"), description: t("archive.description") %>
 
-<div class="mx-auto px-5 py-10 lg:px-16 lg:py-16 lg:grid lg:grid-cols-[372px_1fr] lg:gap-x-32">
-  <aside class="lg:sticky lg:top-16 lg:self-start">
-    <%= render "profile" %>
-  </aside>
+<div class="mx-auto max-w-[1600px] px-4 py-8 sm:px-6 lg:px-10 lg:py-12">
+  <%= render "profile" %>
 
-  <section class="mt-10 lg:mt-0">
-    <h2 class="text-2xl font-extrabold tracking-tight text-ink"><%= t("archive.title") %></h2>
-
-    <dl class="mt-4 grid grid-cols-2 sm:grid-cols-4 gap-3">
-      <% [
-           [ t("archive.totals", count: @totals[:count]), nil ],
-           [ t("archive.hours"), work_hours(@totals[:hours]) ],
-           [ t("archive.cost"), usd(@totals[:cost_usd]) ],
-           [ t("archive.revenue"), usd(@totals[:revenue_usd]) ]
-         ].each do |label, value| %>
-        <div class="rounded-2xl bg-surface px-4 py-3">
-          <% if value %>
-            <dt class="text-xs text-muted"><%= label %></dt>
-            <dd class="mt-0.5 font-mono text-2xl font-bold text-ink"><%= value %></dd>
-          <% else %>
-            <dd class="font-mono text-2xl font-bold text-ink pt-4"><%= label %></dd>
-          <% end %>
-        </div>
-      <% end %>
-    </dl>
-    <p class="mt-2 text-xs text-muted"><%= t("archive.hours_note") %></p>
-
-    <% Idea::BATCHES.each do |batch| %>
-      <% next unless @ideas[batch] %>
-      <h2 class="mt-10 mb-4 text-sm font-bold tracking-wide text-muted"><%= t("archive.batch.#{batch}") %></h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
-        <%= render partial: "card", collection: @ideas[batch], as: :idea %>
-      </div>
-    <% end %>
-  </section>
+  <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+    <%= render "totals", totals: @totals %>
+    <%= render partial: "card", collection: @ideas, as: :idea %>
+  </div>
 </div>
 
 <% content_for :head do %>
-  <script type="application/ld+json"><%= raw ideas_structured_data(Idea.all).to_json %></script>
+  <script type="application/ld+json"><%= raw ideas_structured_data(@ideas).to_json %></script>
 <% end %>

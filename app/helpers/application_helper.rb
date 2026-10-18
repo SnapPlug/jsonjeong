@@ -25,7 +25,7 @@ module ApplicationHelper
   end
 
   def og_image_url
-    "#{site_url}/og-card.png?v=2"
+    content_for?(:og_image) ? content_for(:og_image) : "#{site_url}/og-card.png?v=2"
   end
 
   # Site-wide JSON-LD entities (WebSite + Person + SoftwareApplication).
@@ -114,6 +114,10 @@ module ApplicationHelper
 
   def usd(amount)
     amount.zero? ? "$0" : number_to_currency(amount, unit: "$", precision: amount % 1 == 0 ? 0 : 2)
+  end
+
+  def idea_image(idea, **opts)
+    image_tag "ideas/#{idea.slug}.jpg", alt: idea.title, width: 900, height: 800, **opts
   end
 
   def work_hours(hours)

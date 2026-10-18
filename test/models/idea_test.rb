@@ -16,6 +16,10 @@ class IdeaTest < ActiveSupport::TestCase
     end
   end
 
+  test "every idea has a card image" do
+    Idea.all.each { |idea| assert Rails.root.join("app/assets/images/ideas/#{idea.slug}.jpg").exist?, idea.slug }
+  end
+
   test "links are https only" do
     Idea.all.filter_map(&:url).each { |url| assert url.start_with?("https://"), url }
   end
