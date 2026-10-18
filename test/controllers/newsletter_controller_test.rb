@@ -20,4 +20,9 @@ class NewsletterControllerTest < ActionDispatch::IntegrationTest
     get "/"
     assert_select "a[href=?]", SNAPPLUG_NEWSLETTER_URL
   end
+
+  test "homepage links to the snapplug.app cases" do
+    get "/"
+    assert_select "a[href=?]", "https://snapplug.app/cases"
+  end
 end

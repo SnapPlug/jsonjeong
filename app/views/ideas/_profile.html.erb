@@ -40,6 +40,10 @@
     <% if I18n.locale == :ko %>
       <%= link_to "뉴스레터 구독 →", SNAPPLUG_NEWSLETTER_URL, target: "_blank", rel: "noopener",
             class: "text-xs font-semibold text-brand-dark underline underline-offset-4 decoration-2 decoration-brand hover:opacity-80" %>
+      <%# 스냅플러그 사례 허브로 — Bing이 snapplug.app 사례를 따라 들어오게(2026-10-19 AI 검색 점검) %>
+      <%= link_to "스냅플러그 사례 →", "https://snapplug.app/cases",
+            target: "_blank", rel: "noopener",
+            class: "text-xs font-semibold text-brand-dark underline underline-offset-4 decoration-2 decoration-brand hover:opacity-80" %>
     <% end %>
   </div>
 </section>
