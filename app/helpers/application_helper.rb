@@ -4,7 +4,7 @@ module ApplicationHelper
   SITE_DESCRIPTION = "하루 100달러를 벌어 보려고 AI와 검증한 아이디어를 실패한 것까지 전부 남깁니다. 몇 시간 걸렸고, 얼마 썼고, 얼마 벌었는지."
   SITE_PRODUCTION_URL = "https://jsonjeong.com".freeze
   # sitemap lastmod. config/ideas.yml을 고치면 같이 올린다.
-  CONTENT_UPDATED_ON = "2026-10-18"
+  CONTENT_UPDATED_ON = "2026-10-19"
   GA4_ID = "G-51584NFH18"
 
   def site_url

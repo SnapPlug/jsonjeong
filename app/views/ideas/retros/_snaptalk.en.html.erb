@@ -1,0 +1,18 @@
+<h2>Why I started</h2>
+<p>I had a call with a business owner who takes orders through a KakaoTalk channel. About 20 orders come in a day, and for each one they opened the bank app to check the deposit, then copied and pasted a confirmation. "It's really nothing… but you have to keep checking." Some customers order at dawn. They had tried automating it a few times and found it hard.</p>
+<p>At first I built an AI that answers questions. The next day I reread the call transcript: only about 20% of customers ask anything. The other 80% just order and pay. What the owner actually asked for was deposit checking. I changed direction that day.</p>
+
+<h2>What I built</h2>
+<p>When a customer asks something on KakaoTalk, the AI (Claude) reads the owner's manual and answers. If the manual doesn't cover it, it doesn't make things up; the question goes onto a "blanks" list for the owner to fill. Deposits are checked through a bank lookup every 5 minutes. A deposit is linked only when exactly one order matches the depositor name and amount, and then a KakaoTalk notification goes out. An amount that isn't on the price list goes to a person.</p>
+<p>In the September 9 test it answered all 13 of 13 questions, 4 of them with "I don't know". Average 4.9 seconds. Over the experiment, 314 answers cost $4.81 in API fees.</p>
+
+<h2>Where it got stuck</h2>
+<p>It fell over on demo day. The deposit was caught in 2 minutes, but the notification never went out. An auto-save wiped the phone number that had just been filled in, and the send job quietly exited. The same day, the 1GB server in New York ran short on memory, the first reply took over 4 seconds, and Kakao dropped it. I moved to a 2GB server in Seoul.</p>
+<p>Small holes kept appearing. 21 of 211 answers were cut off mid-sentence because the AI spent its output budget thinking. A casual message containing "이름이링" was parsed as an order form, the name was saved as "이링", and the deposit didn't match.</p>
+<p>Then the owner said: "The more I fix it, the more tangled it gets." My first diagnosis was that the AI was reading all 14 manual versions, 200,000 characters, at once. Ten days later I found that was wrong: it was only reading the 3 current documents, 38,000 characters. I still haven't found the real cause. I'm checking whether rules in different documents conflict.</p>
+
+<h2>What a human had to do</h2>
+<p>The owner wrote and revised the manual, tested by hand over KakaoTalk, and sent real money (₩100, ₩50,000) to check it. Topping up the notification and API balances was on them too. On my side: reading logs and writing messages explaining what went wrong and why. A customer who pays without saying a word can't be notified if there's no phone number, so a person still follows up.</p>
+
+<h2>What I learned</h2>
+<p>The owner's first sentence was "I'm checking each one by hand." Hearing that as a problem was the start, and rereading the transcript put the direction right. Building something that runs took a day; keeping it running every day in someone else's business is different work. Most of the 59 hours came after the demo. I'm leaving the wrong diagnosis on the record too.</p>
