@@ -9,6 +9,8 @@ en:
     cost: "Spent"
     revenue: "Earned"
     hours_unit: "%{hours}h"
+    page_title: "%{title} · %{hours} of validation"
+    page_numbers: "%{hours} of work, %{cost} spent, %{revenue} earned. Status: %{status}."
     hours_source:
       session: "measured from session logs"
       commits: "estimated from git commits"

@@ -2,6 +2,7 @@
 
 <%# 바깥 여백·간격은 nomads.com과 같다: 화면 끝에서 카드까지 50px(휴대폰 14px), 카드 사이 28px(휴대폰 14px) %>
 <div class="px-[14px] py-[14px] min-[700px]:px-[50px] min-[700px]:py-7">
+  <h1 class="sr-only"><%= t("archive.title") %></h1>
   <div class="grid grid-cols-2 gap-[14px] min-[700px]:grid-cols-3 min-[700px]:gap-7 min-[1000px]:grid-cols-4 min-[1500px]:grid-cols-5">
     <%= render "totals", totals: @totals %>
     <%= render "profile" %>

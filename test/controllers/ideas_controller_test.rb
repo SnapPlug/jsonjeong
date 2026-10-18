@@ -38,4 +38,28 @@ class IdeasControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match "막힌 곳", response.body
   end
+
+  test "archive h1 names the page, not the person" do
+    get "/"
+    assert_select "h1", count: 1, text: "아이디어 아카이브"
+    get "/en"
+    assert_select "h1", count: 1, text: "Idea archive"
+  end
+
+  test "idea page title and description carry the numbers" do
+    get "/ideas/workoutbell"
+    assert_select "title", text: /\Aworkoutbell\.com · 3\.6시간 검증 기록 — /
+    assert_select "meta[name=description][content*=?]", "3.6시간 동안 $10.44 쓰고"
+    get "/en/ideas/workoutbell"
+    assert_select "title", text: /\Aworkoutbell\.com · 3\.6h of validation — /
+    assert_select "meta[name=description][content*=?]", "3.6h of work, $10.44 spent"
+  end
+
+  test "article structured data has dates and image" do
+    get "/ideas/workoutbell"
+    article = css_select('script[type="application/ld+json"]').map { JSON.parse(_1.text) }.find { _1["@type"] == "Article" }
+    assert_equal "2026-10-03", article["datePublished"]
+    assert article["dateModified"].present?
+    assert_match %r{/assets/ideas/workoutbell-.*\.jpg\z}, article["image"]
+  end
 end

@@ -144,6 +144,9 @@ module ApplicationHelper
       "description" => idea.summary,
       "inLanguage" => html_lang,
       "url" => canonical_url,
+      "image" => image_url("ideas/#{idea.slug}.jpg"),
+      "datePublished" => idea.started_on.iso8601,
+      "dateModified" => (idea.ended_on || Date.parse(CONTENT_UPDATED_ON)).iso8601,
       "author" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" },
       "publisher" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" }
     }

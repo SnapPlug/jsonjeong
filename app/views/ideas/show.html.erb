@@ -1,4 +1,6 @@
-<%= render "head", title: @idea.title, description: @idea.summary %>
+<% numbers = { hours: work_hours(@idea.hours), cost: usd(@idea.cost_usd), revenue: usd(@idea.revenue_usd), status: t("archive.status.#{@idea.status}") } %>
+<%= render "head", title: t("archive.page_title", title: @idea.title, hours: numbers[:hours]),
+                   description: "#{@idea.summary} #{t("archive.page_numbers", **numbers)}" %>
 <% content_for :og_image, image_url("ideas/#{@idea.slug}.jpg") %>
 
 <main class="mx-auto max-w-2xl px-4 py-8 sm:px-6 lg:py-12">

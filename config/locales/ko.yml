@@ -9,6 +9,8 @@ ko:
     cost: "쓴 돈"
     revenue: "번 돈"
     hours_unit: "%{hours}시간"
+    page_title: "%{title} · %{hours} 검증 기록"
+    page_numbers: "%{hours} 동안 %{cost} 쓰고 %{revenue} 벌었다. 상태: %{status}."
     hours_source:
       session: "세션 기록 실측"
       commits: "커밋 기록 추정"
