@@ -1,0 +1,30 @@
+ko:
+  archive:
+    title: "아이디어 아카이브"
+    description: "AI와 검증한 아이디어를 실패한 것까지 전부 남깁니다. 몇 시간 걸렸고, 얼마 썼고, 얼마 벌었는지."
+    quote: "하루 100달러를 벌어 보려고 AI와 아이디어를 하나씩 검증합니다. 대부분 실패합니다. 실패한 것까지 숫자로 남깁니다. 몇 시간 걸렸고, 얼마 썼고, 얼마 벌었는지."
+    location: "대한민국 제주"
+    totals: "아이디어 %{count}개"
+    hours: "작업 시간"
+    cost: "쓴 돈"
+    revenue: "번 돈"
+    hours_unit: "%{hours}시간"
+    hours_source:
+      session: "세션 기록 실측"
+      commits: "커밋 기록 추정"
+    hours_note: "작업 시간 = Claude와 함께 일한 시간. Claude 밖에서 한 일(가입·서류·인터뷰)은 들어가지 않습니다."
+    batch:
+      hundred: "$100 per Day · 2026년 10월"
+      earlier: "그 이전"
+    status:
+      active: "진행 중"
+      paused: "멈춤"
+      dropped: "폐기"
+      pivoted: "전환"
+      released: "무료 공개"
+    ongoing: "진행 중"
+    stuck: "막힌 곳"
+    human: "사람이 한 일"
+    retro: "회고글 읽기 →"
+    visit: "보러 가기 →"
+    back: "← 전체 아이디어"

@@ -21,6 +21,8 @@ class SeoControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "application/xml", response.media_type
     assert_match "<loc>https://jsonjeong.com/</loc>", response.body
+    assert_match "<loc>https://jsonjeong.com/en/ideas/workoutbell</loc>", response.body
+    assert_match 'hreflang="en"', response.body
     assert_match %r{<lastmod>\d{4}-\d{2}-\d{2}</lastmod>}, response.body
   end
 
@@ -29,6 +31,7 @@ class SeoControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_equal "text/plain", response.media_type
     assert_match "jsonjeong.com", response.body
-    assert_match "SnapDeck", response.body
+    assert_match "workoutbell.com", response.body
+    assert_match "https://jsonjeong.com/ideas/workoutbell", response.body
   end
 end

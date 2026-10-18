@@ -1,31 +1,30 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  archive:
+    title: "Idea archive"
+    description: "Every idea I tested with AI, including the ones that failed. How many hours it took, what it cost, what it earned."
+    quote: "I'm testing ideas one by one with AI, trying to make $100 a day. Most of them fail. I keep the failures too, with numbers: hours spent, money spent, money made."
+    location: "Jeju, South Korea"
+    totals: "%{count} ideas"
+    hours: "Hours"
+    cost: "Spent"
+    revenue: "Earned"
+    hours_unit: "%{hours}h"
+    hours_source:
+      session: "measured from session logs"
+      commits: "estimated from git commits"
+    hours_note: "Hours = time spent working with Claude. Work done outside Claude (sign-ups, paperwork, interviews) is not counted."
+    batch:
+      hundred: "$100 per Day · Oct 2026"
+      earlier: "Before that"
+    status:
+      active: "Running"
+      paused: "Paused"
+      dropped: "Dropped"
+      pivoted: "Pivoted"
+      released: "Free release"
+    ongoing: "now"
+    stuck: "Stuck at"
+    human: "Human step"
+    retro: "Read the retro →"
+    visit: "Visit →"
+    back: "← All ideas"

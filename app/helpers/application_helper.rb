@@ -1,41 +1,11 @@
 module ApplicationHelper
   SITE_NAME = "Jason Jeong"
-  SITE_TAGLINE = "현장에서 문제를 먼저 정의하는 AI 자동화 컨설턴트 · 제주"
-  SITE_DESCRIPTION = "AI 자동화 회사 SnapPlug 대표. 공장과 사무실에 직접 가서 문제부터 정의하고, 답에 AI가 없으면 없다고 말합니다. 직원을 대체하지 않고 조직에 저항 없이 안착하는 자동화를 만듭니다. 제주에서."
+  SITE_TAGLINE = "아이디어 아카이브"
+  SITE_DESCRIPTION = "하루 100달러를 벌어 보려고 AI와 검증한 아이디어를 실패한 것까지 전부 남깁니다. 몇 시간 걸렸고, 얼마 썼고, 얼마 벌었는지."
   SITE_PRODUCTION_URL = "https://jsonjeong.com".freeze
-
-  # AEO/GEO: question-answer content surfaced both on-page (collapsible) and as
-  # FAQPage structured data. Single source so the two never drift.
-  FAQS = [
-    {
-      q: "AI 자동화 컨설팅은 어떻게 진행하나요?",
-      a: "'AI로 뭘 할까'가 아니라 '뭐가 문제인가'에서 시작합니다. 현장에 직접 가서 실무진의 이야기를 듣고 문제를 정의한 뒤, 답이 여럿이어도 되는 일은 AI로, 숫자가 정확해야 하는 일은 코드로, 판단이 필요한 일은 사람에게 남깁니다. 답에 AI가 없으면 없다고 말씀드립니다."
-    },
-    {
-      q: "직원들이 자동화를 반대하면 어떻게 하나요?",
-      a: "직원의 일을 대체하려는 자동화는 조용히 묻힙니다. 그래서 기존 업무는 최대한 건드리지 않고 반복 업무의 누수만 줄이는 방식으로 설계하고, 도입 후 직원의 일이 실제로 줄어드는지를 기준으로 삼습니다. 직원 저항을 줄이는 것까지가 컨설팅입니다."
-    },
-    {
-      q: "내 바이브코딩 앱이 안전한지 어떻게 알 수 있나요?",
-      a: "AI로 만든 앱은 대부분 똑같은 구멍 몇 개를 안고 출시됩니다: 꺼진 RLS(행 수준 보안), 클라이언트에 박힌 API 키, 인증 체크 없는 라우트. SnapDeck 같은 스캐너가 프로젝트 폴더를 로컬에서 읽어, 누가 먼저 찾기 전에 쉬운 말로 알려줍니다."
-    },
-    {
-      q: "AI가 만든 앱에서 가장 흔한 보안 실수는 무엇인가요?",
-      a: "꺼지거나 잘못 설정된 RLS(아무나 모든 사용자의 행을 읽음), 클라이언트 번들에 노출된 시크릿 키, 인증 없는 관리자 라우트, 너무 느슨한 CORS. 이것들은 AI가 짠 코드가 아니라 설정·인프라에 있어서 AI 자체 코드 리뷰에는 거의 안 잡힙니다."
-    },
-    {
-      q: "SnapDeck이 제 코드를 클라우드로 보내나요?",
-      a: "아니요. SnapDeck은 전적으로 내 컴퓨터에서 실행됩니다. 소스 코드와 API 키는 절대 컴퓨터를 떠나지 않습니다."
-    },
-    {
-      q: "비개발자 창업자도 쓸 수 있나요?",
-      a: "네. 코드를 못 읽어도 AI로 출시한 사람을 위해 만들었습니다. 프로젝트 폴더를 끌어다 놓으면 쉬운 말로 진단해주고, 대신 고쳐주기까지 합니다."
-    },
-    {
-      q: "바이브코딩이 뭔가요?",
-      a: "바이브코딩은 직접 코드를 쓰기보다 AI 도구에 지시해서 소프트웨어를 만드는 방식입니다. 속도는 엄청나지만 보안은 대개 그렇지 않죠. 그 간극을 메우는 게 제가 만드는 것의 핵심입니다."
-    }
-  ].freeze
+  # sitemap lastmod. config/ideas.yml을 고치면 같이 올린다.
+  CONTENT_UPDATED_ON = "2026-10-18"
+  GA4_ID = "G-51584NFH18"
 
   def site_url
     Rails.env.production? ? SITE_PRODUCTION_URL : request.base_url
@@ -137,19 +107,46 @@ module ApplicationHelper
     }
   end
 
-  # FAQPage JSON-LD built from FAQS. Page-scoped (rendered only where the
-  # matching questions are visible on the page).
-  def faq_structured_data(faqs = FAQS)
+  # <html lang>. 아이디어 화면은 컨트롤러가 정하고, 나머지는 한국어.
+  def html_lang
+    @html_lang || "ko"
+  end
+
+  def usd(amount)
+    amount.zero? ? "$0" : number_to_currency(amount, unit: "$", precision: amount % 1 == 0 ? 0 : 2)
+  end
+
+  def work_hours(hours)
+    t("archive.hours_unit", hours: number_with_precision(hours, precision: 1, strip_insignificant_zeros: true))
+  end
+
+  # 메인: 아이디어 목록 / 회고글: 글 한 편. 사이트 공통 @graph(Person 등)에 더해 페이지별로 낸다.
+  def ideas_structured_data(ideas)
     {
       "@context" => "https://schema.org",
-      "@type" => "FAQPage",
-      "mainEntity" => faqs.map do |item|
-        {
-          "@type" => "Question",
-          "name" => item[:q],
-          "acceptedAnswer" => { "@type" => "Answer", "text" => item[:a] }
-        }
+      "@type" => "ItemList",
+      "name" => t("archive.title"),
+      "itemListElement" => ideas.each_with_index.map do |idea, i|
+        { "@type" => "ListItem", "position" => i + 1, "name" => idea.title, "description" => idea.summary }
       end
     }
+  end
+
+  def retro_structured_data(idea)
+    {
+      "@context" => "https://schema.org",
+      "@type" => "Article",
+      "headline" => idea.title,
+      "description" => idea.summary,
+      "inLanguage" => html_lang,
+      "url" => canonical_url,
+      "author" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" },
+      "publisher" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" }
+    }
+  end
+
+  # 같은 페이지의 반대 언어 주소. hreflang과 언어 토글에 쓴다.
+  def alternate_path(locale)
+    url_for(locale: locale == :en ? "en" : nil, only_path: true)
   end
 end

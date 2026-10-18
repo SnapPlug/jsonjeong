@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="<%= html_lang %>">
   <head>
     <title><%= page_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -19,8 +19,8 @@
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="<%= ApplicationHelper::SITE_TAGLINE %> — <%= ApplicationHelper::SITE_NAME %>">
-    <meta property="og:locale" content="ko_KR">
+    <meta property="og:image:alt" content="<%= page_title %>">
+    <meta property="og:locale" content="<%= html_lang == "en" ? "en_US" : "ko_KR" %>">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@jasonjeongio">
@@ -28,13 +28,24 @@
     <meta name="twitter:title" content="<%= page_title %>">
     <meta name="twitter:description" content="<%= page_description %>">
     <meta name="twitter:image" content="<%= og_image_url %>">
-    <meta name="twitter:image:alt" content="<%= ApplicationHelper::SITE_TAGLINE %> — <%= ApplicationHelper::SITE_NAME %>">
+    <meta name="twitter:image:alt" content="<%= page_title %>">
 
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="<%= ApplicationHelper::SITE_NAME %>">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+
+    <%# GA4 속성 jsonjeong.com (snapplug_app 계정). 운영에서만 — 로컬·테스트 방문은 안 섞는다. %>
+    <% if Rails.env.production? %>
+      <script async src="https://www.googletagmanager.com/gtag/js?id=<%= ApplicationHelper::GA4_ID %>"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '<%= ApplicationHelper::GA4_ID %>');
+      </script>
+    <% end %>
 
     <%= render "shared/structured_data" %>
     <%= yield :head %>

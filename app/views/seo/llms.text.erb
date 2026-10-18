@@ -1,18 +1,27 @@
-# Json Jeong — jsonjeong.com
+<% I18n.with_locale(:ko) do -%>
+# Json Jeong — 아이디어 아카이브 (jsonjeong.com)
 
-> 현장에서 문제를 먼저 정의하는 AI 자동화 컨설턴트. Json Jeong(제이슨)은 대한민국 제주의 AI 자동화 회사 SnapPlug 대표로, 제조·유통 현장에 직접 가서 문제부터 정의하고 답에 AI가 없으면 없다고 말합니다. 직원을 대체하지 않고 반복 업무의 누수를 줄여, 조직에 저항 없이 안착하는 자동화를 설계합니다.
+> 하루 100달러를 벌어 보려고 AI(Claude)와 검증한 아이디어를 실패한 것까지 전부 남기는 기록. 아이디어마다 작업 시간, 쓴 돈, 번 돈, 막힌 곳, 사람이 직접 해야 했던 일을 숫자로 적는다. 운영자 Json Jeong은 제주의 AI 자동화 회사 SnapPlug 대표다. 영어판: <%= ApplicationHelper::SITE_PRODUCTION_URL %>/en
 
-바이브코딩(직접 코드를 쓰기보다 AI 도구에 지시해 소프트웨어를 만드는 방식)으로 필요한 도구를 직접 만들어 공개합니다. 각 제품은 반복되는 일을 줄여주는 실용 도구입니다.
+작업 시간은 Claude와 함께 일한 시간이다. 2026년 10월 실험은 Claude Code 세션 기록으로 쟀고, 그 이전 프로젝트는 git 커밋 간격으로 추정했다.
 
-## 제품
+## 합계
 
-- [SnapDeck](https://snapdeck.jsonjeong.com): AI로 만든 앱을 위한 데스크톱 보안 스캐너. 프로젝트 폴더를 끌어다 놓으면 로컬에서 스캔해 노출된 키, 꺼진 RLS(행 수준 보안), 방치된 라우트를 쉬운 말로 알려주고 고쳐줍니다. 소스 코드와 키가 컴퓨터를 떠나지 않습니다. macOS.
-- [SnapMusk](https://github.com/SnapPlug/snapmusk): 맥북 노치에 사는 AI 타임박싱 비서. "헤이 머스크" 웨이크워드, 온디바이스 음성인식(WhisperKit), Claude로 하루를 타임박싱합니다. macOS, 오픈소스.
-- [Snap Teleprompter](https://github.com/SnapPlug/snap-teleprompter): 맥북 노치 영역에 대본이 스크롤되는 텔레프롬프터 앱. 카메라를 보면서 자연스럽게 읽습니다. macOS, 오픈소스.
-- [Supabase 바이브코딩 가이드](https://github.com/SnapPlug/supabase-vibe-coding-guide): Claude Code(바이브코딩)로 Supabase 백엔드를 개발할 때 만나는 문제와 해결책 모음. 무료, 오픈소스.
+<% t = Idea.totals -%>
+- 아이디어 <%= t[:count] %>개 · 작업 <%= t[:hours].round(1) %>시간 · 쓴 돈 $<%= t[:cost_usd] %> · 번 돈 $<%= t[:revenue_usd] %>
 
+<% Idea::BATCHES.each do |batch| -%>
+## <%= t("archive.batch.#{batch}") %>
+
+<% Idea.all.select { |i| i.batch == batch }.each do |idea| -%>
+- <%= idea.title %> (<%= t("archive.status.#{idea.status}") %>, <%= idea.hours %>시간, 쓴 돈 $<%= idea.cost_usd %>, 번 돈 $<%= idea.revenue_usd %>): <%= idea.summary %><% if idea.stuck %> 막힌 곳: <%= idea.stuck %><% end %><% if idea.retro? %> 회고글: <%= ApplicationHelper::SITE_PRODUCTION_URL %>/ideas/<%= idea.slug %><% end %>
+<% end -%>
+
+<% end -%>
 ## 링크
 
-- X / Twitter: https://x.com/jasonjeongio
 - Threads: https://www.threads.net/@snapplug.app
+- X: https://x.com/jasonjeongio
 - GitHub: https://github.com/SnapPlug
+- SnapPlug: https://snapplug.app
+<% end -%>

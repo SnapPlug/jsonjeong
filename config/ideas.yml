@@ -1,0 +1,232 @@
+# 아이디어 아카이브 데이터 — jsonjeong.com 메인.
+# hours: Claude와 함께 일한 시간.
+#   session = $100_per_day 세션 기록 실측 ($100_per_day/worktime.py)
+#   commits = git 커밋 간격 추정 (세션 기록이 30일 지나 지워진 이전 프로젝트)
+# ended_on이 비어 있으면 진행 중. stuck·human은 모르면 비워 둔다(지어내지 않는다).
+# 회고글: app/views/ideas/retros/_<slug 밑줄>.{ko,en}.html.erb 가 있으면 카드에 링크가 생긴다.
+
+- slug: workoutbell
+  batch: hundred
+  status: active
+  started_on: 2026-10-03
+  hours: 3.6
+  hours_source: session
+  cost_usd: 10.44
+  revenue_usd: 0
+  url: https://workoutbell.com
+  ko:
+    title: workoutbell.com
+    summary: 운동용 인터벌 타이머 사이트. 검색으로 들어오고 광고로 번다.
+    stuck: 애드센스가 "가치가 별로 없는 콘텐츠"로 거절했다. 가이드 14편을 붙여 10/18에 재검토를 요청했다.
+    human: 도메인 결제, 애드센스 가입, 재검토 요청 버튼은 직접 눌렀다.
+  en:
+    title: workoutbell.com
+    summary: An interval timer site for workouts. Traffic from search, money from ads.
+    stuck: AdSense rejected it as "low value content". Added 14 guides and asked for a re-review on Oct 18.
+    human: I paid for the domain, signed up for AdSense, and clicked the re-review button myself.
+
+- slug: page-to-pdf
+  batch: hundred
+  status: active
+  started_on: 2026-10-05
+  hours: 1.0
+  hours_source: session
+  cost_usd: 5
+  revenue_usd: 0
+  url: https://richjason.gumroad.com/l/page-to-pdf-pro
+  ko:
+    title: Page to PDF
+    summary: 보이는 그대로 웹페이지를 PDF로 저장하는 크롬 확장. Pro는 $9.99.
+    stuck: Pro 버전이 심사 대기 중이다. 판매자 인증은 D&B 등록이 없어 실패했다.
+    human: 웹스토어 등록비 결제, 판매자 인증, Stripe 신분 확인은 직접 했다.
+  en:
+    title: Page to PDF
+    summary: A Chrome extension that saves a web page as a PDF exactly as you see it. Pro is $9.99.
+    stuck: The Pro version is still in review. Seller verification failed because I have no D&B listing.
+    human: I paid the store fee, did seller verification and the Stripe ID check myself.
+
+- slug: bakery-agent
+  batch: hundred
+  status: pivoted
+  started_on: 2026-10-11
+  hours: 2.6
+  hours_source: session
+  cost_usd: 0
+  revenue_usd: 0
+  ko:
+    title: 동네 빵집 AI 에이전트
+    summary: 파리의 한 빵집과 제주의 한 빵집을 실제 고객으로 놓고, 혼자 다 하는 사장님의 손일을 AI가 받아 주는 시안을 만들었다.
+    stuck: 돈 받는 상품이 아니라 레퍼런스 사례로 목표가 바뀌었다.
+    human: 지인 소개, 사장님 인터뷰, 시안 전달은 사람이 했다.
+  en:
+    title: AI agent for neighborhood bakeries
+    summary: Two real bakeries, one in Paris and one in Jeju, as test customers. Mockups of an AI taking over the owner's handwork.
+    stuck: The goal changed from a paid product to a reference case.
+    human: A friend's introduction, the owner interview and sending the mockup were done by people.
+
+- slug: security-audit
+  batch: hundred
+  status: paused
+  started_on: 2026-10-01
+  ended_on: 2026-10-11
+  hours: 2.3
+  hours_source: session
+  cost_usd: 0
+  revenue_usd: 0
+  ko:
+    title: 바이브코딩 앱 보안 감사 $39
+    summary: AI로 만든 앱을 24시간 안에 보안 점검해 주는 $39짜리 서비스.
+    stuck: X 계정이 스팸 라벨로 막혀 Reddit으로 옮겼는데, 거기서도 계정이 정지됐다.
+    human: Gumroad 가입, Reddit 댓글 게시, 정지 이의 제기는 직접 했다.
+  en:
+    title: $39 security audit for vibe-coded apps
+    summary: A 24-hour security check for apps built with AI, for $39.
+    stuck: My X account got a spam label, so I moved to Reddit. That account got banned too.
+    human: I signed up for Gumroad, posted the Reddit comments and filed the ban appeal myself.
+
+- slug: switch-check
+  batch: hundred
+  status: paused
+  started_on: 2026-10-12
+  ended_on: 2026-10-13
+  hours: 1.6
+  hours_source: session
+  cost_usd: 0
+  revenue_usd: 0
+  ko:
+    title: Switch Check
+    summary: 통신사를 옮기기 전에 내 폰에서 되는 기능과 요금이 오르는 날을 알려주는 도구.
+    stuck: 검색 자동완성으로 수요는 보였다. 화면을 다섯 번 고친 뒤 멈췄다.
+    human: 화면 방향은 매번 사람이 정했다.
+  en:
+    title: Switch Check
+    summary: Before you switch carriers, it tells you which features work on your phone and when your price goes up.
+    stuck: Search autocomplete showed real demand. Stopped after redoing the screen five times.
+    human: A person decided the screen direction every time.
+
+- slug: apify-lighthouse
+  batch: hundred
+  status: paused
+  started_on: 2026-10-05
+  ended_on: 2026-10-11
+  hours: 1.3
+  hours_source: session
+  cost_usd: 0
+  revenue_usd: 0
+  url: https://apify.com/jsonjeong/lighthouse-site-monitor
+  ko:
+    title: Apify Lighthouse 사이트 점검
+    summary: 웹사이트 속도를 정기적으로 재 주는 Apify 유료 도구. 한 번 점검에 $0.02.
+    stuck: 스토어에 올렸지만 쓰는 사람이 없다. 비슷한 도구도 대부분 한 달 사용자 수십 명이다.
+    human: Apify 가입과 지급 정보 등록은 직접 했다.
+  en:
+    title: Apify Lighthouse site monitor
+    summary: A paid Apify tool that checks website speed on a schedule. $0.02 per check.
+    stuck: Published on the store, nobody uses it. Most similar tools have a few dozen users a month.
+    human: I signed up for Apify and added payout details myself.
+
+- slug: block-game
+  batch: hundred
+  status: dropped
+  started_on: 2026-10-03
+  ended_on: 2026-10-04
+  hours: 0.6
+  hours_source: session
+  cost_usd: 0
+  revenue_usd: 0
+  ko:
+    title: 블록 쌓기 광고판
+    summary: 블록 쌓기 게임의 블록 7개를 스폰서 광고 자리로 파는 아이디어.
+    stuck: 자리 가격과 판매 방식을 정하지 못한 채 타이머로 넘어갔다.
+    human: 아이디어와 디자인 피드백은 사람이 줬다.
+  en:
+    title: Block game billboard
+    summary: Sell the 7 blocks of a block-stacking game as sponsor ad slots.
+    stuck: Never settled on slot price or how to sell them. Moved on to the timer.
+    human: The idea and design feedback came from a person.
+
+- slug: lead-search
+  batch: hundred
+  status: dropped
+  started_on: 2026-10-11
+  ended_on: 2026-10-11
+  hours: 0.3
+  hours_source: session
+  cost_usd: 0
+  revenue_usd: 0
+  ko:
+    title: 이미 돈 내는 문제 찾기
+    summary: 사업자 커뮤니티 글 388개를 훑어 사람들이 이미 돈 내고 있는 문제를 찾았다.
+    stuck: 구글 쇼핑 이미지 규격, 아마존 광고비 같은 후보가 확인해 보니 전부 탈락했다.
+  en:
+    title: Finding problems people already pay for
+    summary: Went through 388 posts in business communities looking for problems people already pay to solve.
+    stuck: Every candidate (Google Shopping image rules, Amazon ad charges) fell apart on checking.
+
+- slug: snapdeck
+  batch: earlier
+  status: paused
+  started_on: 2026-05-15
+  ended_on: 2026-08-18
+  hours: 28.1
+  hours_source: commits
+  cost_usd: 0
+  revenue_usd: 0
+  url: https://snapdeck.jsonjeong.com
+  ko:
+    title: SnapDeck
+    summary: AI로 만든 앱의 보안 구멍을 쉬운 말로 찾아 주는 맥 앱.
+  en:
+    title: SnapDeck
+    summary: A Mac app that finds security holes in AI-built apps and explains them in plain words.
+
+- slug: snap-teleprompter
+  batch: earlier
+  status: released
+  started_on: 2026-06-25
+  ended_on: 2026-06-27
+  hours: 11.5
+  hours_source: commits
+  cost_usd: 0
+  revenue_usd: 0
+  url: https://github.com/SnapPlug/snap-teleprompter
+  ko:
+    title: Snap Teleprompter
+    summary: 맥북 노치 자리에 대본이 흘러가는 텔레프롬프터. 무료 공개.
+  en:
+    title: Snap Teleprompter
+    summary: A teleprompter that scrolls your script under the MacBook notch. Free and open source.
+
+- slug: snapmusk
+  batch: earlier
+  status: released
+  started_on: 2026-06-25
+  ended_on: 2026-07-01
+  hours: 5.7
+  hours_source: commits
+  cost_usd: 0
+  revenue_usd: 0
+  url: https://github.com/SnapPlug/snapmusk
+  ko:
+    title: SnapMusk
+    summary: 맥북 노치에 사는 AI 비서. 말로 부르면 하루 일정을 시간 단위로 짜 준다. 무료 공개.
+  en:
+    title: SnapMusk
+    summary: An AI assistant living in the MacBook notch. Call it by voice and it plans your day in time blocks. Free and open source.
+
+- slug: supabase-guide
+  batch: earlier
+  status: released
+  started_on: 2026-04-12
+  ended_on: 2026-04-13
+  hours: 1.5
+  hours_source: commits
+  cost_usd: 0
+  revenue_usd: 0
+  url: https://github.com/SnapPlug/supabase-vibe-coding-guide
+  ko:
+    title: Supabase 바이브코딩 가이드
+    summary: Claude Code로 Supabase를 쓸 때 터지는 문제와 해결책 모음. 무료 공개.
+  en:
+    title: Supabase vibe coding guide
+    summary: Problems you hit using Supabase with Claude Code, and how to fix them. Free and open source.

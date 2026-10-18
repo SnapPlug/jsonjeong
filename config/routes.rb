@@ -17,7 +17,6 @@ Rails.application.routes.draw do
     post "/" => "newsletter#subscribe", as: :newsletter_subscribe_on_subdomain
   end
 
-  # Apex (no subdomain or www) — dashboard
   # 내부 운영 도구 — 계약현황·헬스체크 관제 (옛 Overload). 로그인 필수.
   constraints subdomain: "ops" do
     scope module: :ops, as: :ops do
@@ -30,8 +29,6 @@ Rails.application.routes.draw do
   end
 
   constraints subdomain: /\A(www)?\z/ do
-    root "dashboard#index"
-
     # Crawler files served dynamically (short cache, not the 1-year asset cache)
     get "/robots.txt" => "seo#robots", defaults: { format: "text" }
     get "/sitemap.xml" => "seo#sitemap", defaults: { format: "xml" }
@@ -42,5 +39,11 @@ Rails.application.routes.draw do
 
     # Apex POST handler — sidebar form on dashboard submits here
     post "newsletter", to: "newsletter#subscribe", as: :newsletter_subscribe
+
+    # 아이디어 아카이브 — 한국어는 /, 영어는 /en
+    scope "(:locale)", locale: /en/ do
+      root "ideas#index"
+      resources :ideas, only: :show, param: :slug
+    end
   end
 end

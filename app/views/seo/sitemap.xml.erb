@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+<% base = ApplicationHelper::SITE_PRODUCTION_URL %>
+<% pages = [ [ "/", "/en", "1.0" ] ] + Idea.all.select(&:retro?).map { |idea| [ "/ideas/#{idea.slug}", "/en/ideas/#{idea.slug}", "0.8" ] } %>
+<% pages.each do |ko, en, priority| %>
+  <% [ ko, en ].each do |path| %>
   <url>
-    <loc><%= ApplicationHelper::SITE_PRODUCTION_URL %>/</loc>
-    <lastmod>2026-06-17</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
+    <loc><%= base %><%= path %></loc>
+    <lastmod><%= ApplicationHelper::CONTENT_UPDATED_ON %></lastmod>
+    <priority><%= priority %></priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="<%= base %><%= ko %>"/>
+    <xhtml:link rel="alternate" hreflang="en" href="<%= base %><%= en %>"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="<%= base %><%= ko %>"/>
   </url>
+  <% end %>
+<% end %>
 </urlset>

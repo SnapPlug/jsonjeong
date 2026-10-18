@@ -10,6 +10,8 @@ module Jason
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
+    # 아이디어 아카이브(메인)만 ko/en을 쓴다. 기본값 en은 그대로 둬서 ops 화면에 영향이 없다.
+    config.i18n.available_locales = %i[en ko]
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
