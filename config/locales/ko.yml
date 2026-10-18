@@ -31,7 +31,6 @@ ko:
       active: "진행 중"
       paused: "멈춤"
       dropped: "폐기"
-      pivoted: "전환"
       released: "무료 공개"
     ongoing: "진행 중"
     stuck: "막힌 곳"

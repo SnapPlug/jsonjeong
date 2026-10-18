@@ -50,7 +50,7 @@
 
 - slug: bakery-agent
   batch: hundred
-  status: pivoted
+  status: active
   started_on: 2026-10-11
   hours: 2.6
   hours_source: session
@@ -196,7 +196,7 @@
   started_on: 2026-08-30
   hours: 59.0
   hours_source: commits
-  cost_usd: 0
+  cost_usd: 4.81
   revenue_usd: 0
   url: https://talk.snapplug.app
   ko:
@@ -231,9 +231,8 @@
 - slug: snapbrain
   screen: true
   batch: earlier
-  status: paused
+  status: active
   started_on: 2026-07-22
-  ended_on: 2026-08-09
   hours: 7.5
   hours_source: commits
   cost_usd: 0
@@ -241,12 +240,12 @@
   ko:
     title: 스냅브레인
     summary: 회사 데이터(ERP·카톡·메일)를 연결해 두고 물으면 실제 Claude가 숫자로 답하는 AI 팀원 데모.
-    stuck: 실제 회사 데이터는 데모보다 훨씬 크다. 그대로 붙이면 숫자가 틀린다. 데모는 멈추고, 실제 계약이 오면 설계를 바꾸기로 했다.
+    stuck: 실제 회사 데이터는 데모보다 훨씬 크다. 그대로 붙이면 숫자가 틀린다. 데모는 그대로 두고, 이 개념으로 고객사 프로젝트를 하고 있다.
     human: 미팅에서 시연하고 반응을 들은 건 사람이다.
   en:
     title: SnapBrain
     summary: An AI teammate demo. Connect company data (ERP, chats, email), ask a question, and a real Claude answers with numbers.
-    stuck: Real company data is far larger than the demo. Plugged in as is, the numbers come out wrong. Froze the demo; the design changes when a real contract comes.
+    stuck: Real company data is far larger than the demo. Plugged in as is, the numbers come out wrong. The demo stays as is; the concept now runs in a client project.
     human: Demoing it in meetings and hearing the reaction was done by a person.
 
 - slug: snap-teleprompter

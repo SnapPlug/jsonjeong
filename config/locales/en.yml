@@ -31,7 +31,6 @@ en:
       active: "Running"
       paused: "Paused"
       dropped: "Dropped"
-      pivoted: "Pivoted"
       released: "Free release"
     ongoing: "now"
     stuck: "Stuck at"
