@@ -21,6 +21,12 @@ en:
       earlier: "Earlier"
     spent_label: "spent"
     earned_label: "earned"
+    days: "Days"
+    days_unit: "%{days}d"
+    goal_note: "vs $100 goal"
+    by_status: "Ideas by status"
+    hours_short: "hours"
+    retro_heading: "Retro"
     status:
       active: "Running"
       paused: "Paused"

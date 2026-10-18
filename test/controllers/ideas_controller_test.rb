@@ -31,10 +31,11 @@ class IdeasControllerTest < ActionDispatch::IntegrationTest
     assert_match '<html lang="en">', response.body
   end
 
-  test "unknown idea or idea without retro is 404" do
+  test "unknown idea is 404, idea without retro still has a page" do
     get "/ideas/nope"
     assert_response :not_found
     get "/ideas/block-game"
-    assert_response :not_found
+    assert_response :success
+    assert_match "막힌 곳", response.body
   end
 end

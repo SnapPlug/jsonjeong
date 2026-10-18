@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 <% base = ApplicationHelper::SITE_PRODUCTION_URL %>
-<% pages = [ [ "/", "/en", "1.0" ] ] + Idea.all.select(&:retro?).map { |idea| [ "/ideas/#{idea.slug}", "/en/ideas/#{idea.slug}", "0.8" ] } %>
+<% pages = [ [ "/", "/en", "1.0" ] ] + Idea.all.map { |idea| [ "/ideas/#{idea.slug}", "/en/ideas/#{idea.slug}", "0.8" ] } %>
 <% pages.each do |ko, en, priority| %>
   <% [ ko, en ].each do |path| %>
   <url>

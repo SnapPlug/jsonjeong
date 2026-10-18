@@ -9,7 +9,6 @@ class IdeasController < ApplicationController
 
   def show
     @idea = Idea.find(params[:slug])
-    raise ActiveRecord::RecordNotFound unless @idea.retro?
   end
 
   private

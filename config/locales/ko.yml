@@ -21,6 +21,12 @@ ko:
       earlier: "그 이전"
     spent_label: "쓴 돈"
     earned_label: "번 돈"
+    days: "검증 기간"
+    days_unit: "%{days}일"
+    goal_note: "목표 $100 대비"
+    by_status: "상태별 아이디어"
+    hours_short: "시간"
+    retro_heading: "회고"
     status:
       active: "진행 중"
       paused: "멈춤"

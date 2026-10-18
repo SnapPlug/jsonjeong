@@ -14,7 +14,7 @@
 ## <%= t("archive.batch.#{batch}") %>
 
 <% Idea.all.select { |i| i.batch == batch }.each do |idea| -%>
-- <%= idea.title %> (<%= t("archive.status.#{idea.status}") %>, <%= idea.hours %>시간, 쓴 돈 $<%= idea.cost_usd %>, 번 돈 $<%= idea.revenue_usd %>): <%= idea.summary %><% if idea.stuck %> 막힌 곳: <%= idea.stuck %><% end %><% if idea.retro? %> 회고글: <%= ApplicationHelper::SITE_PRODUCTION_URL %>/ideas/<%= idea.slug %><% end %>
+- <%= idea.title %> (<%= t("archive.status.#{idea.status}") %>, <%= idea.hours %>시간, 쓴 돈 $<%= idea.cost_usd %>, 번 돈 $<%= idea.revenue_usd %>): <%= idea.summary %><% if idea.stuck %> 막힌 곳: <%= idea.stuck %><% end %> 자세히: <%= ApplicationHelper::SITE_PRODUCTION_URL %>/ideas/<%= idea.slug %>
 <% end -%>
 
 <% end -%>

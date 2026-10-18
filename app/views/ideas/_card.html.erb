@@ -1,52 +1,46 @@
-<%# nomads.com 카드(크기·간격·모서리 동일): 사진 위에 숫자를 겹친다. 마우스를 올리거나(데스크톱) 눌러서 포커스하면(휴대폰) 자세한 내용이 덮인다. %>
+<%# nomads.com 카드(크기·간격·모서리 동일): 사진 위에 숫자 몇 개만. 마우스를 올리거나(데스크톱) 포커스하면(휴대폰) 막대 그래프가 덮인다. %>
 <%
-  href = idea.retro? ? idea_path(idea.slug) : idea.url
-  tag_name = href ? :a : :div
-  attrs = href ? { href: href } : { tabindex: 0 }
-  attrs.merge!(target: "_blank", rel: "noopener") if href && !idea.retro?
+  max = Idea.maxima
+  # 많이 쓸수록 주의·심각. 번 돈은 하루 목표 $100 기준.
+  spend_tone = ->(r) { r < 0.34 ? :good : (r < 0.67 ? :warning : :critical) }
+  bars = [
+    [ "⏱", t("archive.hours"), idea.hours / max[:hours], work_hours(idea.hours) ],
+    [ "📅", t("archive.days"), idea.days.to_f / max[:days], t("archive.days_unit", days: idea.days) ],
+    [ "💸", t("archive.cost"), max[:cost_usd].zero? ? 0 : idea.cost_usd / max[:cost_usd], usd(idea.cost_usd) ]
+  ].map { |emoji, label, ratio, value| [ emoji, label, ratio, value, spend_tone.(ratio) ] }
+  earned = idea.revenue_usd / 100.0
+  bars << [ "💰", t("archive.revenue"), earned, usd(idea.revenue_usd), earned >= 1 ? :good : :warning ]
 %>
-<%= content_tag tag_name, **attrs, class: "group relative block overflow-hidden rounded-xl bg-brand-dark text-white shadow-[0_0_0_1px_#ddd] outline-none focus-visible:ring-4 focus-visible:ring-brand #{Idea::CARD_HEIGHT}" do %>
-  <%= idea_image idea, loading: "lazy", decoding: "async", class: "absolute inset-0 h-full w-full object-cover blur-[1.5px] transition duration-500 group-hover:scale-105" %>
-  <div class="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/80"></div>
+<%= link_to idea_path(idea.slug), class: "group relative block overflow-hidden rounded-xl bg-brand-dark text-white shadow-[0_0_0_1px_#ddd] outline-none focus-visible:ring-4 focus-visible:ring-brand #{Idea::CARD_HEIGHT}" do %>
+  <%= idea_image idea, loading: "lazy", decoding: "async", class: "absolute inset-0 h-full w-full object-cover" %>
+  <div class="absolute inset-0 bg-black/30"></div>
 
-  <div class="absolute inset-x-0 top-0 flex items-start justify-between p-[14px] [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
-    <span class="border-b-2 border-white/80 pb-0.5 text-xs font-bold min-[700px]:text-sm"><%= t("archive.batch_short.#{idea.batch}") %></span>
-    <span class="text-right leading-none">
-      <span class="block text-base font-extrabold min-[700px]:text-2xl"><%= work_hours(idea.hours) %></span>
-      <span class="mt-1 block text-[10px] font-semibold opacity-90 min-[700px]:text-[11px]"><%= t("archive.hours") %></span>
+  <div class="absolute inset-0 transition-opacity duration-200 group-hover:opacity-0 group-focus-visible:opacity-0 [text-shadow:0_1px_4px_rgb(0_0_0/0.75)]">
+    <span class="absolute left-[14px] top-[14px] border-b-2 border-white pb-0.5 text-base font-bold min-[700px]:text-lg"><%= number %></span>
+    <%# 휴대폰 2열에선 한 줄(3.6시간), 넓으면 nomads처럼 숫자 아래 단위 %>
+    <span class="absolute right-[14px] top-[14px] text-right leading-none">
+      <span class="text-base font-bold min-[700px]:block min-[700px]:text-xl"><%= number_with_precision(idea.hours, precision: 1, strip_insignificant_zeros: true) %></span><span class="text-[11px] font-semibold min-[700px]:mt-0.5 min-[700px]:block"><%= t("archive.hours_short") %></span>
+    </span>
+
+    <%# 위아래 모서리 숫자를 피한 가운데 띠. 휴대폰 2열에선 글자를 줄이고 3줄까지만. %>
+    <div class="absolute inset-x-0 inset-y-[36px] flex flex-col items-center justify-center px-2.5 text-center min-[700px]:inset-y-[56px] min-[700px]:px-4">
+      <h3 class="line-clamp-3 text-[15px] font-bold leading-tight min-[700px]:text-[26px]"><%= idea.title %></h3>
+      <p class="mt-1 hidden min-[700px]:block min-[700px]:text-base"><%= t("archive.status.#{idea.status}") %></p>
+    </div>
+
+    <span class="absolute bottom-[14px] left-[14px] leading-none">
+      <span class="block text-sm font-bold min-[700px]:text-base"><%= usd(idea.cost_usd) %></span>
+      <span class="mt-0.5 block text-[10px] font-bold uppercase"><%= t("archive.spent_label") %></span>
+    </span>
+    <span class="absolute bottom-[14px] right-[14px] text-right leading-none">
+      <span class="block text-base font-bold min-[700px]:text-xl"><%= usd(idea.revenue_usd) %></span>
+      <span class="mt-0.5 block text-[10px] font-bold uppercase"><%= t("archive.earned_label") %></span>
     </span>
   </div>
 
-  <div class="absolute inset-0 flex flex-col items-center justify-center px-6 text-center [text-shadow:0_2px_8px_rgb(0_0_0/0.7)]">
-    <h3 class="text-[17px] font-bold leading-tight min-[361px]:text-lg min-[700px]:text-[26px]"><%= idea.title %></h3>
-    <p class="mt-1 hidden text-sm font-medium opacity-95 min-[361px]:block min-[700px]:text-base"><%= t("archive.status.#{idea.status}") %></p>
-  </div>
-
-  <div class="absolute inset-x-0 bottom-0 flex items-end justify-between p-[14px] [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
-    <span class="leading-none">
-      <span class="block text-sm font-bold min-[700px]:text-lg"><%= usd(idea.cost_usd) %></span>
-      <span class="mt-1 block text-[10px] font-semibold uppercase opacity-90 min-[700px]:text-[11px]"><%= t("archive.spent_label") %></span>
-    </span>
-    <span class="text-right leading-none">
-      <span class="block text-base font-extrabold min-[700px]:text-2xl"><%= usd(idea.revenue_usd) %></span>
-      <span class="mt-1 block text-[10px] font-semibold uppercase opacity-90 min-[700px]:text-[11px]"><%= t("archive.earned_label") %></span>
-    </span>
-  </div>
-
-  <div class="absolute inset-0 flex flex-col gap-2 overflow-y-auto bg-brand-dark p-[14px] text-left text-xs leading-relaxed min-[700px]:p-5 min-[700px]:text-sm opacity-0 transition duration-200 group-hover:opacity-100 group-focus:opacity-100 group-focus-visible:opacity-100">
-    <p class="text-base font-bold"><%= idea.title %></p>
-    <p class="text-white/90"><%= idea.summary %></p>
-    <% if idea.stuck.present? %>
-      <p><span class="font-semibold text-brand"><%= t("archive.stuck") %></span> <span class="text-white/85"><%= idea.stuck %></span></p>
-    <% end %>
-    <% if idea.human.present? %>
-      <p><span class="font-semibold text-brand"><%= t("archive.human") %></span> <span class="text-white/85"><%= idea.human %></span></p>
-    <% end %>
-    <p class="mt-auto pt-2 font-mono text-xs text-white/60">
-      <%= idea.started_on.strftime("%Y-%m-%d") %> → <%= idea.ongoing? ? t("archive.ongoing") : idea.ended_on.strftime("%Y-%m-%d") %> · <%= t("archive.hours_source.#{idea.hours_source}") %>
-    </p>
-    <% if href %>
-      <p class="font-semibold text-brand"><%= idea.retro? ? t("archive.retro") : t("archive.visit") %></p>
+  <div class="absolute inset-0 flex flex-col justify-center gap-2.5 bg-black/70 px-[14px] opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-visible:opacity-100 min-[700px]:gap-3 min-[700px]:px-5">
+    <% bars.each do |emoji, label, ratio, value, tone| %>
+      <%= render "bar", emoji:, label:, ratio:, value:, tone: %>
     <% end %>
   </div>
 <% end %>

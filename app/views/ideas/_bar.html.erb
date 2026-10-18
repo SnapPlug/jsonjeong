@@ -1,0 +1,14 @@
+<%# 카드 위 막대 한 줄 — nomads.com 마우스오버 그래프. 색은 상태색(좋음·주의·심각)이고 값 글자가 옆에 붙어 색만으로 읽지 않는다. %>
+<%
+  ratio = ratio.to_f.clamp(0, 1)
+  color = { good: "#0ca30c", warning: "#fab219", critical: "#d03b3b" }.fetch(tone)
+%>
+<div class="grid grid-cols-[minmax(0,6.5rem)_1fr] items-center gap-2" title="<%= label %>: <%= value %>">
+  <span class="truncate text-[13px] font-medium [text-shadow:0_1px_2px_rgb(0_0_0/0.6)] min-[700px]:text-[15px]"><%= emoji %> <%= label %></span>
+  <span class="relative h-5 overflow-hidden rounded-full bg-white/15 min-[700px]:h-6">
+    <% if ratio.positive? %>
+      <span class="absolute inset-y-0 left-0 rounded-full" style="width: <%= [ (ratio * 100).round(1), 8 ].max %>%; background: <%= color %>"></span>
+    <% end %>
+    <span class="absolute inset-y-0 right-2 flex items-center text-[11px] font-bold text-white [text-shadow:0_1px_2px_rgb(0_0_0/0.8)] min-[700px]:text-xs"><%= value %></span>
+  </span>
+</div>

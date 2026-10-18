@@ -43,6 +43,19 @@ class IdeaTest < ActiveSupport::TestCase
     refute Idea.all.find(&:ended_on).ongoing?
   end
 
+  test "days count both ends and ongoing ideas run to today" do
+    done = Idea.find("block-game")
+    assert_equal 2, done.days # 10-03 → 10-04
+    live = Idea.find("workoutbell")
+    assert_equal (Date.current - live.started_on).to_i + 1, live.days
+  end
+
+  test "maxima and status counts cover every idea" do
+    m = Idea.maxima
+    assert_equal Idea.all.map(&:hours).max, m[:hours]
+    assert_equal Idea.all.size, Idea.status_counts.values.sum
+  end
+
   test "find raises for an unknown slug" do
     assert_equal "workoutbell", Idea.find("workoutbell").slug
     assert_raises(ActiveRecord::RecordNotFound) { Idea.find("nope") }

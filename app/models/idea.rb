@@ -17,6 +17,15 @@ class Idea < Data.define(:slug, :batch, :status, :started_on, :ended_on, :hours,
       all.find { |idea| idea.slug == slug } or raise ActiveRecord::RecordNotFound, "idea #{slug}"
     end
 
+    # 카드 막대 그래프의 기준(가장 큰 값 = 막대 끝)
+    def maxima
+      { hours: all.map(&:hours).max, days: all.map(&:days).max, cost_usd: all.map(&:cost_usd).max }
+    end
+
+    def status_counts
+      STATUSES.index_with { |status| all.count { |idea| idea.status == status } }.select { |_, n| n.positive? }
+    end
+
     def totals(ideas = all)
       { count: ideas.size, hours: ideas.sum(&:hours), cost_usd: ideas.sum(&:cost_usd), revenue_usd: ideas.sum(&:revenue_usd) }
     end
@@ -25,6 +34,9 @@ class Idea < Data.define(:slug, :batch, :status, :started_on, :ended_on, :hours,
   def initialize(url: nil, ended_on: nil, **) = super
 
   def ongoing? = ended_on.nil?
+
+  # 검증 기간(일). 시작일과 끝난 날을 모두 센다. 진행 중이면 오늘까지.
+  def days = ((ended_on || Date.current) - started_on).to_i + 1
 
   %w[title summary stuck human].each do |field|
     define_method(field) { text.dig(I18n.locale.to_s, field) }

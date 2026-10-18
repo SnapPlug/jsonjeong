@@ -23,6 +23,7 @@ class SeoControllerTest < ActionDispatch::IntegrationTest
     assert_match "<loc>https://jsonjeong.com/</loc>", response.body
     assert_match "<loc>https://jsonjeong.com/en/ideas/workoutbell</loc>", response.body
     assert_match 'hreflang="en"', response.body
+    assert_match "<loc>https://jsonjeong.com/ideas/block-game</loc>", response.body
     assert_match %r{<lastmod>\d{4}-\d{2}-\d{2}</lastmod>}, response.body
   end
 
