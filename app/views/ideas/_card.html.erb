@@ -1,39 +1,39 @@
-<%# nomads.com 카드: 사진 위에 숫자를 겹친다. 마우스를 올리거나(데스크톱) 눌러서 포커스하면(휴대폰) 자세한 내용이 덮인다. %>
+<%# nomads.com 카드(크기·간격·모서리 동일): 사진 위에 숫자를 겹친다. 마우스를 올리거나(데스크톱) 눌러서 포커스하면(휴대폰) 자세한 내용이 덮인다. %>
 <%
   href = idea.retro? ? idea_path(idea.slug) : idea.url
   tag_name = href ? :a : :div
   attrs = href ? { href: href } : { tabindex: 0 }
   attrs.merge!(target: "_blank", rel: "noopener") if href && !idea.retro?
 %>
-<%= content_tag tag_name, **attrs, class: "group relative block aspect-[9/8] overflow-hidden rounded-2xl bg-brand-dark text-white shadow-sm outline-none focus-visible:ring-4 focus-visible:ring-brand" do %>
+<%= content_tag tag_name, **attrs, class: "group relative block overflow-hidden rounded-xl bg-brand-dark text-white shadow-[0_0_0_1px_#ddd] outline-none focus-visible:ring-4 focus-visible:ring-brand #{Idea::CARD_HEIGHT}" do %>
   <%= idea_image idea, loading: "lazy", decoding: "async", class: "absolute inset-0 h-full w-full object-cover blur-[1.5px] transition duration-500 group-hover:scale-105" %>
   <div class="absolute inset-0 bg-gradient-to-b from-black/65 via-black/50 to-black/80"></div>
 
-  <div class="absolute inset-x-0 top-0 flex items-start justify-between p-4 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
-    <span class="border-b-2 border-white/80 pb-0.5 text-sm font-bold"><%= t("archive.batch_short.#{idea.batch}") %></span>
+  <div class="absolute inset-x-0 top-0 flex items-start justify-between p-[14px] [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
+    <span class="border-b-2 border-white/80 pb-0.5 text-xs font-bold min-[700px]:text-sm"><%= t("archive.batch_short.#{idea.batch}") %></span>
     <span class="text-right leading-none">
-      <span class="block text-2xl font-extrabold"><%= work_hours(idea.hours) %></span>
-      <span class="mt-1 block text-[11px] font-semibold opacity-90"><%= t("archive.hours") %></span>
+      <span class="block text-base font-extrabold min-[700px]:text-2xl"><%= work_hours(idea.hours) %></span>
+      <span class="mt-1 block text-[10px] font-semibold opacity-90 min-[700px]:text-[11px]"><%= t("archive.hours") %></span>
     </span>
   </div>
 
   <div class="absolute inset-0 flex flex-col items-center justify-center px-6 text-center [text-shadow:0_2px_8px_rgb(0_0_0/0.7)]">
-    <h3 class="text-2xl font-extrabold leading-tight sm:text-[26px]"><%= idea.title %></h3>
-    <p class="mt-1 text-[15px] font-medium opacity-95"><%= t("archive.status.#{idea.status}") %></p>
+    <h3 class="text-[17px] font-bold leading-tight min-[361px]:text-lg min-[700px]:text-[26px]"><%= idea.title %></h3>
+    <p class="mt-1 hidden text-sm font-medium opacity-95 min-[361px]:block min-[700px]:text-base"><%= t("archive.status.#{idea.status}") %></p>
   </div>
 
-  <div class="absolute inset-x-0 bottom-0 flex items-end justify-between p-4 [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
+  <div class="absolute inset-x-0 bottom-0 flex items-end justify-between p-[14px] [text-shadow:0_1px_3px_rgb(0_0_0/0.6)]">
     <span class="leading-none">
-      <span class="block text-lg font-bold"><%= usd(idea.cost_usd) %></span>
-      <span class="mt-1 block text-[11px] font-semibold uppercase opacity-90"><%= t("archive.spent_label") %></span>
+      <span class="block text-sm font-bold min-[700px]:text-lg"><%= usd(idea.cost_usd) %></span>
+      <span class="mt-1 block text-[10px] font-semibold uppercase opacity-90 min-[700px]:text-[11px]"><%= t("archive.spent_label") %></span>
     </span>
     <span class="text-right leading-none">
-      <span class="block text-2xl font-extrabold"><%= usd(idea.revenue_usd) %></span>
-      <span class="mt-1 block text-[11px] font-semibold uppercase opacity-90"><%= t("archive.earned_label") %></span>
+      <span class="block text-base font-extrabold min-[700px]:text-2xl"><%= usd(idea.revenue_usd) %></span>
+      <span class="mt-1 block text-[10px] font-semibold uppercase opacity-90 min-[700px]:text-[11px]"><%= t("archive.earned_label") %></span>
     </span>
   </div>
 
-  <div class="absolute inset-0 flex flex-col gap-2 overflow-y-auto bg-brand-dark p-5 text-left text-sm leading-relaxed opacity-0 transition duration-200 group-hover:opacity-100 group-focus:opacity-100 group-focus-visible:opacity-100">
+  <div class="absolute inset-0 flex flex-col gap-2 overflow-y-auto bg-brand-dark p-[14px] text-left text-xs leading-relaxed min-[700px]:p-5 min-[700px]:text-sm opacity-0 transition duration-200 group-hover:opacity-100 group-focus:opacity-100 group-focus-visible:opacity-100">
     <p class="text-base font-bold"><%= idea.title %></p>
     <p class="text-white/90"><%= idea.summary %></p>
     <% if idea.stuck.present? %>

@@ -163,6 +163,26 @@
     summary: Went through 388 posts in business communities looking for problems people already pay to solve.
     stuck: Every candidate (Google Shopping image rules, Amazon ad charges) fell apart on checking.
 
+- slug: telecom-lease
+  batch: earlier
+  status: paused
+  started_on: 2026-09-25
+  ended_on: 2026-09-30
+  hours: 4.5
+  hours_source: session
+  cost_usd: 0
+  revenue_usd: 0
+  ko:
+    title: 아파트 옥상 기지국 임대료 DB
+    summary: 전국 아파트 22,543곳의 감사보고서를 읽어 통신사가 내는 옥상·중계기 임대료 시세표(4,418곳, 계약 10,360건)를 만들었다. 관리회사에 팔 생각이었다.
+    stuck: 첫 관리소장 미팅에서 막혔다. 소장은 임대료를 올려도 자기 몫은 없고 실패 책임만 진다. 원하는 건 시세가 아니라 판례였다.
+    human: 관리소장 미팅은 직접 했다. 통신 일 10년 한 경험이 출발점이었다.
+  en:
+    title: Rooftop cell site rent database
+    summary: Read the audit reports of 22,543 Korean apartment complexes and built a rate table of what carriers pay for rooftop and repeater sites (4,418 complexes, 10,360 contracts). The plan was to sell it to property management companies.
+    stuck: Stuck at the first meeting with a building manager. A manager gains nothing from raising the rent and takes the blame if it fails. What they wanted was case law, not market rates.
+    human: I took the building manager meeting myself. Ten years of telecom work was where the idea came from.
+
 - slug: snapdeck
   batch: earlier
   status: paused

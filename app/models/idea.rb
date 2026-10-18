@@ -2,6 +2,8 @@
 class Idea < Data.define(:slug, :batch, :status, :started_on, :ended_on, :hours, :hours_source, :cost_usd, :revenue_usd, :url, :text)
   STATUSES = %w[active paused dropped pivoted released].freeze
   BATCHES = %w[hundred earlier].freeze
+  # nomads.com 카드 높이 그대로(2026-10-18 실측). 열 수는 ideas/index의 격자가 맞춘다.
+  CARD_HEIGHT = "h-[calc(50vw-28px)] min-[361px]:h-[calc(50vw-42px)] min-[700px]:h-[calc(33vw-56px)] min-[1000px]:h-[calc(25vw-56px)] min-[1300px]:h-[284px]".freeze
 
   class << self
     def all
