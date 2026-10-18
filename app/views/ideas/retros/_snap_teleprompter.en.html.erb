@@ -1,0 +1,16 @@
+<h2>Why I started</h2>
+<p>I wanted to shoot YouTube videos in one take with no editing. That meant reading a script while looking at the camera. There was an overseas app that puts the script in the MacBook notch, but it cost $29. I didn't want to pay that, so I built my own.</p>
+
+<h2>What I built</h2>
+<p>The first commit was at 7 a.m. on June 25. By that evening it had an icon, sentence-aware line wrapping and an estimated reading time. Day two added a timer and background colors; day three added hiding from screen share and an onboarding screen. When you share your screen on Zoom or Teams, the other side can't see the script.</p>
+<p>Space pauses and arrow keys change speed even while another app has focus. Three days, 30 commits, 11.5 hours.</p>
+
+<h2>Where it got stuck</h2>
+<p>The features took a day. What ate the last day was macOS. Whenever another app went full screen, the script over the notch disappeared. It took four fixes, changing the window level, adding a timer that checks every 0.2 seconds, and removing one setting, before it stayed put.</p>
+<p>The plan was to sell it. The spec even had Pro at $7.99 and an early bird price of $4.99. But I never signed it, notarized it or made an installer. To use it today you still download the source and build it yourself.</p>
+
+<h2>What a human had to do</h2>
+<p>Feeling that $29 was too much, drawing the line between free and paid, and clicking through 22 test scenarios by hand. I found the full-screen bug by actually using it. And one person who came in from a single Threads post used it the next day for a graduate school interview. They sent 7 pieces of feedback and said "I'd pay $2.99."</p>
+
+<h2>What I learned</h2>
+<p>I built something close to a $29 app in three days. The price a real user named was $3–10. When building costs almost nothing, someone else's price tag falls apart quickly too. In the end I didn't sell it and kept it open source: 17 stars, 3 forks on GitHub. I still record videos with it.</p>

@@ -223,9 +223,13 @@
   ko:
     title: SnapDeck
     summary: AI로 만든 앱의 보안 구멍을 쉬운 말로 찾아 주는 맥 앱.
+    stuck: 버전은 1.4.4까지 갔지만 설치 파일 저장소가 비공개라 베타 신청자 11명의 다운로드가 0번이었다. 석 달 뒤에야 알았다.
+    human: 애플 개발자 계정 없이 배포해서 받는 사람마다 우클릭으로 열어야 했다. 실행 오류와 오탐은 베타테스터가 알려 줬다.
   en:
     title: SnapDeck
     summary: A Mac app that finds security holes in AI-built apps and explains them in plain words.
+    stuck: It reached v1.4.4, but the installer repo was private, so 11 beta signups downloaded nothing. I found out three months later.
+    human: Shipped without an Apple developer account, so everyone had to right-click to open it. Beta testers reported the launch error and false positives.
 
 - slug: snap-teleprompter
   screen: true
@@ -241,9 +245,13 @@
   ko:
     title: Snap Teleprompter
     summary: 맥북 노치 자리에 대본이 흘러가는 텔레프롬프터. 무료 공개.
+    stuck: 기능은 하루면 됐다. 다른 앱이 전체 화면이 되면 대본이 사라지는 macOS 문제를 고치는 데 네 번이 걸렸다. 서명과 설치 파일은 끝내 만들지 않았다.
+    human: $29가 아깝다고 느낀 것, 테스트 22개를 손으로 눌러 본 것, 그리고 다음 날 면접에 써 보고 "2.99달러면 산다"고 답한 사용자 한 분.
   en:
     title: Snap Teleprompter
     summary: A teleprompter that scrolls your script under the MacBook notch. Free and open source.
+    stuck: The features took a day. Fixing the macOS issue where the script vanished over full-screen apps took four tries. I never made a signed installer.
+    human: Feeling $29 was too much, clicking through 22 tests by hand, and one user who used it in an interview the next day and said "I'd pay $2.99."
 
 - slug: snapmusk
   screen: true
@@ -258,10 +266,14 @@
   url: https://github.com/SnapPlug/snapmusk
   ko:
     title: SnapMusk
-    summary: 맥북 노치에 사는 AI 비서. 말로 부르면 하루 일정을 시간 단위로 짜 준다. 무료 공개.
+    summary: 맥북 노치와 아이폰 다이내믹 아일랜드에 뜨는 타임박싱 타이머. 처음엔 말로 부르는 AI 비서였다. 무료 공개.
+    stuck: 은행 보안 프로그램이 마이크를 쓰는 앱의 통신을 통째로 막았다. 음성과 Claude를 빼고 손으로 넣는 타이머만 남겼다.
+    human: 원인을 하나씩 지워 가며 찾은 것, 음성을 버리기로 한 것, 아이폰 7일마다 다시 서명하는 일은 사람이 했다.
   en:
     title: SnapMusk
-    summary: An AI assistant living in the MacBook notch. Call it by voice and it plans your day in time blocks. Free and open source.
+    summary: A timeboxing timer in the MacBook notch and the iPhone Dynamic Island. It started as a voice-driven AI assistant. Free and open source.
+    stuck: Banking security software cut off the network for any app using the microphone. Voice and Claude were removed and only a manual timer shipped.
+    human: Finding the cause by elimination, deciding to drop voice, and re-signing the iPhone app every 7 days were done by a person.
 
 - slug: supabase-guide
   screen: true
@@ -277,6 +289,10 @@
   ko:
     title: Supabase 바이브코딩 가이드
     summary: Claude Code로 Supabase를 쓸 때 터지는 문제와 해결책 모음. 무료 공개.
+    stuck: 장 9개를 열고 3개만 채웠다(문제 11개). 4월 13일 이후 커밋이 없다.
+    human: 무엇이 진짜 함정인지는 사람이 골랐다. 몇 달 뒤 고객 일에서 같은 함정(RLS 누락, 무료 플랜 정지)을 사람이 직접 찾아 고쳤다.
   en:
     title: Supabase vibe coding guide
     summary: Problems you hit using Supabase with Claude Code, and how to fix them. Free and open source.
+    stuck: Opened 9 chapters and filled 3 (11 problems). No commits since April 13.
+    human: A person picked which traps were real. Months later, a person found and fixed the same traps (missing RLS, free-plan pause) in client work.

@@ -1,0 +1,17 @@
+<h2>Why I started</h2>
+<p>I had AI read 15 KakaoTalk open chat rooms, about 106,000 lines, to see where people building with AI get stuck. Of twelve pains, number five was "can I trust this?": security. Karpathy's line that deploying his app was harder than writing it was also on my mind.</p>
+<p>The first picture was an app where non-developers check their half-working app as red, yellow or green, and get a fix to paste into their AI tool. As I built it, it narrowed down to a security check.</p>
+
+<h2>What I built</h2>
+<p>Drop a project folder in and it scans on your own computer: keys left in .env or git, RLS turned off, an exposed service_role, hardcoded localhost, CORS open to everyone. Each finding comes with a fix to paste straight into your AI tool. The point was that your keys never leave your machine.</p>
+<p>It reached version 1.4.4: probing the deployed site directly, testing real Supabase RLS, cutting false positives. 163 tests passed. The landing page showed $39 crossed out and $0. There was an English page too.</p>
+
+<h2>Where it got stuck</h2>
+<p>I actually spent 12 days trying to get traction abroad. At the end of June I turned to Korea, and app commits stopped after July 3. Reviewing the business in August, I wrote down two things: "vibe coding" was fading as a term, and security tips alone weren't worth money.</p>
+<p>The worst part I found out in August. There were 11 beta signups, but the repo holding the installer was private, so downloads were zero. The link in the signup email pointed to a three-month-old build full of false positives. The failure made no sound. On August 18 I fixed the path in a day and emailed the new build to everyone who signed up. That was the last commit.</p>
+
+<h2>What a human had to do</h2>
+<p>I never got an Apple developer account ($99/year), so there was no notarization and every person had to right-click → Open to launch it. A beta tester reported the launch error, and testers sent two rounds of false-positive feedback. I rewrote the launch post myself.</p>
+
+<h2>What I learned</h2>
+<p>Most of the 28 hours went into making the app smarter, while the road from the app to people was broken for three months. I watched the building side and never checked the delivery side. One line I wrote while rewriting the signup email in plain words stays with me: if it isn't read, it might as well not have been sent.</p>

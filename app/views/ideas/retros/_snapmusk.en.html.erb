@@ -1,0 +1,17 @@
+<h2>Why I started</h2>
+<p>I couldn't keep up with how fast AI was producing work. I was juggling too many things at once and burning out. I had a to-do list, but nothing decided when each thing would happen. I needed an assistant that would cut the day into time blocks.</p>
+<p>The first picture was big: say "Hey Musk", it understands you (WhisperKit, speech recognition on the Mac itself), Claude plans the schedule, and a voice coaches you through the day, all from the notch.</p>
+
+<h2>What I built</h2>
+<p>The first commit had 5,123 lines: always-on voice wake-up, back-and-forth scheduling with Claude, a voice coach and Apple Calendar. Four days later I deleted almost all of it.</p>
+<p>The released version is simple. A timer sits in the notch, you pick the time with a drum-roll picker, and through iCloud Calendar the same timer shows on the iPhone's Dynamic Island and lock screen. No server, no AI. The iPhone app took two hours.</p>
+
+<h2>Where it got stuck</h2>
+<p>The app silently couldn't reach the internet. I ruled out signing, entitlements, the bundle ID and a VPN one by one and found the cause: banking security software. The keyboard-security and certificate programs that Korean banks install on Macs were cutting off the network for any app that "uses the microphone and sends data out".</p>
+<p>I built a workaround: a helper launched by the OS does the networking, and the app checks a file for results every 0.05 seconds. It still kept dropping out for 15+ seconds at a time. And "Hey Musk" was heard as "mask" and "moosk". In the end I removed voice and Claude and shipped only a timer you set by hand.</p>
+
+<h2>What a human had to do</h2>
+<p>Tracking down the cause by elimination, and deciding to drop voice. Putting the app on an iPhone means trusting the device over USB and signing it, and with a free Apple account it has to be re-signed every 7 days. That's done by hand too.</p>
+
+<h2>What I learned</h2>
+<p>A good part of the 5.7 hours went into features I later deleted. What I needed from the start wasn't a talking assistant but a timer that shows what this block is for. I also learned that if you build Mac apps in Korea, suspect the banking security software first. It's free and open source, with zero stars so far.</p>

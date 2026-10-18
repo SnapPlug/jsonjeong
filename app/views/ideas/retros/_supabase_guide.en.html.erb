@@ -1,0 +1,15 @@
+<h2>Why I started</h2>
+<p>Hooking up a Supabase backend with Claude Code kept hitting the same traps: forgetting RLS, using the anon key everywhere, not knowing a free project pauses after a week of inactivity. I thought that if I wrote down why the AI builds it that way, the next person might fall in less often.</p>
+
+<h2>What I built</h2>
+<p>A "Supabase vibe coding problem set". Each problem has four parts: when it happens, why the AI builds it this way, how to fix it, and how to avoid it next time. Two days, 3 commits, 1.5 hours.</p>
+<p>I opened 9 chapters. RLS got 6 problems, migrations 1, and vibe-coding patterns 4: anon key exposure, free-plan traps, RPC overuse, and guarding with both API and RLS. The auth, schema, edge functions, storage, realtime and TypeScript chapters are titles only.</p>
+
+<h2>Where it got stuck</h2>
+<p>It didn't get stuck so much as stop. There have been no commits since I added problem 11 on April 13. A problem set only becomes useful as problems pile up, and I moved on to the next build. It had 2 visits in the last two weeks, one of them from Threads.</p>
+
+<h2>What a human had to do</h2>
+<p>A person picked which traps were real. And months later, what the problem set warned about actually happened. In client work a service went down from the free-plan pause, and on another client's site I found and fixed missing RLS myself. Both were found by human eyes.</p>
+
+<h2>What I learned</h2>
+<p>Writing it down doesn't mean it gets done. I wrote up the free-plan pause and its fix as problem 9 in April, and still only added the safeguard to my client's project after it went down. It's free and open, with 10 stars and 2 forks on GitHub.</p>

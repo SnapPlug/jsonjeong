@@ -81,7 +81,7 @@ module ApplicationHelper
           "name" => "SnapMusk",
           "applicationCategory" => "ProductivityApplication",
           "operatingSystem" => "macOS",
-          "description" => "맥북 노치에 사는 AI 타임박싱 비서. '헤이 머스크' 웨이크워드, 온디바이스 음성인식(WhisperKit), Claude로 하루를 타임박싱합니다.",
+          "description" => "맥북 노치와 아이폰 다이내믹 아일랜드에 뜨는 타임박싱 타이머. 서버 없이 iCloud 캘린더로 동기화합니다.",
           "url" => "https://github.com/SnapPlug/snapmusk",
           "creator" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" }
         },
