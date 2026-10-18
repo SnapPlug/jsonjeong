@@ -8,7 +8,7 @@
     <%= idea_image @idea, class: "absolute inset-0 h-full w-full object-cover" %>
     <div class="absolute inset-0 bg-gradient-to-b from-black/30 to-black/75"></div>
     <div class="absolute inset-x-0 bottom-0 p-5 [text-shadow:0_2px_8px_rgb(0_0_0/0.7)]">
-      <p class="text-sm font-semibold opacity-90"><%= t("archive.batch_short.#{@idea.batch}") %> · <%= t("archive.status.#{@idea.status}") %></p>
+      <p class="flex items-center gap-2 text-sm font-semibold"><%= render "status_badge", status: @idea.status %> <span class="opacity-90"><%= t("archive.batch_short.#{@idea.batch}") %></span></p>
       <h1 class="mt-1 text-3xl font-extrabold leading-tight"><%= @idea.title %></h1>
     </div>
   </header>

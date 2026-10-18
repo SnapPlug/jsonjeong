@@ -1,0 +1,12 @@
+<%# 상태 배지 — 글자가 상태를 말하고 색은 거든다. 진행 중=초록, 전환=파랑, 멈춤=노랑, 폐기=빨강, 무료 공개=흰색 %>
+<%
+  colors = {
+    "active" => "bg-[#0ca30c] text-white",
+    "pivoted" => "bg-[#2f6fe4] text-white",
+    "paused" => "bg-[#fab219] text-brand-dark",
+    "dropped" => "bg-[#d03b3b] text-white",
+    "released" => "bg-white text-brand-dark ring-1 ring-black/10"
+  }
+  size = local_assigns.fetch(:size, :md) == :sm ? "px-2 text-[11px] leading-[18px]" : "px-2.5 py-0.5 text-xs leading-5 min-[700px]:text-[13px]"
+%>
+<span class="inline-flex items-center rounded-full font-bold [text-shadow:none] <%= size %> <%= colors.fetch(status) %>"><%= t("archive.status.#{status}") %></span>

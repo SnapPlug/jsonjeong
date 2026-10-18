@@ -25,7 +25,7 @@
     <%# 위아래 모서리 숫자를 피한 가운데 띠. 휴대폰 2열에선 글자를 줄이고 3줄까지만. %>
     <div class="absolute inset-x-0 inset-y-[36px] flex flex-col items-center justify-center px-2.5 text-center min-[700px]:inset-y-[56px] min-[700px]:px-4">
       <h3 class="line-clamp-3 text-[15px] font-bold leading-tight min-[700px]:text-[26px]"><%= idea.title %></h3>
-      <p class="mt-1 hidden min-[700px]:block min-[700px]:text-base"><%= t("archive.status.#{idea.status}") %></p>
+      <p class="mt-1.5 min-[700px]:mt-2"><%= render "status_badge", status: idea.status, size: :sm %></p>
     </div>
 
     <span class="absolute bottom-[14px] left-[14px] leading-none">

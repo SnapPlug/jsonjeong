@@ -11,12 +11,12 @@
     <% end %>
   </dl>
 
-  <h2 class="mt-2.5 text-xs font-semibold text-muted"><%= t("archive.by_status") %></h2>
-  <ul class="mt-1.5 flex flex-col gap-1">
+  <h2 class="mt-2 text-xs font-semibold text-muted"><%= t("archive.by_status") %></h2>
+  <ul class="mt-1.5 flex flex-col gap-[3px]">
     <% top = counts.values.max %>
     <% counts.each do |status, n| %>
-      <li class="grid grid-cols-[4.5rem_1fr_1.5rem] items-center gap-2 text-[13px]" title="<%= t("archive.status.#{status}") %>: <%= n %>">
-        <span class="truncate"><%= t("archive.status.#{status}") %></span>
+      <li class="grid grid-cols-[4.75rem_1fr_1.25rem] items-center gap-2 text-[13px]" title="<%= t("archive.status.#{status}") %>: <%= n %>">
+        <span><%= render "status_badge", status:, size: :sm %></span>
         <span class="h-2.5 rounded-full bg-black/[0.06]"><span class="block h-full rounded-full bg-brand-dark" style="width: <%= (n * 100.0 / top).round(1) %>%"></span></span>
         <span class="text-right font-bold tabular-nums"><%= n %></span>
       </li>
