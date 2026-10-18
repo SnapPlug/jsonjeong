@@ -54,6 +54,8 @@ ${BOLD}Options:${RESET}
   --github-org <org>        GitHub 조직 (default: 프롬프트)
   --private                 Private 레포로 생성 (default: maker=public, client=private)
   --no-deploy-template      Kamal/Cloudflare 템플릿 파일 건너뛰기
+  --payment polar           Polar 결제 보일러플레이트 추가 (MoR, 해외카드)
+  --payment portone         포트원 V2 보일러플레이트 추가 (카카오페이·네이버페이)
   -h, --help                이 도움말
 
 ${BOLD}Examples:${RESET}
@@ -74,6 +76,7 @@ LANG_POLICY=""
 WITH_AUTH=1
 WITH_GITHUB=1
 WITH_DEPLOY_TEMPLATE=1
+WITH_PAYMENT=""
 GITHUB_ORG=""
 VISIBILITY=""
 
@@ -85,6 +88,7 @@ while [[ $# -gt 0 ]]; do
     --no-auth) WITH_AUTH=0; shift ;;
     --no-github) WITH_GITHUB=0; shift ;;
     --no-deploy-template) WITH_DEPLOY_TEMPLATE=0; shift ;;
+    --payment) WITH_PAYMENT="$2"; shift 2 ;;
     --github-org) GITHUB_ORG="$2"; shift 2 ;;
     --private) VISIBILITY="private"; shift ;;
     --public) VISIBILITY="public"; shift ;;
@@ -197,6 +201,13 @@ fi
 
 PROJECT_PURPOSE=$(prompt_text "프로젝트 한 줄 설명 (영문 권장)" "")
 
+if [[ -z "$WITH_PAYMENT" ]]; then
+  WITH_PAYMENT=$(prompt_select "결제 모듈 추가할까요?" "없음" "없음" "portone (카카오·네이버페이, 한국 사업자)" "polar (해외카드, 사업자 불필요)")
+  [[ "$WITH_PAYMENT" == "없음" ]] && WITH_PAYMENT=""
+  [[ "$WITH_PAYMENT" == portone* ]] && WITH_PAYMENT="portone"
+  [[ "$WITH_PAYMENT" == polar* ]]   && WITH_PAYMENT="polar"
+fi
+
 if [[ $WITH_GITHUB -eq 1 ]] && [[ -z "$GITHUB_ORG" ]]; then
   DEFAULT_ORG=""
   if [[ "$PROJECT_TYPE" == "maker" ]]; then
@@ -213,6 +224,7 @@ cat <<EOF
   언어 정책:       $LANG_POLICY
   설명:            ${PROJECT_PURPOSE:-<나중에 작성>}
   인증 generator:  $([ $WITH_AUTH -eq 1 ] && echo "예" || echo "아니오")
+  결제 보일러플레이트: ${WITH_PAYMENT:-없음}
   배포 템플릿:     $([ $WITH_DEPLOY_TEMPLATE -eq 1 ] && echo "예" || echo "아니오")
   GitHub 레포:     $([ $WITH_GITHUB -eq 1 ] && echo "$GITHUB_ORG/$PROJECT_NAME ($VISIBILITY)" || echo "건너뜀")
 EOF
@@ -588,6 +600,359 @@ else
   warn "배포 템플릿 건너뜀"
 fi
 
+# ---------- Step 5.5: Polar 결제 보일러플레이트 ----------
+if [[ "$WITH_PAYMENT" == "polar" ]]; then
+  step "결제 Polar 보일러플레이트 추가"
+
+  # Gemfile 에 svix 추가
+  sed -i '' '/gem "jbuilder"/a\
+\
+gem "svix"  # Polar 웹훅 서명 검증' Gemfile
+
+  # 웹훅 컨트롤러
+  mkdir -p app/controllers/webhooks
+  cat > app/controllers/webhooks/polar_controller.rb <<'POLAR_CTRL'
+class Webhooks::PolarController < ApplicationController
+  skip_before_action :verify_authenticity_token
+  before_action :verify_signature
+  before_action :skip_if_duplicate
+
+  def receive
+    event = JSON.parse(request.raw_post, symbolize_names: true)
+    PolarEvent.create!(
+      webhook_id: request.headers["webhook-id"],
+      event_type: event[:type],
+      payload:    event[:data]
+    )
+    dispatch(event)
+    head :ok
+  end
+
+  private
+
+  def verify_signature
+    wh = Svix::Webhook.new(ENV.fetch("POLAR_WEBHOOK_SECRET"))
+    wh.verify(request.raw_post, {
+      "webhook-id"        => request.headers["webhook-id"],
+      "webhook-timestamp" => request.headers["webhook-timestamp"],
+      "webhook-signature" => request.headers["webhook-signature"]
+    })
+  rescue Svix::WebhookVerificationError
+    head :unauthorized
+  end
+
+  # ponytail: Polar 는 실패 시 재시도 — 중복 처리 방지
+  def skip_if_duplicate
+    head :ok if PolarEvent.exists?(webhook_id: request.headers["webhook-id"])
+  end
+
+  def dispatch(event)
+    case event[:type]
+    when "order.created"          then on_order_created(event[:data])
+    when "subscription.active"    then on_subscription_active(event[:data])
+    when "subscription.canceled"  then on_subscription_canceled(event[:data])
+    when "subscription.revoked"   then on_subscription_revoked(event[:data])
+    end
+  end
+
+  # TODO: 서비스에 맞게 구현 (data 키: https://docs.polar.sh/api/v1/webhooks)
+  def on_order_created(data)         = nil
+  def on_subscription_active(data)   = nil
+  def on_subscription_canceled(data) = nil
+  def on_subscription_revoked(data)  = nil
+end
+POLAR_CTRL
+
+  # PolarSubscribable concern
+  mkdir -p app/models/concerns
+  cat > app/models/concerns/polar_subscribable.rb <<'POLAR_CONCERN'
+module PolarSubscribable
+  extend ActiveSupport::Concern
+
+  included do
+    scope :active_subscribers, -> { where(polar_status: "active") }
+  end
+
+  def subscriber?
+    polar_status == "active" &&
+      (polar_access_until.nil? || polar_access_until.future?)
+  end
+
+  def activate_polar!(subscription_id:, access_until: nil)
+    update!(polar_subscription_id: subscription_id, polar_status: "active", polar_access_until: access_until)
+  end
+
+  def cancel_polar!(access_until: nil)
+    update!(polar_status: access_until ? "canceling" : "canceled", polar_access_until: access_until)
+  end
+end
+POLAR_CONCERN
+
+  # 마이그레이션 파일 생성 (타임스탬프 자동)
+  TS1=$(date '+%Y%m%d%H%M%S')
+  sleep 1
+  TS2=$(date '+%Y%m%d%H%M%S')
+
+  cat > "db/migrate/${TS1}_create_polar_events.rb" <<'POLAR_MIG1'
+class CreatePolarEvents < ActiveRecord::Migration[8.0]
+  def change
+    create_table :polar_events do |t|
+      t.string :webhook_id, null: false, index: { unique: true }
+      t.string :event_type, null: false
+      t.json   :payload,    default: {}
+      t.timestamps
+    end
+  end
+end
+POLAR_MIG1
+
+  cat > "db/migrate/${TS2}_add_polar_to_users.rb" <<'POLAR_MIG2'
+class AddPolarToUsers < ActiveRecord::Migration[8.0]
+  def change
+    add_column :users, :polar_subscription_id, :string
+    add_column :users, :polar_status,          :string, default: "free"
+    add_column :users, :polar_access_until,    :datetime
+    add_index  :users, :polar_subscription_id
+  end
+end
+POLAR_MIG2
+
+  # routes.rb 에 웹훅 라우트 추가
+  sed -i '' '/^Rails.application.routes.draw do/a\
+  post "webhooks/polar", to: "webhooks/polar#receive"' config/routes.rb
+
+  # .env.example 업데이트 (있으면)
+  if [[ -f ".env.example" ]]; then
+    echo "POLAR_WEBHOOK_SECRET=whsec_..." >> .env.example
+  fi
+
+  success "Polar 보일러플레이트 추가 (컨트롤러 + 마이그레이션 + concern + 라우트)"
+  warn "남은 작업: User 모델에 'include PolarSubscribable' 추가 후 bin/rails db:migrate"
+fi
+
+# ---------- Step 5.6: 포트원 V2 결제 보일러플레이트 ----------
+if [[ "$WITH_PAYMENT" == "portone" ]]; then
+  step "결제 포트원 V2 보일러플레이트 추가"
+
+  # 컨트롤러 디렉터리
+  mkdir -p app/controllers/webhooks
+  mkdir -p app/controllers
+
+  # payments_controller.rb
+  cat > app/controllers/payments_controller.rb <<'PORTONE_PAY_CTRL'
+require "net/http"
+
+class PaymentsController < ApplicationController
+  before_action :require_authentication
+
+  def new
+    @store_id           = ENV.fetch("PORTONE_STORE_ID")
+    @channel_key_kakao  = ENV.fetch("PORTONE_CHANNEL_KEY_KAKAOPAY")
+    @channel_key_naver  = ENV.fetch("PORTONE_CHANNEL_KEY_NAVERPAY")
+    @redirect_url       = payments_complete_url
+    @order_name         = "서비스 이용권"
+    @amount             = 9900
+  end
+
+  def complete
+    payment_id = params[:payment_id]
+    return redirect_to new_payment_path, alert: "잘못된 접근입니다." unless payment_id
+
+    payment = portone_get_payment(payment_id)
+    if payment && payment[:status] == "PAID" && payment[:amount][:total] == expected_amount
+      current_user.activate_portone!(payment_id: payment_id, amount: payment[:amount][:total])
+      redirect_to root_path, notice: "결제가 완료되었습니다!"
+    else
+      redirect_to new_payment_path, alert: "결제 확인에 실패했습니다."
+    end
+  rescue => e
+    Rails.logger.error("포트원 결제 검증 실패: #{e.message}")
+    redirect_to new_payment_path, alert: "결제 처리 중 오류가 발생했습니다."
+  end
+
+  private
+
+  def portone_get_payment(payment_id)
+    uri = URI("https://api.portone.io/payments/#{CGI.escape(payment_id)}")
+    req = Net::HTTP::Get.new(uri)
+    req["Authorization"] = "PortOne #{ENV.fetch('PORTONE_API_SECRET')}"
+    res = Net::HTTP.start(uri.hostname, uri.port, use_ssl: true) { |http| http.request(req) }
+    return nil unless res.is_a?(Net::HTTPSuccess)
+    JSON.parse(res.body, symbolize_names: true)
+  end
+
+  def expected_amount
+    # TODO: DB에서 실제 주문 금액 조회
+    9900
+  end
+end
+PORTONE_PAY_CTRL
+
+  # 웹훅 컨트롤러
+  cat > app/controllers/webhooks/portone_controller.rb <<'PORTONE_WH_CTRL'
+class Webhooks::PortoneController < ApplicationController
+  skip_before_action :verify_authenticity_token
+  before_action :verify_signature
+  before_action :skip_if_duplicate
+
+  def receive
+    event = JSON.parse(request.raw_post, symbolize_names: true)
+    PortoneEvent.create!(
+      webhook_id: request.headers["webhook-id"],
+      event_type: event[:type],
+      payload:    event.dig(:data) || {}
+    )
+    dispatch(event)
+    head :ok
+  end
+
+  private
+
+  def verify_signature
+    wh_id  = request.headers["webhook-id"]
+    wh_ts  = request.headers["webhook-timestamp"]
+    wh_sig = request.headers["webhook-signature"]
+    return head :unauthorized unless wh_id && wh_ts && wh_sig
+    return head :unauthorized if (Time.now.to_i - wh_ts.to_i).abs > 300
+
+    message  = "#{wh_id}\n#{wh_ts}\n#{request.raw_post}"
+    secret   = Base64.decode64(ENV.fetch("PORTONE_WEBHOOK_SECRET"))
+    expected = Base64.strict_encode64(OpenSSL::HMAC.digest("SHA256", secret, message))
+    provided = wh_sig.split(" ").map { |s| s.split(",", 2).last }
+    head :unauthorized unless provided.any? { |sig| ActiveSupport::SecurityUtils.secure_compare(sig, expected) }
+  end
+
+  def skip_if_duplicate
+    head :ok if PortoneEvent.exists?(webhook_id: request.headers["webhook-id"])
+  end
+
+  def dispatch(event)
+    case event[:type]
+    when "Transaction.Paid"      then on_paid(event[:data])
+    when "Transaction.Cancelled" then on_cancelled(event[:data])
+    when "Transaction.Failed"    then on_failed(event[:data])
+    end
+  end
+
+  def on_paid(data)      = nil
+  def on_cancelled(data) = nil
+  def on_failed(data)    = nil
+end
+PORTONE_WH_CTRL
+
+  # Stimulus 컨트롤러
+  cat > app/javascript/controllers/payment_controller.js <<'PORTONE_JS'
+import { Controller } from "@hotwired/stimulus"
+import * as PortOne from "@portone/browser-sdk/v2"
+
+export default class extends Controller {
+  static values = {
+    storeId: String, channelKey: String,
+    orderName: String, amount: Number, redirectUrl: String,
+  }
+
+  async pay(event) {
+    event.preventDefault()
+    const btn = event.currentTarget
+    btn.disabled = true
+    btn.textContent = "처리 중..."
+    try {
+      const response = await PortOne.requestPayment({
+        storeId: this.storeIdValue, channelKey: this.channelKeyValue,
+        paymentId: `payment-${crypto.randomUUID()}`,
+        orderName: this.orderNameValue, totalAmount: this.amountValue,
+        currency: "CURRENCY_KRW", redirectUrl: this.redirectUrlValue,
+      })
+      if (response?.code) { alert(response.message); btn.disabled = false; btn.textContent = "다시 결제하기" }
+    } catch { alert("결제 중 오류가 발생했습니다."); btn.disabled = false; btn.textContent = "다시 결제하기" }
+  }
+}
+PORTONE_JS
+
+  # PortonePayable concern
+  mkdir -p app/models/concerns
+  cat > app/models/concerns/portone_payable.rb <<'PORTONE_CONCERN'
+module PortonePayable
+  extend ActiveSupport::Concern
+
+  included do
+    has_many :portone_payments
+    scope :paid_users, -> { where.not(portone_paid_at: nil) }
+  end
+
+  def paid?
+    portone_paid_at.present?
+  end
+
+  def activate_portone!(payment_id:, amount:, channel: nil)
+    portone_payments.create!(payment_id: payment_id, status: "paid", amount: amount, channel: channel)
+    update!(portone_paid_at: Time.current, portone_payment_id: payment_id)
+  end
+
+  def deactivate_portone!
+    update!(portone_paid_at: nil)
+    portone_payments.where(payment_id: portone_payment_id).update_all(status: "cancelled")
+  end
+end
+PORTONE_CONCERN
+
+  # PortonePayment 모델
+  cat > app/models/portone_payment.rb <<'PORTONE_MODEL'
+class PortonePayment < ApplicationRecord
+  belongs_to :user
+end
+PORTONE_MODEL
+
+  # PortoneEvent 모델
+  cat > app/models/portone_event.rb <<'PORTONE_EVENT_MODEL'
+class PortoneEvent < ApplicationRecord
+end
+PORTONE_EVENT_MODEL
+
+  # 마이그레이션
+  TS=$(date '+%Y%m%d%H%M%S')
+  cat > "db/migrate/${TS}_create_portone_tables.rb" <<'PORTONE_MIG'
+class CreatePortoneTables < ActiveRecord::Migration[8.0]
+  def change
+    create_table :portone_events do |t|
+      t.string :webhook_id, null: false, index: { unique: true }
+      t.string :event_type, null: false
+      t.json   :payload,    default: {}
+      t.timestamps
+    end
+
+    create_table :portone_payments do |t|
+      t.references :user,       null: false, foreign_key: true
+      t.string     :payment_id, null: false, index: { unique: true }
+      t.string     :status,     null: false, default: "pending"
+      t.integer    :amount
+      t.string     :channel
+      t.timestamps
+    end
+
+    add_column :users, :portone_paid_at,    :datetime
+    add_column :users, :portone_payment_id, :string
+    add_index  :users, :portone_payment_id
+  end
+end
+PORTONE_MIG
+
+  # importmap 에 포트원 SDK 추가
+  echo 'pin "@portone/browser-sdk/v2", to: "https://cdn.portone.io/v2/browser-sdk.esm.js", preload: false' >> config/importmap.rb
+
+  # routes.rb 에 라우트 추가
+  sed -i '' '/^Rails.application.routes.draw do/a\
+  get  "payments/new",      to: "payments#new",     as: :new_payment\
+  get  "payments/complete", to: "payments#complete", as: :payments_complete\
+  post "webhooks/portone",  to: "webhooks/portone#receive"' config/routes.rb
+
+  success "포트원 V2 보일러플레이트 추가 (컨트롤러 + 웹훅 + Stimulus + 마이그레이션)"
+  warn "남은 작업:"
+  warn "  1. User 모델에 include PortonePayable 추가"
+  warn "  2. bin/rails db:migrate"
+  warn "  3. ENV 5개 설정 (PORTONE_STORE_ID, API_SECRET, WEBHOOK_SECRET, 채널키 2개)"
+fi
+
 # ---------- Step 6: 첫 git 커밋 ----------
 step "6/7 첫 git 커밋"
 git add .
@@ -640,6 +1005,27 @@ echo "    4. ${CYAN}bin/kamal setup${RESET}"
 echo "    상세 가이드: ${CYAN}DEPLOY.md${RESET}"
 fi
 echo
+if [[ "$WITH_PAYMENT" == "polar" ]]; then
+echo "  ${BOLD}Polar 결제 활성화:${RESET}"
+echo "    1. bundle install  (svix gem 설치)"
+echo "    2. app/models/user.rb 에 ${CYAN}include PolarSubscribable${RESET} 추가"
+echo "    3. bin/rails db:migrate"
+echo "    4. Polar 대시보드 → Webhooks → ${CYAN}POLAR_WEBHOOK_SECRET${RESET} 복사"
+echo "    5. Polar 대시보드 → Products → 상품 등록 후 체크아웃 링크 사용"
+echo ""
+fi
+if [[ "$WITH_PAYMENT" == "portone" ]]; then
+echo "  ${BOLD}포트원 V2 결제 활성화:${RESET}"
+echo "    1. app/models/user.rb 에 ${CYAN}include PortonePayable${RESET} 추가"
+echo "    2. bin/rails db:migrate"
+echo "    3. ENV 5개 설정:"
+echo "         PORTONE_STORE_ID, PORTONE_API_SECRET, PORTONE_WEBHOOK_SECRET"
+echo "         PORTONE_CHANNEL_KEY_KAKAOPAY, PORTONE_CHANNEL_KEY_NAVERPAY"
+echo "    4. 포트원 콘솔 → 결제 연동 → 카카오페이·네이버페이 가맹 신청"
+echo "    5. 가맹 승인 후 채널 키 발급 → ENV 업데이트"
+echo "    6. 포트원 콘솔 → 웹훅 URL: ${CYAN}https://your-domain.com/webhooks/portone${RESET}"
+echo ""
+fi
 echo "  ${BOLD}참고 문서:${RESET}"
 echo "    - CLAUDE.md      — AI 코딩 가이드 (한 번 더 읽고 프로젝트 맥락 추가)"
 echo "    - .kamal/secrets — 시크릿 패턴 (실제 키는 ENV 로)"

@@ -9,6 +9,7 @@ class IdeasControllerTest < ActionDispatch::IntegrationTest
     assert_match "workoutbell.com", response.body
     assert_match 'hreflang="en"', response.body
     assert_match '"@type":"Person"', response.body
+    assert_no_match "컨설턴트", response.body
     assert_match '"@type":"ItemList"', response.body
   end
 

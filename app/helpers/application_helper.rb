@@ -50,10 +50,10 @@ module ApplicationHelper
           "alternateName" => "Json Jeong",
           "url" => "#{SITE_PRODUCTION_URL}/",
           "image" => "#{SITE_PRODUCTION_URL}/icon.png",
-          "jobTitle" => "AI 자동화 컨설턴트 · SnapPlug 대표",
-          "description" => "대한민국 제주의 AI 자동화 컨설턴트, SnapPlug 대표. 제조·유통 현장에 직접 가서 문제부터 정의하고, 직원을 대체하지 않고 조직에 저항 없이 안착하는 자동화를 설계합니다. 필요한 도구는 직접 만들어 공개합니다.",
+          "jobTitle" => "SnapPlug 대표",
+          "description" => "대한민국 제주에 사는 SnapPlug 대표. 하루 100달러를 벌어 보려고 AI와 아이디어를 하나씩 검증하고, 실패한 것까지 몇 시간 걸렸고 얼마 썼고 얼마 벌었는지 숫자로 남깁니다.",
           "address" => { "@type" => "PostalAddress", "addressLocality" => "Jeju", "addressCountry" => "KR" },
-          "knowsAbout" => [ "AI agents", "AI automation", "application security", "vibe coding", "row-level security", "Supabase", "Ruby on Rails" ],
+          "knowsAbout" => [ "AI agents", "Claude Code", "vibe coding", "idea validation", "side projects", "telecommunications", "Ruby on Rails" ],
           "worksFor" => { "@id" => "#{SITE_PRODUCTION_URL}/#org" },
           "sameAs" => [ "https://x.com/jasonjeongio", "https://www.threads.net/@snapplug.app", "https://github.com/SnapPlug" ]
         },
