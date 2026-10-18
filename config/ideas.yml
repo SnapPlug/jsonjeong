@@ -90,22 +90,21 @@
 - slug: switch-check
   screen: true
   batch: hundred
-  status: paused
+  status: active
   started_on: 2026-10-12
-  ended_on: 2026-10-13
   hours: 1.6
   hours_source: session
   cost_usd: 0
   revenue_usd: 0
   ko:
-    title: Switch Check
+    title: 통신사 갈아타기 체크
     summary: 통신사를 옮기기 전에 내 폰에서 되는 기능과 요금이 오르는 날을 알려주는 도구.
-    stuck: 검색 자동완성으로 수요는 보였다. 화면을 다섯 번 고친 뒤 멈췄다.
+    stuck: 검색 자동완성으로 수요는 보였다. 화면을 다섯 번 고쳤고, 지금은 "요금 오르기 14일 전 메일 한 통" 하나로 좁혀 검증 중이다.
     human: 화면 방향은 매번 사람이 정했다.
   en:
-    title: Switch Check
+    title: Carrier Switch Check
     summary: Before you switch carriers, it tells you which features work on your phone and when your price goes up.
-    stuck: Search autocomplete showed real demand. Stopped after redoing the screen five times.
+    stuck: Search autocomplete showed real demand. After five screen redesigns it's narrowed to one thing, an email 14 days before your price goes up, and still being tested.
     human: A person decided the screen direction every time.
 
 - slug: apify-lighthouse
