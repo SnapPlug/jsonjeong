@@ -13,7 +13,7 @@
 %>
 <%= link_to idea_path(idea.slug), class: "group relative block overflow-hidden rounded-xl bg-brand-dark text-white shadow-[0_0_0_1px_#ddd] outline-none focus-visible:ring-4 focus-visible:ring-brand #{Idea::CARD_HEIGHT}" do %>
   <%= idea_image idea, loading: "lazy", decoding: "async", class: "absolute inset-0 h-full w-full object-cover" %>
-  <div class="absolute inset-0 bg-black/30"></div>
+  <div class="absolute inset-0 <%= idea.screen ? "bg-black/55" : "bg-black/30" %>"></div>
 
   <div class="absolute inset-0 transition-opacity duration-200 group-hover:opacity-0 group-focus-visible:opacity-0 [text-shadow:0_1px_4px_rgb(0_0_0/0.75)]">
     <span class="absolute left-[14px] top-[14px] border-b-2 border-white pb-0.5 text-base font-bold min-[700px]:text-lg"><%= number %></span>

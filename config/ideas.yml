@@ -3,9 +3,11 @@
 #   session = $100_per_day 세션 기록 실측 ($100_per_day/worktime.py)
 #   commits = git 커밋 간격 추정 (세션 기록이 30일 지나 지워진 이전 프로젝트)
 # ended_on이 비어 있으면 진행 중. stuck·human은 모르면 비워 둔다(지어내지 않는다).
+# screen: true = 카드 사진이 실제 만든 화면(캡처). 없으면 Unsplash 사진. 화면 캡처는 글자가 많아 더 어둡게 덮는다.
 # 회고글: app/views/ideas/retros/_<slug 밑줄>.{ko,en}.html.erb 가 있으면 카드에 링크가 생긴다.
 
 - slug: workoutbell
+  screen: true
   batch: hundred
   status: active
   started_on: 2026-10-03
@@ -26,6 +28,7 @@
     human: I paid for the domain, signed up for AdSense, and clicked the re-review button myself.
 
 - slug: page-to-pdf
+  screen: true
   batch: hundred
   status: active
   started_on: 2026-10-05
@@ -85,6 +88,7 @@
     human: I signed up for Gumroad, posted the Reddit comments and filed the ban appeal myself.
 
 - slug: switch-check
+  screen: true
   batch: hundred
   status: paused
   started_on: 2026-10-12
@@ -105,6 +109,7 @@
     human: A person decided the screen direction every time.
 
 - slug: apify-lighthouse
+  screen: true
   batch: hundred
   status: paused
   started_on: 2026-10-05
@@ -164,6 +169,7 @@
     stuck: Every candidate (Google Shopping image rules, Amazon ad charges) fell apart on checking.
 
 - slug: telecom-lease
+  screen: true
   batch: earlier
   status: paused
   started_on: 2026-09-25
@@ -183,7 +189,29 @@
     stuck: Stuck at the first meeting with a building manager. A manager gains nothing from raising the rent and takes the blame if it fails. What they wanted was case law, not market rates.
     human: I took the building manager meeting myself. Ten years of telecom work was where the idea came from.
 
+- slug: snaptalk
+  screen: true
+  batch: earlier
+  status: active
+  started_on: 2026-08-30
+  hours: 59.0
+  hours_source: commits
+  cost_usd: 0
+  revenue_usd: 0
+  url: https://talk.snapplug.app
+  ko:
+    title: Snaptalk
+    summary: 카카오톡 채널 문의에 AI가 답하고, 통장 입금을 확인해 안내까지 보내는 서버. 입금을 일일이 확인하던 대표님 한 분의 말에서 시작했다.
+    stuck: 대표님 테스트에서 "고칠수록 꼬인다"는 말을 들었다. 원인을 다시 보는 중이다.
+    human: 대표님과 매뉴얼을 같이 다듬는 일은 사람이 했다.
+  en:
+    title: Snaptalk
+    summary: A server where AI answers KakaoTalk channel questions, checks bank deposits and sends the confirmation. It started from one owner who was checking every deposit by hand.
+    stuck: In testing the owner said "the more I fix it, the more tangled it gets". Still digging into why.
+    human: Refining the manual together with the owner was done by people.
+
 - slug: snapdeck
+  screen: true
   batch: earlier
   status: paused
   started_on: 2026-05-15
@@ -200,7 +228,29 @@
     title: SnapDeck
     summary: A Mac app that finds security holes in AI-built apps and explains them in plain words.
 
+- slug: snapbrain
+  screen: true
+  batch: earlier
+  status: paused
+  started_on: 2026-07-22
+  ended_on: 2026-08-09
+  hours: 7.5
+  hours_source: commits
+  cost_usd: 0
+  revenue_usd: 0
+  ko:
+    title: 스냅브레인
+    summary: 회사 데이터(ERP·카톡·메일)를 연결해 두고 물으면 실제 Claude가 숫자로 답하는 AI 팀원 데모.
+    stuck: 실제 회사 데이터는 데모보다 훨씬 크다. 그대로 붙이면 숫자가 틀린다. 데모는 멈추고, 실제 계약이 오면 설계를 바꾸기로 했다.
+    human: 미팅에서 시연하고 반응을 들은 건 사람이다.
+  en:
+    title: SnapBrain
+    summary: An AI teammate demo. Connect company data (ERP, chats, email), ask a question, and a real Claude answers with numbers.
+    stuck: Real company data is far larger than the demo. Plugged in as is, the numbers come out wrong. Froze the demo; the design changes when a real contract comes.
+    human: Demoing it in meetings and hearing the reaction was done by a person.
+
 - slug: snap-teleprompter
+  screen: true
   batch: earlier
   status: released
   started_on: 2026-06-25
@@ -218,6 +268,7 @@
     summary: A teleprompter that scrolls your script under the MacBook notch. Free and open source.
 
 - slug: snapmusk
+  screen: true
   batch: earlier
   status: released
   started_on: 2026-06-25
@@ -235,6 +286,7 @@
     summary: An AI assistant living in the MacBook notch. Call it by voice and it plans your day in time blocks. Free and open source.
 
 - slug: supabase-guide
+  screen: true
   batch: earlier
   status: released
   started_on: 2026-04-12

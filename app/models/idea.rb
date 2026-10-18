@@ -1,5 +1,5 @@
 # 아이디어 아카이브 한 칸. config/ideas.yml을 읽는 일반 Ruby 객체 — DB에 넣지 않는다.
-class Idea < Data.define(:slug, :batch, :status, :started_on, :ended_on, :hours, :hours_source, :cost_usd, :revenue_usd, :url, :text)
+class Idea < Data.define(:slug, :batch, :status, :started_on, :ended_on, :hours, :hours_source, :cost_usd, :revenue_usd, :url, :screen, :text)
   STATUSES = %w[active paused dropped pivoted released].freeze
   BATCHES = %w[hundred earlier].freeze
   # nomads.com 카드 높이 그대로(2026-10-18 실측). 열 수는 ideas/index의 격자가 맞춘다.
@@ -8,7 +8,7 @@ class Idea < Data.define(:slug, :batch, :status, :started_on, :ended_on, :hours,
   class << self
     def all
       @all ||= YAML.load_file(Rails.root.join("config/ideas.yml"), permitted_classes: [ Date ]).map do |row|
-        new(**row.slice(*%w[slug batch status started_on hours hours_source cost_usd revenue_usd url]).symbolize_keys,
+        new(**row.slice(*%w[slug batch status started_on hours hours_source cost_usd revenue_usd url screen]).symbolize_keys,
             ended_on: row["ended_on"], text: row.slice("ko", "en").freeze)
       end.freeze
     end
@@ -31,7 +31,7 @@ class Idea < Data.define(:slug, :batch, :status, :started_on, :ended_on, :hours,
     end
   end
 
-  def initialize(url: nil, ended_on: nil, **) = super
+  def initialize(url: nil, ended_on: nil, screen: false, **) = super
 
   def ongoing? = ended_on.nil?
 
