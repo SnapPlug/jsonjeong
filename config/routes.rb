@@ -37,12 +37,8 @@ Rails.application.routes.draw do
     get "/sitemap.xml" => "seo#sitemap", defaults: { format: "xml" }
     get "/llms.txt" => "seo#llms", defaults: { format: "text" }
 
-    # Back-compat: /newsletter on apex 301s to newsletter subdomain
-    get "newsletter", to: redirect { |_, req|
-      base = req.host_with_port.sub(/\A(?:newsletter|www)\./, "")
-      scheme = req.ssl? ? "https" : "http"
-      "#{scheme}://newsletter.#{base}/"
-    }, as: :newsletter
+    # 뉴스레터는 snapplug.app으로 모았다 — 예전 /newsletter 주소도 그리로
+    get "newsletter", to: redirect(SNAPPLUG_NEWSLETTER_URL), as: :newsletter
 
     # Apex POST handler — sidebar form on dashboard submits here
     post "newsletter", to: "newsletter#subscribe", as: :newsletter_subscribe

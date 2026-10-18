@@ -10,4 +10,14 @@ class NewsletterControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to "http://newsletter.example.com/"
   end
+
+  test "apex /newsletter sends people to the snapplug.app newsletter" do
+    get "/newsletter"
+    assert_redirected_to SNAPPLUG_NEWSLETTER_URL
+  end
+
+  test "homepage links to the snapplug.app newsletter" do
+    get "/"
+    assert_select "a[href=?]", SNAPPLUG_NEWSLETTER_URL
+  end
 end
