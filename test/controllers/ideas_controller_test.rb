@@ -49,11 +49,11 @@ class IdeasControllerTest < ActionDispatch::IntegrationTest
 
   test "idea page title and description carry the numbers" do
     get "/ideas/workoutbell"
-    assert_select "title", text: /\Aworkoutbell\.com · 3\.6시간 검증 기록 — /
-    assert_select "meta[name=description][content*=?]", "3.6시간 동안 $10.44 쓰고"
+    assert_select "title", text: /\Aworkoutbell\.com · 4시간 검증 기록 — /
+    assert_select "meta[name=description][content*=?]", "4시간 동안 $10.44 쓰고"
     get "/en/ideas/workoutbell"
-    assert_select "title", text: /\Aworkoutbell\.com · 3\.6h of validation — /
-    assert_select "meta[name=description][content*=?]", "3.6h of work, $10.44 spent"
+    assert_select "title", text: /\Aworkoutbell\.com · 4h of validation — /
+    assert_select "meta[name=description][content*=?]", "4h of work, $10.44 spent"
   end
 
   test "article structured data has dates and image" do
@@ -62,5 +62,16 @@ class IdeasControllerTest < ActionDispatch::IntegrationTest
     assert_equal "2026-10-03", article["datePublished"]
     assert article["dateModified"].present?
     assert_match %r{/assets/ideas/workoutbell-.*\.jpg\z}, article["image"]
+  end
+
+  test "idea page is an og article with its own image" do
+    get "/ideas/workoutbell"
+    assert_select "meta[property='og:type'][content=article]"
+    assert_select "meta[property='og:image'][content*=?]", "/assets/ideas/workoutbell-"
+    assert_select "meta[property='og:image:width']", count: 0
+    assert_select "meta[property='article:published_time'][content=?]", "2026-10-03"
+    get "/"
+    assert_select "meta[property='og:type'][content=website]"
+    assert_select "meta[property='og:image:width'][content='1200']"
   end
 end

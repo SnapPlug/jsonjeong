@@ -4,7 +4,7 @@ module ApplicationHelper
   SITE_DESCRIPTION = "하루 100달러를 벌어 보려고 AI와 검증한 아이디어를 실패한 것까지 전부 남깁니다. 몇 시간 걸렸고, 얼마 썼고, 얼마 벌었는지."
   SITE_PRODUCTION_URL = "https://jsonjeong.com".freeze
   # sitemap lastmod. config/ideas.yml을 고치면 같이 올린다.
-  CONTENT_UPDATED_ON = "2026-10-19"
+  CONTENT_UPDATED_ON = "2026-10-26"
   GA4_ID = "G-51584NFH18"
 
   def site_url
@@ -40,7 +40,7 @@ module ApplicationHelper
           "name" => SITE_NAME,
           "url" => "#{SITE_PRODUCTION_URL}/",
           "description" => SITE_DESCRIPTION,
-          "inLanguage" => "ko",
+          "inLanguage" => [ "ko", "en" ],
           "publisher" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" }
         },
         {
@@ -55,13 +55,14 @@ module ApplicationHelper
           "address" => { "@type" => "PostalAddress", "addressLocality" => "Jeju", "addressCountry" => "KR" },
           "knowsAbout" => [ "AI agents", "Claude Code", "vibe coding", "idea validation", "side projects", "telecommunications", "Ruby on Rails" ],
           "worksFor" => { "@id" => "#{SITE_PRODUCTION_URL}/#org" },
-          "sameAs" => [ "https://x.com/jasonjeongio", "https://www.threads.net/@snapplug.app", "https://github.com/SnapPlug" ]
+          "sameAs" => [ "https://x.com/jasonjeongio", "https://www.threads.net/@snapplug.app", "https://www.threads.net/@jsonjeong", "https://github.com/SnapPlug" ]
         },
         {
           "@type" => "Organization",
           "@id" => "#{SITE_PRODUCTION_URL}/#org",
           "name" => "SnapPlug",
-          "description" => "제조·유통 기업의 AI 자동화 컨설팅(AX)과 실용 도구를 만드는 회사. 현장에서 문제를 먼저 정의하고, 직원 저항 없이 안착하는 자동화를 설계합니다. 대표작으로 SnapDeck(바이브코딩 앱 보안 스캐너), SnapMusk, Snap Teleprompter가 있습니다.",
+          "url" => "https://snapplug.app",
+          "description" => "중소기업 AI 도입과 AI 에이전트 구축을 돕는 회사. 직원이 손으로 하던 반복 업무 한 자리를 골라 그 일만 하는 AI 팀원을 만들고, 판단은 사람에게 남깁니다.",
           "founder" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" },
           "sameAs" => [ "https://github.com/SnapPlug", "https://www.threads.net/@snapplug.app" ]
         },
@@ -72,8 +73,7 @@ module ApplicationHelper
           "applicationCategory" => "SecurityApplication",
           "operatingSystem" => "macOS",
           "description" => "AI로 만든 앱을 위한 데스크톱 보안 스캐너. 프로젝트 폴더를 끌어다 놓으면 SnapDeck이 노출된 키, 꺼진 RLS, 방치된 라우트를 쉬운 말로 찾아냅니다 — 로컬에서 실행되어 키가 컴퓨터를 떠나지 않습니다.",
-          "url" => "https://snapdeck.jsonjeong.com",
-          "offers" => { "@type" => "Offer", "price" => "0", "priceCurrency" => "USD" },
+          "url" => "#{SITE_PRODUCTION_URL}/ideas/snapdeck",
           "creator" => { "@id" => "#{SITE_PRODUCTION_URL}/#person" }
         },
         {

@@ -11,7 +11,7 @@
   batch: hundred
   status: active
   started_on: 2026-10-03
-  hours: 3.6
+  hours: 4.0
   hours_source: session
   cost_usd: 10.44
   revenue_usd: 0
@@ -19,12 +19,12 @@
   ko:
     title: workoutbell.com
     summary: 운동용 인터벌 타이머 사이트. 검색으로 들어오고 광고로 번다.
-    stuck: 애드센스가 "가치가 별로 없는 콘텐츠"로 거절했다. 가이드 14편을 붙여 10/18에 재검토를 요청했다.
+    stuck: 애드센스가 "가치가 별로 없는 콘텐츠"로 두 번 거절했다. 10/26에 가이드를 21편으로 늘리고 번역 페이지 광고를 뺐다. 재검토는 11월 초에 다시 요청한다.
     human: 도메인 결제, 애드센스 가입, 재검토 요청 버튼은 직접 눌렀다.
   en:
     title: workoutbell.com
     summary: An interval timer site for workouts. Traffic from search, money from ads.
-    stuck: AdSense rejected it as "low value content". Added 14 guides and asked for a re-review on Oct 18.
+    stuck: AdSense rejected it twice as "low value content". On Oct 26 I grew the guides to 21 and removed ads from translated pages. The next re-review request is in early November.
     human: I paid for the domain, signed up for AdSense, and clicked the re-review button myself.
 
 - slug: page-to-pdf
@@ -52,7 +52,7 @@
   batch: hundred
   status: active
   started_on: 2026-10-11
-  hours: 2.6
+  hours: 4.5
   hours_source: session
   cost_usd: 0
   revenue_usd: 0
@@ -219,7 +219,6 @@
   hours_source: commits
   cost_usd: 0
   revenue_usd: 0
-  url: https://snapdeck.jsonjeong.com
   ko:
     title: SnapDeck
     summary: AI로 만든 앱의 보안 구멍을 쉬운 말로 찾아 주는 맥 앱.
