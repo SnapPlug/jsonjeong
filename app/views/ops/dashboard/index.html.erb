@@ -69,8 +69,8 @@
           <% client.checks.each do |check| %>
             <% log = logs[check] %>
             <span class="inline-flex items-center gap-1.5 rounded-md border border-zinc-700 bg-zinc-800/60 px-2 py-0.5 text-xs text-zinc-300"
-                  title="<%= log ? "#{log.ms}ms · #{kst(log.checked_at)}" : "아직 체크 전" %>">
-              <span class="h-1.5 w-1.5 rounded-full <%= ok_dot(log&.ok) %>"></span><%= HealthLog::LABELS[check] %>
+                  title="<%= HealthLog::LABELS[check] %> · <%= log ? "#{log.ms}ms · #{kst(log.checked_at)}" : "아직 체크 전" %>">
+              <span class="h-1.5 w-1.5 rounded-full <%= ok_dot(log&.ok) %>"></span><%= check_icon(check) %><span class="sr-only"><%= HealthLog::LABELS[check] %></span>
             </span>
           <% end %>
           <span class="flex-1"></span>

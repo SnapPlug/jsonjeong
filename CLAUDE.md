@@ -88,6 +88,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **로그인 계정**: `json.jeong@snapplug.app` 하나. 비밀번호는 `~/.config/overload/ops_password` 파일 → `OPS_PASSWORD` → 컨테이너 시작 때 `bin/rails ops:password`가 맞춘다. 바꾸려면 파일 수정 후 `kamal deploy`(또는 `kamal app boot`)
 - **URL 체크 약속**: 2xx면 정상. 응답이 JSON이고 `failed: []`가 있으면 그 항목이 알림에 실린다 (더온실 `/api/health`, Rails 앱의 `/health`가 이 형식)
 - 데이터 가져오기(한 번): `bin/rails overload:import[/path/turso-export.json]`
+- **계약 등록(스킬)**: `/ops-contract`가 계약서를 읽어 `kamal app exec "bin/rails ops:contract[<base64 JSON>]"`로 등록한다. 형식은 `app/lib/ops_contract.rb` 주석
+- **서비스 상태 아이콘**: `OpsHelper::CHECK_ICONS`(URL 지구본·Vercel lobehub·Supabase 공식 로고). 글자는 `sr-only`와 title에만
 
 ## 환경
 

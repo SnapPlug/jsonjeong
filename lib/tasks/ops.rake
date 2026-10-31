@@ -12,3 +12,10 @@ namespace :ops do
     puts "[ops] #{email} 비밀번호 적용"
   end
 end
+
+namespace :ops do
+  desc "계약 등록: bin/rails ops:contract[<base64 JSON>] — 형식은 app/lib/ops_contract.rb 주석"
+  task :contract, [ :payload ] => :environment do |_task, args|
+    puts OpsContract.run(args.fetch(:payload))
+  end
+end

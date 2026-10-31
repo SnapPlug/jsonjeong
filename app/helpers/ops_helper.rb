@@ -70,6 +70,17 @@ module OpsHelper
     logs.any? { |log| !log.ok } ? "bg-red-500" : "bg-green-500"
   end
 
+  # 서비스 상태 배지 아이콘. Vercel은 lobehub 아이콘, Supabase는 공식 로고(simple-icons), URL은 지구본.
+  CHECK_ICONS = {
+    "url" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5 text-zinc-400"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
+    "vercel" => '<svg viewBox="0 0 24 24" fill="currentColor" class="h-3.5 w-3.5 text-zinc-100"><path d="M12 0l12 20.785H0L12 0z"/></svg>',
+    "supabase" => '<svg viewBox="0 0 24 24" fill="#3ECF8E" class="h-3.5 w-3.5"><path d="M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C-.33 13.427.65 15.455 2.409 15.455h9.579l.113 7.51c.014.985 1.259 1.408 1.873.636l9.262-11.653c1.093-1.375.113-3.403-1.645-3.403h-9.642z"/></svg>'
+  }.freeze
+
+  def check_icon(check)
+    CHECK_ICONS.fetch(check).html_safe # rubocop:disable Rails/OutputSafety -- 상수 문자열
+  end
+
   def ok_dot(ok)
     ok.nil? ? "bg-zinc-600" : (ok ? "bg-green-500" : "bg-red-500")
   end
