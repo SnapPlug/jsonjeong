@@ -68,9 +68,10 @@
           <%# 배지는 전부 같은 모양. 상태는 점 색 하나로만 말한다: 초록 정상 · 빨강 실패 · 회색 체크 전 %>
           <% client.checks.each do |check| %>
             <% log = logs[check] %>
+            <% label, icon = check_badge(client, check) %>
             <span class="inline-flex items-center gap-1.5 rounded-md border border-zinc-700 bg-zinc-800/60 px-2 py-0.5 text-xs text-zinc-300"
-                  title="<%= HealthLog::LABELS[check] %> · <%= log ? "#{log.ms}ms · #{kst(log.checked_at)}" : "아직 체크 전" %>">
-              <span class="h-1.5 w-1.5 rounded-full <%= ok_dot(log&.ok) %>"></span><%= check_icon(check) %><span class="sr-only"><%= HealthLog::LABELS[check] %></span>
+                  title="<%= label %> · <%= log ? "#{log.ms}ms · #{kst(log.checked_at)}" : "아직 체크 전" %>">
+              <span class="h-1.5 w-1.5 rounded-full <%= ok_dot(log&.ok) %>"></span><%= icon %><span class="sr-only"><%= label %></span>
             </span>
           <% end %>
           <span class="flex-1"></span>
