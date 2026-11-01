@@ -88,6 +88,27 @@
 </section>
 
 <section class="space-y-2">
+  <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">플랫폼 소식 · 장애 + 보안·마이너 릴리스</h2>
+  <% if @platform_events.empty? %>
+    <p class="rounded-lg border border-zinc-800 bg-zinc-900 p-6 text-center text-zinc-500">아직 수집 전입니다. 한 시간마다 확인합니다.</p>
+  <% else %>
+    <div class="divide-y divide-zinc-800 rounded-lg border border-zinc-800 bg-zinc-900">
+      <% @platform_events.each do |e| %>
+        <div class="flex flex-wrap items-center gap-2 px-4 py-2 text-xs hover:bg-zinc-800/40">
+          <span class="h-1.5 w-1.5 rounded-full <%= e.kind == "release" ? "bg-indigo-400" : (e.resolved? ? "bg-green-500" : "bg-orange-400") %>"></span>
+          <span class="w-20 text-zinc-400"><%= e.label %></span>
+          <%= link_to e.title, e.url, target: "_blank", rel: "noopener", class: "truncate text-zinc-200 hover:underline" %>
+          <% if e.kind == "incident" %><span class="text-zinc-500"><%= e.resolved? ? "해결" : e.status %></span>
+          <% elsif e.status == "security" %><span class="text-red-400">보안</span><% end %>
+          <span class="flex-1"></span>
+          <span class="text-zinc-600"><%= kst(e.happened_at) %></span>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</section>
+
+<section class="space-y-2">
   <div class="flex items-center justify-between">
     <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">월 수금 · 최근 12개월 · 마감일 기준</h2>
     <span class="text-xs text-zinc-500">12개월 합계 <span class="font-medium text-zinc-200"><%= won(@last12_total) %></span></span>

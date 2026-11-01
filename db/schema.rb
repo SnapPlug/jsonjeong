@@ -10,66 +10,81 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_01_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_01_213938) do
   create_table "clients", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "health_url"
-    t.string "kind", default: "other", null: false
     t.string "name", null: false
-    t.text "notes"
+    t.string "kind", default: "other", null: false
     t.string "status", default: "active", null: false
-    t.string "supabase_ref"
-    t.datetime "updated_at", null: false
+    t.string "health_url"
     t.string "vercel_project_id"
     t.string "vercel_team_id"
+    t.string "supabase_ref"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["name"], name: "index_clients_on_name", unique: true
   end
 
   create_table "contracts", force: :cascade do |t|
-    t.integer "amount", null: false
-    t.string "business_number"
     t.integer "client_id", null: false
-    t.datetime "created_at", null: false
-    t.date "ends_on", null: false
     t.string "name", null: false
-    t.text "notes"
+    t.integer "amount", null: false
     t.date "starts_on", null: false
+    t.date "ends_on", null: false
     t.string "status", default: "in_progress", null: false
+    t.string "business_number"
+    t.text "notes"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_contracts_on_client_id"
   end
 
   create_table "health_logs", force: :cascade do |t|
-    t.string "check_type", null: false
-    t.datetime "checked_at", null: false
     t.integer "client_id", null: false
-    t.string "error"
-    t.integer "ms"
+    t.string "check_type", null: false
     t.boolean "ok", null: false
     t.integer "status_code"
+    t.integer "ms"
+    t.string "error"
+    t.datetime "checked_at", null: false
     t.index ["checked_at"], name: "index_health_logs_on_checked_at"
     t.index ["client_id", "check_type", "checked_at"], name: "index_health_logs_on_client_id_and_check_type_and_checked_at"
     t.index ["client_id"], name: "index_health_logs_on_client_id"
   end
 
   create_table "payments", force: :cascade do |t|
-    t.integer "amount", null: false
     t.integer "contract_id", null: false
-    t.datetime "created_at", null: false
-    t.date "due_on", null: false
     t.string "kind", null: false
+    t.integer "amount", null: false
+    t.date "due_on", null: false
     t.date "paid_on"
     t.string "status", default: "pending", null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["contract_id"], name: "index_payments_on_contract_id"
   end
 
-  create_table "sessions", force: :cascade do |t|
+  create_table "platform_events", force: :cascade do |t|
+    t.string "source", null: false
+    t.string "kind", null: false
+    t.string "external_id", null: false
+    t.string "title", null: false
+    t.string "status"
+    t.string "url"
+    t.datetime "happened_at", null: false
+    t.datetime "notified_at"
     t.datetime "created_at", null: false
-    t.string "ip_address"
     t.datetime "updated_at", null: false
-    t.string "user_agent"
+    t.index ["happened_at"], name: "index_platform_events_on_happened_at"
+    t.index ["source", "external_id"], name: "index_platform_events_on_source_and_external_id", unique: true
+  end
+
+  create_table "sessions", force: :cascade do |t|
     t.integer "user_id", null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
@@ -96,19 +111,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_01_090000) do
   end
 
   create_table "subscribers", force: :cascade do |t|
-    t.datetime "beehiiv_synced_at"
-    t.datetime "created_at", null: false
     t.string "email", null: false
     t.string "source", default: "site", null: false
     t.string "status", default: "pending", null: false
+    t.datetime "beehiiv_synced_at"
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_subscribers_on_email", unique: true
   end
 
   create_table "users", force: :cascade do |t|
-    t.datetime "created_at", null: false
     t.string "email_address", null: false
     t.string "password_digest", null: false
+    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end

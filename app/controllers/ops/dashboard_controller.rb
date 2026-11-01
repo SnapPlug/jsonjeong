@@ -11,6 +11,8 @@ module Ops
       @latest = HealthLog.latest.group_by(&:client_id).transform_values { |logs| logs.index_by(&:check_type) }
       @unhealthy = @services.count { |client| @latest[client.id]&.values&.any? { |log| !log.ok } }
 
+      @platform_events = PlatformEvent.recent.limit(10)
+
       @monthly = Payment.monthly_paid
       @months = (0..11).map { |i| (Date.current << i).strftime("%Y-%m") }.reverse
       @last12_total = @monthly.values.sum

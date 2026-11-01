@@ -4,6 +4,9 @@ production:
   health_check:
     class: HealthCheckJob
     schedule: every 5 minutes
+  platform_watch:
+    class: PlatformWatchJob
+    schedule: every hour
   purge_health_logs:
     command: "HealthLog.purge!"
     schedule: every day at 3am
