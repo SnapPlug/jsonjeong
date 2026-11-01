@@ -19,3 +19,13 @@ namespace :ops do
     puts OpsContract.run(args.fetch(:payload))
   end
 end
+
+namespace :ops do
+  desc "텔레그램 봇 웹훅을 ops.jsonjeong.com/telegram/webhook 으로 등록한다 (TELEGRAM_WEBHOOK_SECRET 필요)"
+  task telegram_webhook: :environment do
+    secret = ENV.fetch("TELEGRAM_WEBHOOK_SECRET")
+    url = "https://ops.jsonjeong.com/telegram/webhook"
+    r = Telegram.call("setWebhook", url:, secret_token: secret, allowed_updates: [ "message" ])
+    puts "[ops] setWebhook #{r.inspect}"
+  end
+end

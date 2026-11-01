@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       resources :contracts, only: %i[index new create update]
       resources :payments, only: :update
       resource :health_check, only: :create
+      post "telegram/webhook", to: "telegram#create"   # 텔레그램 봇 웹훅. 로그인 대신 비밀 토큰 헤더
     end
   end
 
