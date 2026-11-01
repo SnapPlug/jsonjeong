@@ -5,6 +5,7 @@ class IdeasController < ApplicationController
   def index
     @ideas = Idea.all
     @totals = Idea.totals
+    @others = Submission.approved
   end
 
   def show

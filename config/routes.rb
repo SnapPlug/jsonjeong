@@ -44,6 +44,8 @@ Rails.application.routes.draw do
     scope "(:locale)", locale: /en/ do
       root "ideas#index"
       resources :ideas, only: :show, param: :slug
+      # 남의 실패 사례 제출 → 아카이브와 비교한 "내 위치" 화면. 승인은 rake submissions:approve
+      resources :submissions, only: %i[new create show], param: :token
     end
   end
 end

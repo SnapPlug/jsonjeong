@@ -9,7 +9,10 @@
     <% @ideas.each_with_index do |idea, i| %>
       <%= render "card", idea:, number: i + 1 %>
     <% end %>
+    <%= render "submit_card" %>
   </div>
+
+  <%= render "others", submissions: @others %>
 
   <p class="mt-6 text-xs text-muted"><%= t("archive.hours_note") %></p>
 </div>

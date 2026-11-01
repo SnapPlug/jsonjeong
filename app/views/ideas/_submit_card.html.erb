@@ -1,0 +1,8 @@
+<%# 격자 속 제출 안내 카드. 사진 없이 글만. %>
+<%= link_to new_submission_path, class: "flex flex-col justify-between rounded-xl border-2 border-dashed border-brand-dark/40 bg-surface p-[14px] text-ink hover:border-brand-dark min-[700px]:p-5 #{Idea::CARD_HEIGHT}" do %>
+  <div>
+    <p class="text-[15px] font-extrabold leading-tight min-[700px]:text-xl"><%= t("submit.card_title") %></p>
+    <p class="mt-2 line-clamp-4 text-[12px] leading-snug text-muted min-[700px]:text-sm"><%= t("submit.card_body") %></p>
+  </div>
+  <p class="text-sm font-bold text-brand-dark"><%= t("submit.card_cta") %></p>
+<% end %>

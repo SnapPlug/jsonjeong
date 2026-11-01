@@ -1,0 +1,48 @@
+<%= render "ideas/head", title: t("submit.result_title", name: @submission.name), description: t("submit.description") %>
+<% content_for :head do %><meta name="robots" content="noindex"><% end %>
+
+<div class="mx-auto max-w-xl px-[14px] py-8 min-[700px]:py-12">
+  <%= link_to t("archive.back"), root_path, class: "text-sm font-semibold text-brand-dark underline underline-offset-4 decoration-2 decoration-brand" %>
+  <h1 class="mt-4 text-2xl font-extrabold tracking-tight min-[700px]:text-3xl"><%= @submission.name %></h1>
+  <p class="mt-2 text-[15px] text-ink/90"><%= t("submit.result_lead", count: @pool_size) %></p>
+
+  <%# 네 줄: 값 + 아카이브 안 위치. 색은 안 쓴다. 글자만으로 읽힌다. %>
+  <dl class="mt-6 divide-y divide-black/10 rounded-xl bg-surface shadow-[0_0_0_1px_#ddd]">
+    <% rows = [
+      [ t("archive.hours"), work_hours(@submission.hours), :hours, :less ],
+      [ t("archive.days"), t("archive.days_unit", days: @submission.days), :days, :less ],
+      [ t("archive.cost"), usd(@submission.cost_usd), :cost_usd, :less ],
+      [ t("archive.revenue"), usd(@submission.revenue_usd), :revenue_usd, :more ]
+    ] %>
+    <% rows.each do |label, value, metric, better| %>
+      <% p = @submission.percentile(metric) %>
+      <div class="grid grid-cols-[6rem_1fr] items-baseline gap-3 px-4 py-3 min-[700px]:grid-cols-[8rem_1fr]">
+        <dt class="text-sm text-muted"><%= label %></dt>
+        <dd>
+          <span class="text-lg font-extrabold tabular-nums"><%= value %></span>
+          <% if p %>
+            <span class="ml-2 text-sm text-muted">
+              <%= better == :less ? t("submit.pos_less", pct: p) : t("submit.pos_more", pct: 100 - p) %>
+            </span>
+          <% end %>
+        </dd>
+      </div>
+    <% end %>
+  </dl>
+
+  <section class="mt-6 space-y-3 text-[15px] leading-relaxed">
+    <p><span class="font-semibold"><%= t("archive.stuck") %>:</span> <%= @submission.stuck %></p>
+    <p><span class="font-semibold"><%= t("submit.f.quit_signal") %>:</span> <%= @submission.quit_signal %></p>
+    <% if @submission.tools.present? %><p><span class="font-semibold"><%= t("submit.f.tools") %>:</span> <%= @submission.tools %></p><% end %>
+  </section>
+
+  <p class="mt-8 rounded-lg bg-page p-4 text-sm text-ink/90">
+    <% if @submission.approved? %>
+      <%= t("submit.status_approved") %>
+    <% else %>
+      <%= t("submit.status_pending") %>
+      <% unless @submission.verified? %><%= t("submit.unverified_note") %><% end %>
+    <% end %>
+  </p>
+  <p class="mt-3 text-xs text-muted"><%= t("submit.share_hint") %> <code class="select-all"><%= request.original_url %></code></p>
+</div>

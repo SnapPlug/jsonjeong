@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_14_001003) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_01_090000) do
   create_table "clients", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "health_url"
@@ -71,6 +71,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_14_001003) do
     t.string "user_agent"
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_sessions_on_user_id"
+  end
+
+  create_table "submissions", force: :cascade do |t|
+    t.string "token", null: false
+    t.string "status", default: "pending", null: false
+    t.string "locale", default: "ko", null: false
+    t.string "name", null: false
+    t.string "url"
+    t.string "email", null: false
+    t.date "started_on", null: false
+    t.date "ended_on"
+    t.decimal "hours", precision: 8, scale: 1, null: false
+    t.decimal "cost_usd", precision: 10, scale: 2, null: false
+    t.decimal "revenue_usd", precision: 10, scale: 2, null: false
+    t.text "stuck", null: false
+    t.text "quit_signal", null: false
+    t.string "tools"
+    t.string "proof_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["status"], name: "index_submissions_on_status"
+    t.index ["token"], name: "index_submissions_on_token", unique: true
   end
 
   create_table "subscribers", force: :cascade do |t|

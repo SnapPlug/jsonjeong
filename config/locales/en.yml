@@ -40,3 +40,71 @@ en:
     retro: "Read the retro →"
     visit: "Visit →"
     back: "← All ideas"
+  submit:
+    title: "Add your failure"
+    description: "Log an idea you dropped, with numbers. You instantly see where it sits among every case in this archive."
+    lead: "Log one idea you dropped, with numbers. The moment you submit, we place it next to every other case here and show you where it sits."
+    rules:
+      - "No numbers, no entry. Hours, money spent and money earned are required."
+      - "No advice. Only what you got stuck on and what told you to quit."
+      - "Entries are reviewed before listing. Without a proof link they are marked 'unverified'."
+    f:
+      name: "Idea name"
+      url: "Link"
+      started_on: "Started"
+      ended_on: "Dropped"
+      hours: "Hours"
+      cost_usd: "Spent ($)"
+      revenue_usd: "Earned ($)"
+      stuck: "Stuck at"
+      quit_signal: "What told you to quit"
+      tools: "Tools used"
+      proof_url: "Proof link"
+      email: "Email"
+    ph:
+      name: "e.g. Booking chatbot for a local bakery"
+      stuck: "e.g. Kakao's 5-second skill timeout killed the AI replies"
+      quit_signal: "e.g. Day 30: 40 visits, 0 payments"
+      tools: "e.g. Claude Code, Supabase, Meta ads"
+    h:
+      url: "A live address if you have one. Optional."
+      ended_on: "Leave empty if it is still running."
+      money: "Rough numbers in USD are fine."
+      quit_signal: "What you looked at when you decided to stop. A date and a number are best."
+      proof_url: "A revenue or traffic screenshot, or a store page. Without it the entry is listed as unverified."
+      email: "We tell you when it is listed. Never shown."
+    button: "Submit and see my position"
+    result_title: "%{name} · position in the archive"
+    result_lead: "Placed next to the %{count} cases in this archive."
+    pos_less: "%{pct}% here spent this much or less"
+    pos_more: "%{pct}% here earned more"
+    status_pending: "It goes on the main list after review. We email you when it does."
+    status_approved: "Listed on the main page."
+    unverified_note: "No proof link, so it is marked 'unverified'."
+    unverified: "unverified"
+    share_hint: "Only you know this address. Share it if you like:"
+    card_title: "Add your failure"
+    card_body: "Log an idea you dropped, with numbers. You instantly see where it sits in this archive."
+    card_cta: "Add mine →"
+    others_heading: "%{count} failures from other people"
+  activerecord:
+    attributes:
+      submission:
+        name: "Idea name"
+        url: "Link"
+        email: "Email"
+        started_on: "Start date"
+        ended_on: "Drop date"
+        hours: "Hours"
+        cost_usd: "Spent"
+        revenue_usd: "Earned"
+        stuck: "Stuck at"
+        quit_signal: "Quit signal"
+        tools: "Tools"
+        proof_url: "Proof link"
+    errors:
+      models:
+        submission:
+          attributes:
+            ended_on:
+              after_start: "cannot be before the start date"
