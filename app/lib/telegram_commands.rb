@@ -19,7 +19,7 @@ module TelegramCommands
   end
 
   def help
-    "명령: 헬스체크(지금 전부 체크) · 상태(마지막 결과) · 미수금"
+    "명령: 상태(마지막 결과, 5분마다 자동 체크) · 헬스체크(지금 새로 체크, 10–30초) · 미수금"
   end
 
   def check!
@@ -34,7 +34,9 @@ module TelegramCommands
     lines = [ "#{title} · #{logs.size}개 중 실패 #{failures.size}" ]
     failures.each { |l| lines << "🔴 #{l.client.name} · #{HealthLog::LABELS[l.check_type]}: #{l.error}" }
     lines << "전부 정상" if failures.empty?
-    lines << "마지막 #{logs.map(&:checked_at).max.in_time_zone('Seoul').strftime('%m/%d %H:%M')}"
+    last = logs.map(&:checked_at).max
+    ago = ((Time.current - last) / 60).round
+    lines << "#{last.in_time_zone('Seoul').strftime('%m/%d %H:%M')} 체크 · #{ago < 1 ? '방금' : "#{ago}분 전"}"
     lines.join("\n")
   end
 
