@@ -10,6 +10,13 @@ class TelegramCommandsTest < ActiveSupport::TestCase
     assert_match(/🔴 에이스상사 · Vercel: HTTP 503/, out)
   end
 
+  test "상태에 버전 현황이 붙는다" do
+    clients(:acme).update!(stack_version: "16.2.6")
+    PlatformEvent.create!(source: "nextjs", kind: "release", external_id: "v16.4.1", title: "v16.4.1", status: "security", happened_at: 1.day.ago)
+    out = TelegramCommands.run("상태")
+    assert_match(/📦 버전\nNext.js 16.2.6 ⚠️ 최신 16.4.1 — 에이스상사/, out)
+  end
+
   test "미수금: 연체는 ⚠️와 +일수" do
     out = TelegramCommands.run("미수금")
     assert_match(/💰 미수금/, out)

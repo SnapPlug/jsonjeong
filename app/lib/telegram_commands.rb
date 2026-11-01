@@ -29,7 +29,7 @@ module TelegramCommands
 
   def status(title: "📋 마지막 체크")
     logs = HealthLog.latest.includes(:client).to_a
-    return "#{title}\n체크 기록이 없습니다" if logs.empty?
+    return ([ "#{title}", "체크 기록이 없습니다" ] + versions).join("\n") if logs.empty?
     failures = logs.reject(&:ok)
     lines = [ "#{title} · #{logs.size}개 중 실패 #{failures.size}" ]
     failures.each { |l| lines << "🔴 #{l.client.name} · #{HealthLog::LABELS[l.check_type]}: #{l.error}" }
@@ -37,7 +37,30 @@ module TelegramCommands
     last = logs.map(&:checked_at).max
     ago = ((Time.current - last) / 60).round
     lines << "#{last.in_time_zone('Seoul').strftime('%m/%d %H:%M')} 체크 · #{ago < 1 ? '방금' : "#{ago}분 전"}"
-    lines.join("\n")
+    (lines + versions).join("\n")
+  end
+
+  # 버전 현황. 프레임워크별로 "우리 버전 → 알려진 최신(같은 줄기)"과 고객사 이름. ⚠️는 같은 줄기 최신보다 낮음.
+  FRAMEWORKS = { "nextjs" => "Next.js", "rails" => "Rails" }.freeze
+
+  def versions
+    lines = [ "", "📦 버전" ]
+    FRAMEWORKS.each do |source, label|
+      clients = Client.affected_by(source).where.not(stack_version: nil).order(:name)
+      next if clients.empty?
+      clients.group_by { |c| c.stack_version.split(".").first }.sort.reverse_each do |major, group|
+        latest = latest_release(source, major)
+        version = group.map(&:stack_version).uniq.join("/")
+        mark = latest ? (Gem::Version.new(group.map(&:stack_version).min) < Gem::Version.new(latest) ? " ⚠️ 최신 #{latest}" : " ✅") : ""
+        lines << "#{label} #{version}#{mark} — #{group.map(&:name).join(' · ')}"
+      end
+    end
+    lines.size > 2 ? lines : []
+  end
+
+  # 플랫폼 소식에 기록된 그 줄기의 최신 릴리스(보안·마이너만 수집하므로 패치는 빠질 수 있다).
+  def latest_release(source, major)
+    PlatformEvent.where(source:, kind: "release").where("title LIKE ?", "v#{major}.%").recent.pick(:title)&.delete_prefix("v")
   end
 
   def money
