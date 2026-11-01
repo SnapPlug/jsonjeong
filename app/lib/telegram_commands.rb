@@ -5,6 +5,9 @@ module TelegramCommands
 
   def admin_chat_id = ENV["TELEGRAM_ADMIN_CHAT_ID"].to_s.strip
 
+  # 명령을 받는 채팅: Jason 개인 대화 + 알림 채널(Overload). 답장은 명령이 온 곳으로 간다.
+  def allowed_chat_ids = [ admin_chat_id, ENV["TELEGRAM_CHAT_ID"].to_s.strip ].reject(&:empty?)
+
   def run(text)
     case text.strip
     when %r{\A/?(check|헬스체크|체크)\z}i then check!

@@ -25,7 +25,7 @@ namespace :ops do
   task telegram_webhook: :environment do
     secret = ENV.fetch("TELEGRAM_WEBHOOK_SECRET")
     url = "https://ops.jsonjeong.com/telegram/webhook"
-    r = Telegram.call("setWebhook", url:, secret_token: secret, allowed_updates: [ "message" ])
+    r = Telegram.call("setWebhook", url:, secret_token: secret, allowed_updates: [ "message", "channel_post" ])
     puts "[ops] setWebhook #{r.inspect}"
   end
 end
