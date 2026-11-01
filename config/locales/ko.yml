@@ -83,6 +83,8 @@ ko:
     unverified_note: "증거 링크가 없어 '미확인'으로 표시됩니다."
     unverified: "미확인"
     share_hint: "이 화면 주소는 본인만 압니다. 공유하셔도 됩니다:"
+    share_text: "「%{name}」 %{hours}, %{cost} 쓰고 %{revenue} 벌고 접었습니다. 접은 아이디어 %{count}건 속 내 자리:"
+    share_threads: "스레드에 올리기"
     card_title: "내 실패도 올리기"
     card_body: "접은 아이디어를 숫자로 남기세요. 올리면 바로 이 아카이브 속 내 위치가 나옵니다."
     card_cta: "올리러 가기 →"

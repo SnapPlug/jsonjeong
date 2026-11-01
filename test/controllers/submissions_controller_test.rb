@@ -20,6 +20,8 @@ class SubmissionsControllerTest < ActionDispatch::IntegrationTest
     assert_match "건과 나란히", response.body
     assert_select "meta[name=robots][content=noindex]"
     assert_match "미확인", response.body
+    assert_select "meta[property='og:description'][content*='12시간']"
+    assert_select "a[href^='https://www.threads.net/intent/post?text=']"
   end
 
   test "invalid create re-renders with errors" do

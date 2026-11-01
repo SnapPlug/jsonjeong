@@ -83,6 +83,8 @@ en:
     unverified_note: "No proof link, so it is marked 'unverified'."
     unverified: "unverified"
     share_hint: "Only you know this address. Share it if you like:"
+    share_text: "「%{name}」 %{hours}, spent %{cost}, made %{revenue}, then quit. My place among %{count} dead ideas:"
+    share_threads: "Post on Threads"
     card_title: "Add your failure"
     card_body: "Log an idea you dropped, with numbers. You instantly see where it sits in this archive."
     card_cta: "Add mine →"

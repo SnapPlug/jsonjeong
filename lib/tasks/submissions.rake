@@ -9,8 +9,13 @@ namespace :submissions do
 
   desc "제출 승인: bin/rails submissions:approve[id]  (거절은 submissions:reject[id])"
   task :approve, [ :id ] => :environment do |_t, args|
-    Submission.find(args.fetch(:id)).update!(status: "approved")
-    puts "approved #{args[:id]}"
+    s = Submission.find(args.fetch(:id))
+    s.update!(status: "approved")
+    puts "approved #{s.id}"
+    # 스레드에 던질 문장. 올리는 것은 사람이 한다.
+    url = "https://jsonjeong.com#{s.locale == "en" ? "/en" : ""}/submissions/#{s.token}"
+    puts I18n.with_locale(s.locale) { I18n.t("submit.share_text", name: s.name, hours: ApplicationController.helpers.work_hours(s.hours), cost: ApplicationController.helpers.usd(s.cost_usd), revenue: ApplicationController.helpers.usd(s.revenue_usd), count: Submission.pool.size) }
+    puts url
   end
 
   task :reject, [ :id ] => :environment do |_t, args|
