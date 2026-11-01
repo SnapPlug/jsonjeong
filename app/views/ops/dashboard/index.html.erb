@@ -64,7 +64,7 @@
         <% logs = @latest[client.id] || {} %>
         <% failures = logs.values.reject(&:ok) %>
         <div class="flex flex-wrap items-center gap-2 px-4 py-2.5 hover:bg-zinc-800/40">
-          <%= link_to client.name, ops_client_path(client), class: "w-44 truncate font-medium text-zinc-100 hover:underline" %>
+          <span class="flex w-44 items-baseline gap-1.5 truncate"><%= link_to client.name, ops_client_path(client), class: "truncate font-medium text-zinc-100 hover:underline" %><% if client.stack_version %><span class="text-[10px] text-zinc-600"><%= client.stack_version %></span><% end %></span>
           <%# 배지는 전부 같은 모양. 상태는 점 색 하나로만 말한다: 초록 정상 · 빨강 실패 · 회색 체크 전 %>
           <% client.checks.each do |check| %>
             <% log = logs[check] %>

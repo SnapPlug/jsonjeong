@@ -8,7 +8,7 @@ class Client < ApplicationRecord
 
   enum :status, %w[active paused completed].index_by(&:itself), default: "active"
 
-  normalizes :name, :health_url, :vercel_project_id, :vercel_team_id, :supabase_ref,
+  normalizes :name, :health_url, :vercel_project_id, :vercel_team_id, :supabase_ref, :stack_version,
              with: ->(value) { value.strip.presence }
 
   validates :name, presence: true, uniqueness: true
@@ -19,6 +19,29 @@ class Client < ApplicationRecord
     where.not(status: "paused")
       .where("health_url IS NOT NULL OR vercel_project_id IS NOT NULL OR supabase_ref IS NOT NULL")
   }
+
+  # 플랫폼 소식(PlatformEvent.source)이 닿는 고객사. 일시중지는 뺀다.
+  # vercel/supabase는 감시 정보로, cloudflare는 Workers 주소로, rails/nextjs는 종류로 판단한다.
+  def self.affected_by(source)
+    base = where.not(status: "paused")
+    case source
+    when "vercel" then base.where.not(vercel_project_id: nil)
+    when "supabase" then base.where.not(supabase_ref: nil)
+    when "cloudflare" then base.where("health_url LIKE ?", "%workers.dev%")
+    when "rails" then base.where(kind: "rails")
+    when "nextjs" then base.where(kind: "vercel_supabase")
+    else none
+    end
+  end
+
+  # 릴리스 알림 한 줄: "더온실 15.5.18 ⚠️". 릴리스보다 낮으면 ⚠️, 같거나 높으면 ✅, 버전 모르면 ?.
+  def version_mark(release_tag)
+    return "#{name} ?" unless stack_version
+    mine, theirs = Gem::Version.new(stack_version), Gem::Version.new(release_tag.delete_prefix("v"))
+    "#{name} #{stack_version} #{mine < theirs ? '⚠️' : '✅'}"
+  rescue ArgumentError
+    "#{name} #{stack_version}"
+  end
 
   # 이 고객사에 적용되는 체크 종류 (HealthLog::CHECK_TYPES 중)
   def checks

@@ -22,7 +22,7 @@ module Ops
       end
 
       def client_params
-        params.expect(client: [ :name, :kind, :status, :health_url, :vercel_project_id, :vercel_team_id, :supabase_ref, :notes ])
+        params.expect(client: [ :name, :kind, :status, :health_url, :vercel_project_id, :vercel_team_id, :supabase_ref, :stack_version, :notes ])
       end
   end
 end

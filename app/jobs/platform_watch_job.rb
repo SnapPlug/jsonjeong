@@ -20,10 +20,19 @@ class PlatformWatchJob < ApplicationJob
 
   private
     def message(e)
-      if e.kind == "incident"
-        "#{e.resolved? ? '🟢' : '🟠'} #{e.label} 장애#{e.resolved? ? ' 해결' : ''}: #{e.title}#{e.resolved? ? '' : " (#{e.status})"}\n#{e.url}"
+      head = if e.kind == "incident"
+        "#{e.resolved? ? '🟢' : '🟠'} #{e.label} 장애#{e.resolved? ? ' 해결' : ''}: #{e.title}#{e.resolved? ? '' : " (#{e.status})"}"
       else
-        "🆕 #{e.label} #{e.title}#{e.status == 'security' ? ' (보안)' : ''}\n#{e.url}"
+        "🆕 #{e.label} #{e.title}#{e.status == 'security' ? ' (보안)' : ''}"
       end
+      [ head, ours(e), e.url ].compact.join("\n")
+    end
+
+    # 우리 고객사 현황 한 줄. 장애면 이름만, 릴리스면 버전과 ⚠️/✅.
+    def ours(e)
+      clients = Client.affected_by(e.source).order(:name)
+      return nil if clients.empty?
+      list = e.kind == "release" ? clients.map { |c| c.version_mark(e.title) } : clients.map(&:name)
+      "우리 #{clients.size}곳: #{list.join(' · ')}"
     end
 end
