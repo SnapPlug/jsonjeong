@@ -41,3 +41,13 @@ class ContractTest < ActiveSupport::TestCase
     assert_equal "공백 계약", contract.name
   end
 end
+
+class ClientVersionMarkTest < ActiveSupport::TestCase
+  test "같은 줄기만 비교하고 다른 줄기는 표시 없음" do
+    c = Client.new(name: "더온실", stack_version: "15.5.28")
+    assert_equal "더온실 15.5.28", c.version_mark("v16.4.1")
+    assert_equal "더온실 15.5.28 ✅", c.version_mark("v15.5.28")
+    assert_equal "더온실 15.5.28 ⚠️", c.version_mark("v15.5.29")
+    assert_equal "더온실 ?", Client.new(name: "더온실").version_mark("v16.4.1")
+  end
+end

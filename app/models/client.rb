@@ -34,10 +34,12 @@ class Client < ApplicationRecord
     end
   end
 
-  # 릴리스 알림 한 줄: "더온실 15.5.18 ⚠️". 릴리스보다 낮으면 ⚠️, 같거나 높으면 ✅, 버전 모르면 ?.
+  # 릴리스 알림 한 줄: "더온실 15.5.18 ⚠️". 같은 줄기(메이저)에서 릴리스보다 낮으면 ⚠️, 같거나 높으면 ✅.
+  # 줄기가 다르면(15.x 고객사에 16.x 알림) 그 알림으로는 알 수 없으니 표시 없이 버전만. 버전 모르면 ?.
   def version_mark(release_tag)
     return "#{name} ?" unless stack_version
     mine, theirs = Gem::Version.new(stack_version), Gem::Version.new(release_tag.delete_prefix("v"))
+    return "#{name} #{stack_version}" if mine.segments.first != theirs.segments.first
     "#{name} #{stack_version} #{mine < theirs ? '⚠️' : '✅'}"
   rescue ArgumentError
     "#{name} #{stack_version}"
