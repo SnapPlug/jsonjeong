@@ -2,7 +2,7 @@ require "test_helper"
 
 class PlatformWatchJobTest < ActiveJob::TestCase
   def event(**attrs)
-    PlatformWatch::Event.new(**{ source: "vercel", kind: "incident", external_id: "abc", title: "빌드 지연",
+    PlatformWatch::Event.new(**{ source: "vercel", kind: "incident", external_id: "abc", title: "Elevated Function Invocation Errors",
                                  status: "investigating", url: "https://x", happened_at: 1.hour.ago }.merge(attrs))
   end
 
@@ -15,32 +15,50 @@ class PlatformWatchJobTest < ActiveJob::TestCase
   end
 
   test "새 장애는 알리고, 같은 장애는 다시 알리지 않고, 해결되면 한 번 더 알린다" do
-    assert_equal [ "🟠 Vercel 장애: 빌드 지연 (investigating)\n우리 1곳: 에이스상사\nhttps://x" ], run_with([ event ])
+    assert_equal [ "🟠 Vercel 장애: Elevated Function Invocation Errors (investigating)\n우리 1곳: 에이스상사\nhttps://x" ], run_with([ event ])
     assert_empty run_with([ event(status: "monitoring") ])
-    assert_equal [ "🟢 Vercel 장애 해결: 빌드 지연\n우리 1곳: 에이스상사\nhttps://x" ], run_with([ event(status: "resolved") ])
+    assert_equal [ "🟢 Vercel 장애 해결: Elevated Function Invocation Errors\n우리 1곳: 에이스상사\nhttps://x" ], run_with([ event(status: "resolved") ])
     assert_equal 1, PlatformEvent.count
   end
 
   test "알림에 우리 고객사 현황이 붙는다: 장애는 이름, 릴리스는 버전 비교" do
     clients(:acme).update!(stack_version: "16.2.6")
-    assert_equal [ "🟠 Vercel 장애: 빌드 지연 (investigating)\n우리 1곳: 에이스상사\nhttps://x" ], run_with([ event ])
+    assert_equal [ "🟠 Vercel 장애: Elevated Function Invocation Errors (investigating)\n우리 1곳: 에이스상사\nhttps://x" ], run_with([ event ])
     release = event(source: "nextjs", kind: "release", external_id: "v16.4.1", title: "v16.4.1", status: "security")
     assert_equal [ "🆕 Next.js v16.4.1 (보안)\n우리 1곳: 에이스상사 16.2.6 ⚠️\nhttps://x" ], run_with([ release ])
   end
 
-  test "Supabase 장애에 리전이 있으면 우리 리전과 비교한다" do
+  test "Supabase 장애는 우리 리전에 닿을 때만 알린다" do
     clients(:acme).update!(supabase_ref: "abc", supabase_region: "ap-northeast-2")
-    other = event(source: "supabase", external_id: "s1", title: "Storage uploads failing in us-east-1")
-    assert_equal [ "🟠 Supabase 장애: Storage uploads failing in us-east-1 (investigating)\n우리 리전 아님: 에이스상사 ap-northeast-2\nhttps://x" ], run_with([ other ])
-    ours = event(source: "supabase", external_id: "s2", title: "Pooler errors in ap-northeast-2")
-    assert_includes run_with([ ours ]).first, "우리 1곳: 에이스상사 ap-northeast-2"
+    assert_empty run_with([ event(source: "supabase", external_id: "s1", title: "Storage uploads failing in us-east-1") ])
+    assert_empty run_with([ event(source: "supabase", external_id: "s1", title: "Storage uploads failing in us-east-1", status: "resolved") ]), "알리지 않은 장애는 해결도 알리지 않는다"
+    ours = run_with([ event(source: "supabase", external_id: "s2", title: "Pooler errors in ap-northeast-2") ])
+    assert_includes ours.first, "우리 1곳: 에이스상사 ap-northeast-2"
   end
 
   test "리전을 모르는 고객사와 리전이 없는 장애는 영향 후보로 둔다" do
     clients(:acme).update!(supabase_ref: "abc", supabase_region: nil)
     assert_includes run_with([ event(source: "supabase", external_id: "s3", title: "Pooler errors in us-east-1") ]).first, "우리 1곳: 에이스상사 리전?"
     clients(:acme).update!(supabase_region: "ap-northeast-2")
-    assert_includes run_with([ event(source: "supabase", external_id: "s4", title: "Logs degraded in multiple regions") ]).first, "우리 1곳: 에이스상사\n"
+    assert_includes run_with([ event(source: "supabase", external_id: "s4", title: "Database outage") ]).first, "우리 1곳: 에이스상사\n"
+  end
+
+  test "쓰지 않는 기능의 장애와 이미 끝난 장애는 저장만 한다" do
+    assert_empty run_with([ event(external_id: "v1", title: "Increased build and deployment failures") ])
+    assert_empty run_with([ event(external_id: "v2", title: "Elevated Function Invocation Errors", status: "resolved") ])
+    assert_equal 2, PlatformEvent.count
+  end
+
+  test "릴리스는 할 일이 있을 때만 알린다" do
+    client = clients(:acme)
+    client.update!(stack_version: "16.4.5")
+    release = ->(tag, status) { event(source: "nextjs", kind: "release", external_id: tag, title: tag, status:) }
+    assert_empty run_with([ release.call("v16.4.5", "security") ]), "이미 올렸다"
+    assert_empty run_with([ release.call("v16.5.0", "minor") ]), "마이너는 작업 때"
+    assert_empty run_with([ release.call("v17.0.0", "minor") ]), "바로 전 메이저는 아직 지원된다"
+    assert_includes run_with([ release.call("v16.4.6", "security") ]).first, "우리 1곳: 에이스상사 16.4.5 ⚠️"
+    client.update!(stack_version: "15.5.28")
+    assert_includes run_with([ release.call("v17.1.0", "minor") ]).first, "⬆️ 줄기 올릴 때"
   end
 
   test "묵은 소식은 저장만 하고 알리지 않는다" do

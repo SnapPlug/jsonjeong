@@ -1,8 +1,12 @@
-# 한 시간마다 (config/recurring.yml). 새 소식은 저장하고, 최근 3일 안의 것만 텔레그램으로 알린다.
-# 3일 규칙 덕에 처음 돌 때 묵은 소식으로 채널이 넘치지 않는다. 장애는 해결될 때 한 번 더 알린다.
+# 한 시간마다 (config/recurring.yml). 소식은 전부 저장해 대시보드에 두고, 우리가 할 일이 있는 것만 텔레그램으로 알린다.
+# 장애: 우리가 쓰는 기능과 리전에 닿고 아직 진행 중일 때. 알린 장애만 해결도 알린다.
+# 릴리스: 보안은 올려야 할 고객사가 있을 때. 마이너·메이저는 줄기를 올려야 할 고객사가 있을 때(/security-patch §0).
+# 3일 규칙 덕에 처음 돌 때 묵은 소식으로 채널이 넘치지 않는다.
 class PlatformWatchJob < ApplicationJob
   queue_as :default
   FRESH = 3.days
+  ACTION = /⚠️|⬆️| \?$/  # 올리거나, 줄기를 올리거나, 버전을 모르거나
+  STEM = /⬆️/
 
   def perform
     PlatformWatch.fetch_all.each do |event|
@@ -12,13 +16,21 @@ class PlatformWatchJob < ApplicationJob
       record.assign_attributes(event.to_h.except(:source, :external_id))
       record.save!
 
-      next unless event.happened_at > FRESH.ago && (was_new || resolved_now)
+      next unless event.happened_at > FRESH.ago
+      next unless resolved_now ? record.notified_at : (was_new && alert?(record))
       Telegram.send_message(message(record))
       record.update!(notified_at: Time.current)
     end
   end
 
   private
+    def alert?(e)
+      clients = Client.affected_by(e.source)
+      return false if clients.empty?
+      return !e.resolved? && e.touches_us? && (e.regions.empty? || e.source != "supabase" || regional_hits(e, clients).any?) if e.kind == "incident"
+      (e.status == "security" ? ACTION : STEM).then { |mark| clients.any? { |c| c.version_mark(e.title).match?(mark) } }
+    end
+
     def message(e)
       head = if e.kind == "incident"
         "#{e.resolved? ? '🟢' : '🟠'} #{e.label} 장애#{e.resolved? ? ' 해결' : ''}: #{e.title}#{e.resolved? ? '' : " (#{e.status})"}"
@@ -33,14 +45,17 @@ class PlatformWatchJob < ApplicationJob
       clients = Client.affected_by(e.source).order(:name)
       return nil if clients.empty?
       return regional(e, clients) if e.source == "supabase" && e.regions.any?
-      list = e.kind == "release" ? clients.map { |c| c.version_mark(e.title) } : clients.map(&:name)
-      "우리 #{clients.size}곳: #{list.join(' · ')}"
+      list = e.kind == "release" ? clients.map { |c| c.version_mark(e.title) }.grep(ACTION) : clients.map(&:name)
+      "우리 #{list.size}곳: #{list.join(' · ')}"
     end
 
-    # 장애 리전과 우리 리전 비교. 리전을 모르는 고객사는 영향 후보로 둔다.
+    # 장애 리전에 있는 고객사. 리전을 모르는 고객사는 영향 후보로 둔다.
+    def regional_hits(e, clients)
+      clients.select { |c| c.supabase_region.nil? || e.regions.include?(c.supabase_region) }
+    end
+
     def regional(e, clients)
-      hit, miss = clients.partition { |c| c.supabase_region.nil? || e.regions.include?(c.supabase_region) }
-      named = ->(list) { list.map { |c| "#{c.name} #{c.supabase_region || '리전?'}" }.join(" · ") }
-      hit.empty? ? "우리 리전 아님: #{named.call(miss)}" : "우리 #{hit.size}곳: #{named.call(hit)}"
+      hits = regional_hits(e, clients)
+      "우리 #{hits.size}곳: #{hits.map { |c| "#{c.name} #{c.supabase_region || '리전?'}" }.join(' · ')}"
     end
 end
