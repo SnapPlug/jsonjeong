@@ -86,6 +86,15 @@ module OpsHelper
     "url" => [ "URL", CHECK_ICONS["url"] ]
   }.freeze
 
+  # 플랫폼 소식 한 줄의 로고. 서비스 상태 배지와 같은 그림을 쓴다.
+  def platform_icon(source)
+    svg = case source
+    when "vercel", "supabase" then CHECK_ICONS[source]
+    when "nextjs", "rails", "cloudflare" then URL_ICONS.fetch(source).last
+    end
+    svg&.html_safe # rubocop:disable Rails/OutputSafety -- 상수 문자열
+  end
+
   # 배지 하나의 [라벨, 아이콘]. URL이면 고객사가 무엇으로 응답하는지로 고른다.
   def check_badge(client, check)
     return [ HealthLog::LABELS[check], CHECK_ICONS.fetch(check).html_safe ] unless check == "url" # rubocop:disable Rails/OutputSafety -- 상수 문자열
