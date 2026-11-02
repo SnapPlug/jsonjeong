@@ -9,7 +9,7 @@
   </ul>
 <% end %>
 
-<%= form_with url: ops_contracts_path, class: "max-w-2xl space-y-5 rounded-lg border border-zinc-800 bg-zinc-900 p-5" do %>
+<%= form_with url: ops_contracts_path, class: "max-w-2xl space-y-5 rounded-lg border border-zinc-800 bg-zinc-900 p-4 md:p-5" do %>
   <label class="block space-y-1.5">
     <span class="text-xs text-zinc-500">고객사 <span class="text-zinc-600">— 있는 이름이면 재계약, 새 이름이면 함께 등록</span></span>
     <%= text_field_tag :client_name, @client_name, list: "client-names", required: true, autofocus: @client_name.blank?, autocomplete: "off", class: input %>
@@ -23,7 +23,7 @@
     <%= text_field_tag "contract[name]", @contract.name, required: true, placeholder: "예: AI 고객 상담 에이전트 구축", class: input %>
   </label>
 
-  <div class="grid grid-cols-3 gap-3">
+  <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
     <label class="block space-y-1.5"><span class="text-xs text-zinc-500">금액(원)</span><%= number_field_tag "contract[amount]", @contract.amount, min: 1, required: true, class: input %></label>
     <label class="block space-y-1.5"><span class="text-xs text-zinc-500">시작일</span><%= date_field_tag "contract[starts_on]", @contract.starts_on, required: true, class: input %></label>
     <label class="block space-y-1.5"><span class="text-xs text-zinc-500">종료일</span><%= date_field_tag "contract[ends_on]", @contract.ends_on, required: true, class: input %></label>
@@ -35,9 +35,9 @@
     <label class="flex items-center gap-2 text-zinc-300"><%= radio_button_tag :schedule, "thirds", @schedule == "thirds", class: "accent-zinc-400" %> 계약금 30% · 중도금 40% (중간) · 잔금 30%</label>
     <label class="flex items-center gap-2 text-zinc-300"><%= radio_button_tag :schedule, "none", @schedule == "none", class: "accent-zinc-400" %> 납부 일정 없이</label>
     <label class="flex items-center gap-2 text-zinc-300"><%= radio_button_tag :schedule, "manual", @schedule == "manual", class: "accent-zinc-400" %> 직접 입력</label>
-    <div class="ml-6 mt-1 grid grid-cols-[4rem_1fr_1fr] items-center gap-2 text-xs">
+    <div class="mt-1 grid grid-cols-2 items-center gap-2 text-xs sm:ml-6 sm:grid-cols-[4rem_1fr_1fr]">
       <% OpsHelper::PAYMENT_KINDS.each_with_index do |(kind, label), i| %>
-        <span class="text-zinc-500"><%= label %></span>
+        <span class="col-span-2 text-zinc-500 sm:col-span-1"><%= label %></span>
         <%= hidden_field_tag "contract[payments_attributes][#{i}][kind]", kind %>
         <%= number_field_tag "contract[payments_attributes][#{i}][amount]", nil, min: 0, placeholder: "금액", class: input %>
         <%= date_field_tag "contract[payments_attributes][#{i}][due_on]", nil, class: input %>

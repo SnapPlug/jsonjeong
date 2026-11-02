@@ -9,7 +9,7 @@
   <%= link_to "새 계약", new_ops_contract_path, class: OpsHelper::SECONDARY_BUTTON %>
 </div>
 
-<section class="grid grid-cols-3 gap-3">
+<section class="grid grid-cols-1 gap-3 sm:grid-cols-3">
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
     <p class="text-xs text-zinc-500">총 계약 금액</p>
     <p class="mt-1.5 text-xl font-semibold tabular-nums whitespace-nowrap text-zinc-100"><%= won(@total) %></p>
@@ -28,13 +28,13 @@
   <% @contracts.each do |contract| %>
     <% paid = contract.payments.select(&:paid?).sum(&:amount) %>
     <div class="flex flex-wrap items-center gap-3 px-4 py-2.5 hover:bg-zinc-800/40">
-      <%= link_to contract.client.name, ops_client_path(contract.client), class: "w-36 truncate font-medium text-zinc-100 hover:underline" %>
-      <div class="min-w-0 flex-1">
+      <%= link_to contract.client.name, ops_client_path(contract.client), class: "w-full truncate font-medium md:w-36 text-zinc-100 hover:underline" %>
+      <div class="w-full min-w-0 md:w-auto md:flex-1">
         <p class="truncate text-zinc-200"><%= contract.name %></p>
         <p class="text-xs text-zinc-500"><%= contract.starts_on %> ~ <%= contract.ends_on %></p>
       </div>
-      <span class="w-28 text-right font-semibold text-zinc-100"><%= won(contract.amount) %></span>
-      <span class="w-32 text-right text-xs <%= paid >= contract.amount ? "text-green-400" : "text-zinc-500" %>">
+      <span class="font-semibold md:w-28 md:text-right text-zinc-100"><%= won(contract.amount) %></span>
+      <span class="text-xs md:w-32 md:text-right <%= paid >= contract.amount ? "text-green-400" : "text-zinc-500" %>">
         <%= contract.payments.empty? ? "납부 일정 없음" : "수금 #{won(paid)}" %>
       </span>
       <%= status_badge contract.status, OpsHelper::CONTRACT_STATUSES %>

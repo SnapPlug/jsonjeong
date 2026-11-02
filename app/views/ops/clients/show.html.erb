@@ -13,7 +13,7 @@
   <div class="divide-y divide-zinc-800 rounded-lg border border-zinc-800 bg-zinc-900">
     <% @contracts.each do |contract| %>
       <div class="flex flex-wrap items-center gap-3 px-4 py-2.5 hover:bg-zinc-800/40">
-        <div class="min-w-0 flex-1">
+        <div class="w-full min-w-0 md:w-auto md:flex-1">
           <p class="font-medium text-zinc-100"><%= contract.name %></p>
           <p class="text-xs text-zinc-500">
             <%= contract.starts_on %> ~ <%= contract.ends_on %>
@@ -34,7 +34,7 @@
   <div class="divide-y divide-zinc-800 rounded-lg border border-zinc-800 bg-zinc-900">
     <% @payments.each do |payment| %>
       <div class="flex flex-wrap items-center gap-3 px-4 py-2.5 hover:bg-zinc-800/40">
-        <span class="min-w-0 flex-1 truncate text-zinc-200"><%= payment.contract.name %> · <%= OpsHelper::PAYMENT_KINDS[payment.kind] %></span>
+        <span class="w-full min-w-0 truncate text-zinc-200 md:w-auto md:flex-1"><%= payment.contract.name %> · <%= OpsHelper::PAYMENT_KINDS[payment.kind] %></span>
         <span class="font-semibold text-zinc-100"><%= won(payment.amount) %></span>
         <span class="text-xs text-zinc-500">마감 <%= payment.due_on %><% if payment.paid_on %> · 수금 <%= payment.paid_on %><% end %></span>
         <%= status_form ops_payment_path(payment), "payment[status]", payment.status, OpsHelper::PAYMENT_STATUSES %>
@@ -68,12 +68,12 @@
     <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">최근 체크</h2>
     <div class="divide-y divide-zinc-800 rounded-lg border border-zinc-800 bg-zinc-900 text-xs">
       <% @logs.each do |log| %>
-        <div class="flex items-center gap-3 px-4 py-1.5">
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-1.5">
           <span class="h-1.5 w-1.5 rounded-full <%= ok_dot(log.ok) %>"></span>
           <span class="w-24 text-zinc-300"><%= HealthLog::LABELS[log.check_type] %></span>
           <span class="w-16 text-zinc-500"><%= log.ms ? "#{log.ms}ms" : "" %></span>
-          <span class="flex-1 truncate text-red-400"><%= log.error %></span>
-          <span class="text-zinc-600"><%= kst(log.checked_at) %></span>
+          <span class="order-last w-full text-red-400 empty:hidden md:order-none md:w-auto md:flex-1 md:truncate"><%= log.error %></span>
+          <span class="ml-auto text-zinc-600"><%= kst(log.checked_at) %></span>
         </div>
       <% end %>
     </div>

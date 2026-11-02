@@ -6,23 +6,23 @@
 </div>
 
 <section class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-3 md:p-4">
     <p class="text-xs text-zinc-500">진행 중 계약</p>
     <p class="mt-1.5 text-2xl font-semibold text-zinc-100"><%= @open_contracts %></p>
   </div>
-  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-3 md:p-4">
     <p class="text-xs text-zinc-500">미수금</p>
-    <p class="mt-1.5 text-xl font-semibold tabular-nums whitespace-nowrap <%= @unpaid.any?(&:overdue?) ? "text-red-400" : "text-yellow-400" %>"><%= won(@unpaid_total) %></p>
+    <p class="mt-1.5 text-base font-semibold tabular-nums md:text-xl whitespace-nowrap <%= @unpaid.any?(&:overdue?) ? "text-red-400" : "text-yellow-400" %>"><%= won(@unpaid_total) %></p>
   </div>
-  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-3 md:p-4">
     <p class="text-xs text-zinc-500">이번 달 수금</p>
-    <p class="mt-1.5 text-xl font-semibold tabular-nums whitespace-nowrap text-zinc-100"><%= won(@paid_this_month) %></p>
+    <p class="mt-1.5 text-base font-semibold tabular-nums md:text-xl whitespace-nowrap text-zinc-100"><%= won(@paid_this_month) %></p>
   </div>
-  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-3 md:p-4">
     <p class="text-xs text-zinc-500">올해 수금 <span class="text-zinc-600"><%= Date.current.year %></span></p>
-    <p class="mt-1.5 text-xl font-semibold tabular-nums whitespace-nowrap text-zinc-100"><%= won(@paid_this_year) %></p>
+    <p class="mt-1.5 text-base font-semibold tabular-nums md:text-xl whitespace-nowrap text-zinc-100"><%= won(@paid_this_year) %></p>
   </div>
-  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-3 md:p-4">
     <p class="text-xs text-zinc-500">비정상 서비스</p>
     <p class="mt-1.5 text-2xl font-semibold <%= @unhealthy > 0 ? "text-red-400" : "text-green-400" %>"><%= @unhealthy %></p>
   </div>
@@ -64,7 +64,7 @@
         <% logs = @latest[client.id] || {} %>
         <% failures = logs.values.reject(&:ok) %>
         <div class="flex flex-wrap items-center gap-2 px-4 py-2.5 hover:bg-zinc-800/40">
-          <span class="flex w-44 items-baseline gap-1.5 truncate"><%= link_to client.name, ops_client_path(client), class: "truncate font-medium text-zinc-100 hover:underline" %><% if client.stack_version %><span class="text-[10px] text-zinc-600"><%= client.stack_version %></span><% end %></span>
+          <span class="flex w-full items-baseline sm:w-44 gap-1.5 truncate"><%= link_to client.name, ops_client_path(client), class: "truncate font-medium text-zinc-100 hover:underline" %><% if client.stack_version %><span class="text-[10px] text-zinc-600"><%= client.stack_version %></span><% end %></span>
           <%# 배지는 전부 같은 모양. 상태는 점 색 하나로만 말한다: 초록 정상 · 빨강 실패 · 회색 체크 전 %>
           <% client.checks.each do |check| %>
             <% log = logs[check] %>
@@ -76,7 +76,7 @@
           <% end %>
           <span class="flex-1"></span>
           <% if failures.any? %>
-            <span class="max-w-sm truncate text-xs text-red-400" title="<%= failures.map { |l| "#{HealthLog::LABELS[l.check_type]}: #{l.error}" }.join(" · ") %>">
+            <span class="w-full text-xs text-red-400 md:w-auto md:max-w-sm md:truncate" title="<%= failures.map { |l| "#{HealthLog::LABELS[l.check_type]}: #{l.error}" }.join(" · ") %>">
               <%= failures.map { |l| "#{HealthLog::LABELS[l.check_type]}: #{l.error}" }.join(" · ") %>
             </span>
           <% end %>
@@ -97,7 +97,7 @@
         <div class="flex flex-wrap items-center gap-2 px-4 py-2 text-xs hover:bg-zinc-800/40">
           <span class="h-1.5 w-1.5 rounded-full <%= e.kind == "release" ? "bg-indigo-400" : (e.resolved? ? "bg-green-500" : "bg-orange-400") %>"></span>
           <span class="flex w-24 items-center gap-1.5 text-zinc-400"><%= platform_icon(e.source) %><%= e.label %></span>
-          <%= link_to e.title, e.url, target: "_blank", rel: "noopener", class: "truncate text-zinc-200 hover:underline" %>
+          <%= link_to e.title, e.url, target: "_blank", rel: "noopener", class: "order-last w-full text-zinc-200 hover:underline md:order-none md:w-auto md:truncate" %>
           <% if e.kind == "incident" %><span class="text-zinc-500"><%= e.resolved? ? "해결" : e.status %></span>
           <% elsif e.status == "security" %><span class="text-red-400">보안</span><% end %>
           <span class="flex-1"></span>
@@ -109,19 +109,19 @@
 </section>
 
 <section class="space-y-2">
-  <div class="flex items-center justify-between">
+  <div class="flex flex-wrap items-center justify-between gap-x-3">
     <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">월 수금 · 최근 12개월 · 마감일 기준</h2>
     <span class="text-xs text-zinc-500">12개월 합계 <span class="font-medium text-zinc-200"><%= won(@last12_total) %></span></span>
   </div>
   <% peak = [ @monthly.values.max.to_i, 1 ].max %>
   <div class="rounded-lg border border-zinc-800 bg-zinc-900 p-4">
-    <div class="flex h-40 items-end gap-2">
+    <div class="flex h-40 items-end gap-1 md:gap-2">
       <% @months.each do |month| %>
         <% amount = @monthly[month].to_i %>
         <div class="flex h-full flex-1 flex-col items-center justify-end gap-1" title="<%= month %> <%= won(amount) %>">
-          <span class="text-[10px] text-zinc-500"><%= amount > 0 ? "#{amount / 10_000}만" : "" %></span>
+          <span class="whitespace-nowrap text-[10px] text-zinc-500 [writing-mode:vertical-rl] md:[writing-mode:horizontal-tb]"><%= amount > 0 ? "#{amount / 10_000}만" : "" %></span>
           <div class="w-full rounded-t bg-indigo-500/70 hover:bg-indigo-400" style="height: <%= (amount * 100.0 / peak).round %>%"></div>
-          <span class="text-[10px] text-zinc-600"><%= month[5..] %>월</span>
+          <span class="text-[10px] text-zinc-600"><%= month[5..] %><span class="hidden md:inline">월</span></span>
         </div>
       <% end %>
     </div>

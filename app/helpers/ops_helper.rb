@@ -19,8 +19,9 @@ module OpsHelper
     "cancelled" => GRAY, "paused" => GRAY
   }.freeze
 
-  INPUT = "w-full rounded-md border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-[13px] text-zinc-100 placeholder:text-zinc-500 outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-600".freeze
-  SMALL_CONTROL = "rounded-md border border-zinc-700 bg-zinc-800 px-2 py-1 text-xs text-zinc-200 outline-none hover:bg-zinc-700 focus:border-zinc-500".freeze
+  # iOS는 16px 미만 입력칸에 초점이 가면 화면을 확대한다. 그래서 md 미만은 text-base.
+  INPUT = "w-full min-w-0 rounded-md border border-zinc-700 bg-zinc-800 px-2.5 py-1.5 text-base text-zinc-100 md:text-[13px] placeholder:text-zinc-500 outline-none focus:border-zinc-500 focus:ring-2 focus:ring-zinc-600".freeze
+  SMALL_CONTROL = "rounded-md border border-zinc-700 bg-zinc-800 px-2 py-1.5 text-base text-zinc-200 md:py-1 md:text-xs outline-none hover:bg-zinc-700 focus:border-zinc-500".freeze
   PRIMARY_BUTTON = "rounded-md bg-zinc-100 px-3 py-1.5 text-[13px] font-medium text-zinc-900 hover:bg-white cursor-pointer".freeze
   SECONDARY_BUTTON = "rounded-md border border-zinc-700 bg-zinc-800 px-2.5 py-1 text-xs text-zinc-200 hover:bg-zinc-700 cursor-pointer".freeze
 
