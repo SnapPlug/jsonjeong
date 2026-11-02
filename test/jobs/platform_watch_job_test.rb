@@ -28,6 +28,21 @@ class PlatformWatchJobTest < ActiveJob::TestCase
     assert_equal [ "🆕 Next.js v16.4.1 (보안)\n우리 1곳: 에이스상사 16.2.6 ⚠️\nhttps://x" ], run_with([ release ])
   end
 
+  test "Supabase 장애에 리전이 있으면 우리 리전과 비교한다" do
+    clients(:acme).update!(supabase_ref: "abc", supabase_region: "ap-northeast-2")
+    other = event(source: "supabase", external_id: "s1", title: "Storage uploads failing in us-east-1")
+    assert_equal [ "🟠 Supabase 장애: Storage uploads failing in us-east-1 (investigating)\n우리 리전 아님: 에이스상사 ap-northeast-2\nhttps://x" ], run_with([ other ])
+    ours = event(source: "supabase", external_id: "s2", title: "Pooler errors in ap-northeast-2")
+    assert_includes run_with([ ours ]).first, "우리 1곳: 에이스상사 ap-northeast-2"
+  end
+
+  test "리전을 모르는 고객사와 리전이 없는 장애는 영향 후보로 둔다" do
+    clients(:acme).update!(supabase_ref: "abc", supabase_region: nil)
+    assert_includes run_with([ event(source: "supabase", external_id: "s3", title: "Pooler errors in us-east-1") ]).first, "우리 1곳: 에이스상사 리전?"
+    clients(:acme).update!(supabase_region: "ap-northeast-2")
+    assert_includes run_with([ event(source: "supabase", external_id: "s4", title: "Logs degraded in multiple regions") ]).first, "우리 1곳: 에이스상사\n"
+  end
+
   test "묵은 소식은 저장만 하고 알리지 않는다" do
     assert_empty run_with([ event(source: "rails", kind: "release", external_id: "v8.1.0", title: "v8.1.0", status: "minor", happened_at: 30.days.ago) ])
     assert_equal 1, PlatformEvent.count

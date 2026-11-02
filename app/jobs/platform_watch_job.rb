@@ -32,7 +32,15 @@ class PlatformWatchJob < ApplicationJob
     def ours(e)
       clients = Client.affected_by(e.source).order(:name)
       return nil if clients.empty?
+      return regional(e, clients) if e.source == "supabase" && e.regions.any?
       list = e.kind == "release" ? clients.map { |c| c.version_mark(e.title) } : clients.map(&:name)
       "우리 #{clients.size}곳: #{list.join(' · ')}"
+    end
+
+    # 장애 리전과 우리 리전 비교. 리전을 모르는 고객사는 영향 후보로 둔다.
+    def regional(e, clients)
+      hit, miss = clients.partition { |c| c.supabase_region.nil? || e.regions.include?(c.supabase_region) }
+      named = ->(list) { list.map { |c| "#{c.name} #{c.supabase_region || '리전?'}" }.join(" · ") }
+      hit.empty? ? "우리 리전 아님: #{named.call(miss)}" : "우리 #{hit.size}곳: #{named.call(hit)}"
     end
 end
