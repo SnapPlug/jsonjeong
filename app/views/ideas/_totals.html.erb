@@ -1,6 +1,6 @@
-<%# 오른쪽 위 통계 카드. 합계 숫자 + 상태별 개수 막대(한 계열이라 한 색, 범례 없음, 값 글자 옆에). 휴대폰(2열)에선 두 칸 전체. %>
+<%# 오른쪽 둘째 줄 통계 카드. 합계 숫자 + 상태별 개수 막대(한 계열이라 한 색, 범례 없음, 값 글자 옆에). 휴대폰(2열)에선 두 칸 전체. %>
 <% counts = Idea.status_counts %>
-<section class="col-span-2 flex flex-col rounded-xl bg-surface p-[14px] text-ink shadow-[0_0_0_1px_#ddd] min-[700px]:col-span-1 min-[700px]:row-start-1 min-[700px]:col-start-3 min-[700px]:p-4 min-[1000px]:col-start-4 min-[1500px]:col-start-5 min-[700px]:min-h-[calc(33vw-56px)] min-[1000px]:min-h-[calc(25vw-56px)] min-[1300px]:min-h-[284px]" aria-label="<%= t("archive.title") %>">
+<section class="col-span-2 flex flex-col rounded-xl bg-surface p-[14px] text-ink shadow-[0_0_0_1px_#ddd] min-[700px]:col-span-1 min-[700px]:row-start-2 min-[700px]:col-start-3 min-[700px]:p-4 min-[1000px]:col-start-4 min-[1500px]:col-start-5 min-[700px]:min-h-[calc(33vw-56px)] min-[1000px]:min-h-[calc(25vw-56px)] min-[1300px]:min-h-[284px]" aria-label="<%= t("archive.title") %>">
   <dl class="grid grid-cols-4 gap-2 border-b border-black/10 pb-2.5 min-[700px]:grid-cols-2 min-[700px]:gap-y-1.5">
     <% [ [ t("archive.ideas_label"), totals[:count] ], [ t("archive.hours"), work_hours(totals[:hours]) ],
          [ t("archive.cost"), usd(totals[:cost_usd]) ], [ t("archive.revenue"), usd(totals[:revenue_usd]) ] ].each do |label, value| %>

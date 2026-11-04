@@ -1,5 +1,5 @@
-<%# 격자 속 제출 안내 카드. 사진 없이 글만. %>
-<%= link_to new_submission_path, class: "flex flex-col justify-between rounded-xl border-2 border-dashed border-brand-dark/40 bg-surface p-[14px] text-ink hover:border-brand-dark min-[700px]:p-5 #{Idea::CARD_HEIGHT}" do %>
+<%# 오른쪽 위 첫 카드. 처음 들어오면 바로 올릴 수 있게 맨 위에 둔다. 휴대폰(2열)에선 맨 위 두 칸 전체. %>
+<%= link_to new_submission_path, class: "col-span-2 flex flex-col justify-between gap-3 rounded-xl border-2 border-dashed border-brand-dark/40 bg-surface p-[14px] text-ink hover:border-brand-dark min-[700px]:col-span-1 min-[700px]:row-start-1 min-[700px]:col-start-3 min-[700px]:p-5 min-[1000px]:col-start-4 min-[1500px]:col-start-5 min-[361px]:h-[calc(50vw-42px)] min-[700px]:h-[calc(33vw-56px)] min-[1000px]:h-[calc(25vw-56px)] min-[1300px]:h-[284px]" do %>
   <div>
     <p class="text-[15px] font-extrabold leading-tight min-[700px]:text-xl"><%= t("submit.card_title") %></p>
     <p class="mt-2 line-clamp-4 text-[12px] leading-snug text-muted min-[700px]:text-sm"><%= t("submit.card_body") %></p>
