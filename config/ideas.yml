@@ -6,6 +6,26 @@
 # screen: true = 카드 사진이 실제 만든 화면(캡처). 없으면 Unsplash 사진. 화면 캡처는 글자가 많아 더 어둡게 덮는다.
 # 회고글: app/views/ideas/retros/_<slug 밑줄>.{ko,en}.html.erb 가 있으면 카드에 링크가 생긴다.
 
+- slug: grabreceipts
+  screen: true
+  batch: hundred
+  status: active
+  started_on: 2026-11-03
+  hours: 5.3
+  hours_source: session
+  cost_usd: 10.46
+  revenue_usd: 0
+  ko:
+    title: GrabReceipts
+    summary: Xero에서 증빙 없는 거래를 무료로 찾고, 첨부 파일과 판매 송장 PDF를 ZIP 하나로 받는 도구. 1회 US$49.
+    stuck: 만들고 보니 1위 제품보다 나은 점이 약했다. 빠진 증빙을 찾는 보고서와 거래에 안 붙은 파일로 범위를 넓혔다. 추가 권한에 대한 Xero의 답과 서버 암호화 답을 기다려서 아직 공개하지 못했다.
+    human: 제품 이름, 환불 조건, Xero와 서버 업체 문의, 도메인 결제, 화면을 Xero와 대조하는 일은 사람이 했다.
+  en:
+    title: GrabReceipts
+    summary: Finds Xero transactions with no receipt for free, then exports attachments and sales invoice PDFs in one ZIP. US$49 once.
+    stuck: Once built, it was not clearly better than the market leader. I widened it with a missing-evidence report and files attached to nothing. It is not live yet. I am waiting on Xero about extra scopes and on the host about disk encryption.
+    human: The product name, the refund terms, emails to Xero and the host, paying for the domain and checking screens against Xero were done by a person.
+
 - slug: workoutbell
   screen: true
   batch: hundred
