@@ -25,6 +25,8 @@ proxy:
     - newsletter.jsonjeong.com
     - ops.jsonjeong.com
   app_port: 80
+  # Cloudflare가 보낸 X-Forwarded-For(진짜 접속자 IP)를 넘긴다. 신뢰 대역은 production.rb의 trusted_proxies.
+  forward_headers: true
 
 # GHCR image registry (free, scoped to the SnapPlug GH account).
 # KAMAL_REGISTRY_PASSWORD is a GitHub PAT with `write:packages` scope — generated and stored in .kamal/secrets.
