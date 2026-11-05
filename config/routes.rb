@@ -43,7 +43,7 @@ Rails.application.routes.draw do
 
     # 아이디어 아카이브 — 한국어는 /, 영어는 /en
     scope "(:locale)", locale: /en/ do
-      root "ideas#index"
+      root "ideas#index", format: false  # "/.env" 같은 탐색 요청이 첫 화면(200)으로 풀리지 않게
       resources :ideas, only: :show, param: :slug
       # 남의 실패 사례 제출 → 아카이브와 비교한 "내 위치" 화면. 승인은 rake submissions:approve
       resources :submissions, only: %i[new create show], param: :token

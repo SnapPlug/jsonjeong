@@ -1,6 +1,11 @@
 require "test_helper"
 
 class IdeasControllerTest < ActionDispatch::IntegrationTest
+  test "probe paths like /.env are not the archive" do
+    get "/.env"
+    assert_response :not_found
+  end
+
   test "korean archive at root" do
     get "/"
     assert_response :success

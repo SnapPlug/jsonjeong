@@ -4,6 +4,7 @@
 class TelegramErrorReporter
   def report(error, handled:, severity:, context:, source: nil)
     return if handled || !Telegram.configured?
+    return if error.is_a?(ActionDispatch::RemoteIp::IpSpoofAttackError) # 위조 헤더 스캔 — Rails가 이미 거절했다
 
     key = "error_telegram:#{error.class}:#{error.message.to_s[0, 80]}"
     return unless Rails.cache.write(key, 1, expires_in: 10.minutes, unless_exist: true)
