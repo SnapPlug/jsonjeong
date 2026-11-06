@@ -15,9 +15,9 @@ class Payment < ApplicationRecord
     pending.where(due_on: ...Date.current).update_all(status: "overdue")
   end
 
-  # 마감일(due_on) 기준 월별 수금 합계. { "2026-09" => 1000000, ... }
+  # 수금일(paid_on) 기준 월별 수금 합계. { "2026-09" => 1000000, ... }
   def self.monthly_paid(months: 12)
     from = (Date.current << (months - 1)).beginning_of_month
-    paid.where(due_on: from..).group("strftime('%Y-%m', due_on)").sum(:amount)
+    paid.where(paid_on: from..).group("strftime('%Y-%m', paid_on)").sum(:amount)
   end
 end

@@ -4,8 +4,8 @@ module Ops
       @open_contracts = Contract.in_progress.count
       @unpaid = Payment.unpaid.includes(contract: :client)
       @unpaid_total = @unpaid.sum(:amount)
-      @paid_this_month = Payment.paid.where(due_on: Date.current.all_month).sum(:amount)
-      @paid_this_year = Payment.paid.where(due_on: Date.current.all_year).sum(:amount)
+      @paid_this_month = Payment.paid.where(paid_on: Date.current.all_month).sum(:amount)
+      @paid_this_year = Payment.paid.where(paid_on: Date.current.all_year).sum(:amount)
 
       @services = Client.monitored.order(:name)
       @latest = HealthLog.latest.group_by(&:client_id).transform_values { |logs| logs.index_by(&:check_type) }

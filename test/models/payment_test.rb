@@ -12,11 +12,11 @@ class PaymentTest < ActiveSupport::TestCase
     assert_equal Date.current, late.paid_on
   end
 
-  test "월별 수금 합계는 마감일 기준으로 수금 완료분만 센다" do
-    month = payments(:acme_deposit).due_on.strftime("%Y-%m")
+  test "월별 수금 합계는 수금일 기준으로 수금 완료분만 센다" do
+    payments(:acme_deposit).update!(paid_on: Date.current) # 마감일(9/1)과 다른 달에 수금
     totals = Payment.monthly_paid(months: 120)
 
-    assert_equal 1_000_000, totals[month]
+    assert_equal 1_000_000, totals[Date.current.strftime("%Y-%m")]
     assert_equal 1_000_000, totals.values.sum
   end
 
