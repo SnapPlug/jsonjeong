@@ -30,7 +30,7 @@ class SecurityAuditTest < ActiveSupport::TestCase
       assert_equal [ "D: 공개 키로 partners의 email, business_number 읽힘" ], SecurityAudit.database("D", "ref")
     end
     stubbing(SecurityAudit, :supabase_query, HealthCheck::Response.new(code: 403, body: "", ms: 0, error: nil)) do
-      assert_equal [ "D: Supabase 점검 실패 (HTTP 403)" ], SecurityAudit.database("D", "ref")
+      assert_equal [ "D: Supabase 확인 못 함 (토큰 계정 밖 프로젝트)" ], SecurityAudit.database("D", "ref")
     end
 
     ENV["SUPABASE_ACCESS_TOKEN"] = ""

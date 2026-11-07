@@ -1,6 +1,5 @@
 require "open3"
 require "net/http"
-require "base64"
 
 # 주간 보안 점검 (매주 월 09:00 KST, config/recurring.yml). 2026-11-08 손 점검에서 찾은 종류만 기계가 다시 본다.
 # 결과는 문제 한 줄씩의 목록이다. 빈 목록이면 이상 없음. 코드 논리 결함(쿠키 값 검증 등)은 못 잡는다 — 분기 손 점검 몫.
@@ -69,6 +68,7 @@ module SecurityAudit
     return [ "#{name}: Supabase 점검 건너뜀 (SUPABASE_ACCESS_TOKEN 미설정)" ] if token.empty?
 
     response = supabase_query(ref, token)
+    return [ "#{name}: Supabase 확인 못 함 (토큰 계정 밖 프로젝트)" ] if [ 403, 404 ].include?(response.code)
     return [ "#{name}: Supabase 점검 실패 (#{response.error || "HTTP #{response.code}"})" ] unless response.code.to_i.between?(200, 299)
     JSON.parse(response.body).map { |row| "#{name}: 공개 키로 #{row['table_name']}의 #{row['columns']} 읽힘" }
   rescue JSON::ParserError => e
@@ -86,7 +86,7 @@ module SecurityAudit
 
   # 점검 키로 접속하면 서버가 강제 명령(/usr/local/sbin/ops-audit-status)만 돌려 "reboot=… password=…"을 준다.
   def self.server(host, label)
-    key = Base64.decode64(ENV["OPS_AUDIT_SSH_KEY"].to_s)
+    key = [ ENV["OPS_AUDIT_SSH_KEY"].to_s.strip ].pack("H*") # 16진수로 넘긴다(.kamal/secrets)
     return [ "서버 #{label}: 점검 키 미설정" ] if key.strip.empty?
 
     out, status = Tempfile.create("ops_audit_key", binmode: true) do |file|
