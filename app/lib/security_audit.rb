@@ -86,7 +86,7 @@ module SecurityAudit
 
   # 점검 키로 접속하면 서버가 강제 명령(/usr/local/sbin/ops-audit-status)만 돌려 "reboot=… password=…"을 준다.
   def self.server(host, label)
-    key = [ ENV["OPS_AUDIT_SSH_KEY"].to_s.strip ].pack("H*") # 16진수로 넘긴다(.kamal/secrets)
+    key = [ ENV["OPS_AUDIT_SSH_KEY"].to_s.gsub(/[^0-9a-f]/i, "") ].pack("H*") # 16진수만 골라 쓴다(.kamal/secrets 주석)
     return [ "서버 #{label}: 점검 키 미설정" ] if key.strip.empty?
 
     out, status = Tempfile.create("ops_audit_key", binmode: true) do |file|
