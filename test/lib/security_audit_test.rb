@@ -29,6 +29,10 @@ class SecurityAuditTest < ActiveSupport::TestCase
     stubbing(SecurityAudit, :supabase_query, rows) do
       assert_equal [ "D: 공개 키로 partners의 email, business_number 읽힘" ], SecurityAudit.database("D", "ref")
     end
+    public_only = HealthCheck::Response.new(code: 201, body: '[{"table_name":"partners","columns":"phone"}]', ms: 0, error: nil)
+    stubbing(SecurityAudit, :supabase_query, public_only) do
+      assert_empty SecurityAudit.database("더온실", "fspjpbbvunuabibaomfh") # 일부러 공개하는 칸은 알리지 않는다
+    end
     stubbing(SecurityAudit, :supabase_query, HealthCheck::Response.new(code: 403, body: "", ms: 0, error: nil)) do
       assert_equal [ "D: Supabase 확인 못 함 (토큰 계정 밖 프로젝트)" ], SecurityAudit.database("D", "ref")
     end

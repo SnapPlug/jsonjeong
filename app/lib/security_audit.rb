@@ -8,6 +8,10 @@ module SecurityAudit
   SERVERS = { "69.55.54.59" => "ops", "158.247.200.165" => "snaptalk·로컬바이브랩", "172.237.119.122" => "GrabReceipts" }.freeze
   PROBE_PATHS = %w[/.env /.git/config].freeze
   SENSITIVE = /email|phone|mobile|business_number|commission|password|token|secret|account_number|birth/i
+  # 일부러 공개하는 칸. Supabase ref => ["테이블.칸"]. 늘 확인한 근거를 단다.
+  PUBLIC_COLUMNS = {
+    "fspjpbbvunuabibaomfh" => %w[partners.phone] # 더온실: 업체 연락처, 업체 페이지 JSON-LD telephone으로 공개(2026-11-08 확인)
+  }.freeze
 
   def self.run
     clients = Client.where.not(status: "paused")
@@ -70,7 +74,11 @@ module SecurityAudit
     response = supabase_query(ref, token)
     return [ "#{name}: Supabase 확인 못 함 (토큰 계정 밖 프로젝트)" ] if [ 403, 404 ].include?(response.code)
     return [ "#{name}: Supabase 점검 실패 (#{response.error || "HTTP #{response.code}"})" ] unless response.code.to_i.between?(200, 299)
-    JSON.parse(response.body).map { |row| "#{name}: 공개 키로 #{row['table_name']}의 #{row['columns']} 읽힘" }
+    allowed = PUBLIC_COLUMNS.fetch(ref, [])
+    JSON.parse(response.body).filter_map do |row|
+      columns = row["columns"].split(", ").reject { |column| allowed.include?("#{row['table_name']}.#{column}") }
+      "#{name}: 공개 키로 #{row['table_name']}의 #{columns.join(', ')} 읽힘" if columns.any?
+    end
   rescue JSON::ParserError => e
     [ "#{name}: Supabase 응답 해석 실패 (#{e.message[0, 60]})" ]
   end
