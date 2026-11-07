@@ -53,6 +53,8 @@ env:
     - TELEGRAM_CHAT_ID
     - TELEGRAM_ADMIN_CHAT_ID
     - TELEGRAM_WEBHOOK_SECRET
+    - OPS_AUDIT_SSH_KEY       # 주간 보안 점검: 서버 상태 전용 키
+    - SUPABASE_ACCESS_TOKEN   # 주간 보안 점검: 공개 키로 읽히는 칸 확인
     - HEALTHCHECKS_URL
     - OPS_PASSWORD
 

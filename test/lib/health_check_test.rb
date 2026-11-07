@@ -58,6 +58,7 @@ class HealthCheckTest < ActiveSupport::TestCase
 
   FakeHttp = Struct.new(:code, :body, :location) do
     def [](name) = name.to_s.casecmp?("location") ? location : nil
+    def to_hash = { "location" => [ location ].compact }
   end
 
   test "get은 리다이렉트를 따라가 마지막 응답을 돌려준다" do

@@ -5,7 +5,9 @@ require "json"
 # 결과는 HealthLog 한 줄로 남고, 알릴지는 HealthLog.transition이 정한다.
 module HealthCheck
   Result = Data.define(:ok, :status_code, :ms, :error)
-  Response = Data.define(:code, :body, :ms, :error)
+  Response = Data.define(:code, :body, :ms, :error, :headers) do
+    def initialize(code:, body:, ms:, error:, headers: {}) = super
+  end
   TIMEOUT = 10
 
   def self.run(client, check_type, retry_delay: 2)
@@ -48,7 +50,7 @@ module HealthCheck
       break unless response.code.to_i.between?(300, 399) && location
       uri = URI.join(uri.to_s, location)
     end
-    Response.new(code: response.code.to_i, body: response.body, ms: elapsed(started), error: nil)
+    Response.new(code: response.code.to_i, body: response.body, ms: elapsed(started), error: nil, headers: response.to_hash)
   rescue => e
     Response.new(code: nil, body: nil, ms: elapsed(started), error: "#{e.class}: #{e.message}")
   end

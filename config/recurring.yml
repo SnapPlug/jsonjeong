@@ -10,6 +10,9 @@ production:
   purge_health_logs:
     command: "HealthLog.purge!"
     schedule: every day at 3am
+  security_audit:
+    class: SecurityAuditJob
+    schedule: "0 0 * * 1"   # 월요일 0시 UTC = 09:00 KST
   mark_overdue:
     command: "Payment.mark_overdue!; Contract.mark_overdue!"
     schedule: every day at 6am
