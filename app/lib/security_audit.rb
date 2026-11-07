@@ -89,7 +89,7 @@ module SecurityAudit
     key = Base64.decode64(ENV["OPS_AUDIT_SSH_KEY"].to_s)
     return [ "서버 #{label}: 점검 키 미설정" ] if key.strip.empty?
 
-    out, status = Tempfile.create("ops_audit_key") do |file|
+    out, status = Tempfile.create("ops_audit_key", binmode: true) do |file|
       file.write(key)
       file.flush
       File.chmod(0o600, file.path)
