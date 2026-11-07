@@ -25,7 +25,7 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  # config.assume_ssl = true
+  config.assume_ssl = true # Cloudflare·kamal-proxy가 HTTPS를 끝낸다
 
   # Cloudflare 대역을 프록시로 믿어야 request.remote_ip가 진짜 접속자가 된다(로그인 시도 제한의 기준).
   # ponytail: 대역을 박아 둠. Cloudflare가 대역을 바꾸면 https://www.cloudflare.com/ips 로 갱신.
@@ -37,10 +37,10 @@ Rails.application.configure do
   ].map { |range| IPAddr.new(range) }
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  # config.force_ssl = true
+  config.force_ssl = true # 로그인 쿠키 secure + HSTS (2026-11-08 점검)
 
   # Skip http-to-https redirect for the default health check endpoint.
-  # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
+  config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } }, hsts: { subdomains: false } }
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
