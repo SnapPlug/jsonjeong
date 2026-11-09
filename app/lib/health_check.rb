@@ -32,7 +32,7 @@ module HealthCheck
     return if url.empty?
     Net::HTTP.get_response(URI(url))
   rescue => e
-    Rails.logger.warn("[health_check] heartbeat 실패: #{e.class} #{e.message}")
+    Rails.logger.warn("[health_check] heartbeat 실패: #{e.class}") # 메시지엔 핑 주소(=비밀)가 실릴 수 있다
   end
 
   MAX_REDIRECTS = 3

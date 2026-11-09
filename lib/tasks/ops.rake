@@ -26,6 +26,6 @@ namespace :ops do
     secret = ENV.fetch("TELEGRAM_WEBHOOK_SECRET")
     url = "https://ops.jsonjeong.com/telegram/webhook"
     r = Telegram.call("setWebhook", url:, secret_token: secret, allowed_updates: [ "message", "channel_post" ])
-    puts "[ops] setWebhook #{r.inspect}"
+    puts "[ops] setWebhook #{r.is_a?(Hash) && r['ok'] ? '성공' : '실패'}" # 응답 전체를 찍지 않는다 — 비밀이 되돌아올 수 있다
   end
 end

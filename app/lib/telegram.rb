@@ -55,7 +55,7 @@ module Telegram
     end
     JSON.parse(http.request(req).body)
   rescue => e
-    Rails.logger.error("[telegram] #{e.class} #{e.message}")
+    Rails.logger.error("[telegram] #{e.class} #{token ? e.message.gsub(token, '[token]') : e.message}") # 오류 글에 주소가 실려도 토큰은 로그에 안 남긴다
     nil
   end
 end
