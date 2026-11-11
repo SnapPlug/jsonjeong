@@ -22,6 +22,19 @@ class Ops::DashboardControllerTest < ActionDispatch::IntegrationTest
     assert_match "올해 수금", response.body
   end
 
+  test "감시를 끈 체크의 옛 실패는 비정상으로 세지 않는다" do
+    sign_in_as users(:one)
+    acme = clients(:acme)
+    acme.health_logs.create!(check_type: "vercel", ok: false, error: "Vercel API 403", ms: 42, checked_at: Time.current)
+    acme.health_logs.create!(check_type: "url", ok: true, ms: 42, checked_at: Time.current)
+    acme.update!(vercel_project_id: nil)
+
+    get "/"
+
+    assert_no_match "Vercel API 403", response.body
+    assert_select "p.text-green-400", text: "0"
+  end
+
   test "ops 서브도메인이 아니면 공개 사이트가 나온다" do
     host! "www.example.com"
     get "/"
