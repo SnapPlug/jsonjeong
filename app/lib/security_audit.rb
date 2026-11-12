@@ -123,6 +123,8 @@ module SecurityAudit
     disk, mem = out[/^disk=(\d+)/, 1], out[/^mem=(\d+)/, 1]
     issues << "디스크 #{disk}% 사용" if disk.to_i >= DISK_LIMIT
     issues << "메모리 여유 #{mem}%" if mem && mem.to_i < MEM_FREE_MIN
+    failed = out[/^failed=(\d+)/, 1].to_i
+    issues << "멈춘 서비스 #{failed}개 (systemctl --failed)" if failed.positive?
     issues.map { |issue| "서버 #{label}: #{issue}" }
   end
 

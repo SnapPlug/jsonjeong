@@ -47,7 +47,8 @@ class SecurityAuditTest < ActiveSupport::TestCase
     assert_empty SecurityAudit.server_issues("S", "reboot=no\npassword=no\n")
     assert_equal [ "서버 S: 디스크 93% 사용", "서버 S: 메모리 여유 6%" ],
                  SecurityAudit.server_issues("S", "reboot=no\npassword=no\ndisk=93\nmem=6\n")
-    assert_empty SecurityAudit.server_issues("S", "reboot=no\npassword=no\ndisk=40\nmem=34\n")
+    assert_empty SecurityAudit.server_issues("S", "reboot=no\npassword=no\ndisk=40\nmem=34\nfailed=0\n")
+    assert_equal [ "서버 S: 멈춘 서비스 2개 (systemctl --failed)" ], SecurityAudit.server_issues("S", "failed=2\n")
 
     ENV["OPS_AUDIT_SSH_KEY"] = ""
     assert_equal [ "서버 S: 점검 키 미설정" ], SecurityAudit.server("1.2.3.4", "S")
