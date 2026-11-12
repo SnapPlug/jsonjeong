@@ -75,7 +75,8 @@ module OpsHelper
   CHECK_ICONS = {
     "url" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5 text-zinc-400"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg>',
     "vercel" => '<svg viewBox="0 0 24 24" fill="currentColor" class="h-3.5 w-3.5 text-zinc-100"><path d="M12 0l12 20.785H0L12 0z"/></svg>',
-    "supabase" => '<svg viewBox="0 0 24 24" fill="#3ECF8E" class="h-3.5 w-3.5"><path d="M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C-.33 13.427.65 15.455 2.409 15.455h9.579l.113 7.51c.014.985 1.259 1.408 1.873.636l9.262-11.653c1.093-1.375.113-3.403-1.645-3.403h-9.642z"/></svg>'
+    "supabase" => '<svg viewBox="0 0 24 24" fill="#3ECF8E" class="h-3.5 w-3.5"><path d="M11.9 1.036c-.015-.986-1.26-1.41-1.874-.637L.764 12.05C-.33 13.427.65 15.455 2.409 15.455h9.579l.113 7.51c.014.985 1.259 1.408 1.873.636l9.262-11.653c1.093-1.375.113-3.403-1.645-3.403h-9.642z"/></svg>',
+    "server" => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-3.5 w-3.5 text-zinc-400"><rect x="3" y="4" width="18" height="7" rx="1.5"/><rect x="3" y="13" width="18" height="7" rx="1.5"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>'
   }.freeze
 
   # URL 체크는 응답하는 것이 고객사마다 다르다: Rails 서버 · Cloudflare Workers · Next.js(Vercel). 그걸 아이콘으로 보여준다.

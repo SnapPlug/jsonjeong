@@ -1,7 +1,7 @@
 require "net/http"
 require "json"
 
-# 고객사 서비스 생존 확인. 세 가지 체크 전부 HTTP 한 번이고, 실패하면 2초 뒤 한 번 더 본다.
+# 고객사 서비스 생존 확인. url·vercel·supabase는 HTTP 한 번, server는 SSH 한 번. 실패하면 2초 뒤 한 번 더 본다.
 # 결과는 HealthLog 한 줄로 남고, 알릴지는 HealthLog.transition이 정한다.
 module HealthCheck
   Result = Data.define(:ok, :status_code, :ms, :error)
@@ -22,8 +22,16 @@ module HealthCheck
     when "url" then Url.call(client.health_url)
     when "vercel" then Vercel.call(client.vercel_project_id, client.vercel_team_id)
     when "supabase" then Supabase.call(client.supabase_ref)
+    when "server" then server(client.server_host)
     else raise ArgumentError, "알 수 없는 체크: #{check_type}"
     end
+  end
+
+  # 서버 문제(재부팅 대기·비밀번호 로그인·디스크·메모리) 판정은 주간 보안 점검과 같은 SecurityAudit.server를 쓴다.
+  def self.server(host)
+    started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+    issues = SecurityAudit.server(host, host)
+    Result.new(ok: issues.empty?, status_code: nil, ms: elapsed(started), error: issues.join(" · ").presence)
   end
 
   # 감시자 자신의 생존 신호 (Healthchecks.io). 한 바퀴 다 돌았을 때만 보내서, 끊기면 그쪽이 텔레그램으로 알린다.

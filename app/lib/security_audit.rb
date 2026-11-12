@@ -5,7 +5,8 @@ require "net/http"
 # 결과는 문제 한 줄씩의 목록이다. 빈 목록이면 이상 없음. 코드 논리 결함(쿠키 값 검증 등)은 못 잡는다 — 분기 손 점검 몫.
 module SecurityAudit
   # ponytail: 서버가 셋뿐이라 박아 둠. 늘면 여기에 더한다. 각 서버의 authorized_keys에 점검 키가 강제 명령으로 걸려 있다.
-  SERVERS = { "69.55.54.59" => "ops", "158.247.200.165" => "snaptalk·로컬바이브랩", "172.237.119.122" => "GrabReceipts" }.freeze
+  DISK_LIMIT = 90   # 사용률(%) 이상이면 문제
+  MEM_FREE_MIN = 10 # 여유 메모리(%) 미만이면 문제
   PROBE_PATHS = %w[/.env /.git/config].freeze
   SENSITIVE = /email|phone|mobile|business_number|commission|password|token|secret|account_number|birth/i
   # 일부러 공개하는 칸. Supabase ref => ["테이블.칸"]. 늘 확인한 근거를 단다.
@@ -18,7 +19,13 @@ module SecurityAudit
     origins = clients.where.not(health_url: nil).to_h { |c| [ origin(c.health_url), c.name ] }
     origins.flat_map { |url, name| web(name, url) } +
       clients.where.not(supabase_ref: nil).flat_map { |c| database(c.name, c.supabase_ref) } +
-      SERVERS.flat_map { |host, label| server(host, label) }
+      servers(clients).flat_map { |host, label| server(host, label) }
+  end
+
+  # 고객사 정보의 서버 IP로 정한다. 한 서버를 여럿이 쓰면 이름을 이어 붙인다: "158… (snaptalk·로컬바이브랩)"
+  def self.servers(clients)
+    clients.where.not(server_host: nil).group_by(&:server_host)
+      .to_h { |host, cs| [ host, "#{host} (#{cs.map(&:name).join('·')})" ] }
   end
 
   def self.origin(url)
@@ -113,6 +120,9 @@ module SecurityAudit
     issues = []
     issues << "재부팅 대기 (보안 업데이트 미적용)" if out.include?("reboot=yes")
     issues << "SSH 비밀번호 로그인 켜짐" if out.include?("password=yes")
+    disk, mem = out[/^disk=(\d+)/, 1], out[/^mem=(\d+)/, 1]
+    issues << "디스크 #{disk}% 사용" if disk.to_i >= DISK_LIMIT
+    issues << "메모리 여유 #{mem}%" if mem && mem.to_i < MEM_FREE_MIN
     issues.map { |issue| "서버 #{label}: #{issue}" }
   end
 

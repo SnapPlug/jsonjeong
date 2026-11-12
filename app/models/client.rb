@@ -8,7 +8,7 @@ class Client < ApplicationRecord
 
   enum :status, %w[active paused completed].index_by(&:itself), default: "active"
 
-  normalizes :name, :health_url, :vercel_project_id, :vercel_team_id, :supabase_ref, :stack_version,
+  normalizes :name, :health_url, :vercel_project_id, :vercel_team_id, :supabase_ref, :stack_version, :server_host,
              with: ->(value) { value.strip.presence }
 
   validates :name, presence: true, uniqueness: true
@@ -17,7 +17,7 @@ class Client < ApplicationRecord
   # 감시 대상: 일시중지가 아니고 체크할 정보가 하나라도 있는 고객사
   scope :monitored, -> {
     where.not(status: "paused")
-      .where("health_url IS NOT NULL OR vercel_project_id IS NOT NULL OR supabase_ref IS NOT NULL")
+      .where("health_url IS NOT NULL OR vercel_project_id IS NOT NULL OR supabase_ref IS NOT NULL OR server_host IS NOT NULL")
   }
 
   # 플랫폼 소식(PlatformEvent.source)이 닿는 고객사. 일시중지는 뺀다.
@@ -49,6 +49,6 @@ class Client < ApplicationRecord
 
   # 이 고객사에 적용되는 체크 종류 (HealthLog::CHECK_TYPES 중)
   def checks
-    [ ("url" if health_url), ("vercel" if vercel_project_id), ("supabase" if supabase_ref) ].compact
+    [ ("url" if health_url), ("vercel" if vercel_project_id), ("supabase" if supabase_ref), ("server" if server_host) ].compact
   end
 end

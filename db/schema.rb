@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_220000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_12_233734) do
   create_table "clients", force: :cascade do |t|
     t.string "name", null: false
     t.string "kind", default: "other", null: false
@@ -24,6 +24,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_220000) do
     t.datetime "updated_at", null: false
     t.string "stack_version"
     t.string "supabase_region"
+    t.string "server_host"
     t.index ["name"], name: "index_clients_on_name", unique: true
   end
 

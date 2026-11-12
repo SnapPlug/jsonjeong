@@ -88,4 +88,17 @@ class HealthCheckTest < ActiveSupport::TestCase
     end
     assert_equal 2, calls
   end
+
+  test "서버 체크는 서버 문제가 없으면 정상이고, 있으면 문제를 사유에 싣는다" do
+    client = clients(:acme)
+    client.server_host = "1.2.3.4"
+    assert_includes client.checks, "server"
+
+    stubbing(SecurityAudit, :server, []) { assert HealthCheck.call(client, "server").ok }
+    stubbing(SecurityAudit, :server, [ "서버 1.2.3.4: 디스크 93% 사용" ]) do
+      result = HealthCheck.call(client, "server")
+      assert_not result.ok
+      assert_equal "서버 1.2.3.4: 디스크 93% 사용", result.error
+    end
+  end
 end

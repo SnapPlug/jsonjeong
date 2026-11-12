@@ -1,6 +1,6 @@
 class HealthLog < ApplicationRecord
-  CHECK_TYPES = %w[url vercel supabase].freeze
-  LABELS = { "url" => "URL", "vercel" => "Vercel", "supabase" => "Supabase" }.freeze
+  CHECK_TYPES = %w[url vercel supabase server].freeze
+  LABELS = { "url" => "URL", "vercel" => "Vercel", "supabase" => "Supabase", "server" => "서버" }.freeze
 
   belongs_to :client
 
