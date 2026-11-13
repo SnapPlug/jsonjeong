@@ -5,6 +5,7 @@ class Client < ApplicationRecord
   has_many :contracts, dependent: :destroy
   has_many :payments, through: :contracts
   has_many :health_logs, dependent: :destroy
+  has_many :work_logs, dependent: :destroy
 
   enum :status, %w[active paused completed].index_by(&:itself), default: "active"
 

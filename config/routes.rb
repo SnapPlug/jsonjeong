@@ -21,7 +21,9 @@ Rails.application.routes.draw do
   constraints subdomain: "ops" do
     scope module: :ops, as: :ops do
       root "dashboard#index"
-      resources :clients, only: %i[show update]
+      resources :clients, only: %i[show update] do
+        resources :work_logs, only: :create
+      end
       resources :contracts, only: %i[index new create update]
       resources :payments, only: :update
       resource :health_check, only: :create

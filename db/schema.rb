@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_12_233734) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_13_002907) do
   create_table "clients", force: :cascade do |t|
     t.string "name", null: false
     t.string "kind", default: "other", null: false
@@ -131,8 +131,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_12_233734) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  create_table "work_logs", force: :cascade do |t|
+    t.integer "client_id", null: false
+    t.date "worked_on", null: false
+    t.integer "minutes", null: false
+    t.string "kind", null: false
+    t.string "note"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_work_logs_on_client_id"
+  end
+
   add_foreign_key "contracts", "clients"
   add_foreign_key "health_logs", "clients"
   add_foreign_key "payments", "contracts"
   add_foreign_key "sessions", "users"
+  add_foreign_key "work_logs", "clients"
 end

@@ -109,6 +109,13 @@ module OpsHelper
     [ label, svg.html_safe ] # rubocop:disable Rails/OutputSafety -- 상수 문자열
   end
 
+  # 분 → "1시간 30분" · "45분" · 0이면 "–"
+  def work_minutes(minutes)
+    return "–" if minutes.zero?
+    hours, rest = minutes.divmod(60)
+    [ ("#{hours}시간" if hours.positive?), ("#{rest}분" if rest.positive?) ].compact.join(" ")
+  end
+
   def ok_dot(ok)
     ok.nil? ? "bg-zinc-600" : (ok ? "bg-green-500" : "bg-red-500")
   end

@@ -120,6 +120,8 @@ class CanaryTest < ActionDispatch::IntegrationTest
       hit(:post, "/contracts", params: { client_name: "카나리3", contract: { name: "", amount: 0 } })
       hit(:patch, "/clients/#{client.id}", params: { client: { notes: "메모" } })
       hit(:patch, "/clients/#{client.id}", params: { client: { name: "" } })
+      hit(:post, "/clients/#{client.id}/work_logs", params: { work_log: { worked_on: Date.current, minutes: 30, kind: "security", note: "패치" } })
+      hit(:post, "/clients/#{client.id}/work_logs", params: { work_log: { worked_on: "", minutes: 0, kind: "x" } })
       hit(:patch, "/payments/#{payments(:acme_balance).id}", params: { payment: { status: "paid" } })
       hit(:patch, "/contracts/#{contracts(:acme_first).id}", params: { contract: { status: "in_progress" } })
       hit(:post, "/health_check")

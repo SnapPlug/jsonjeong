@@ -6,6 +6,8 @@ module Ops
       @contracts = @client.contracts.order(starts_on: :desc)
       @payments = @client.payments.includes(:contract).order(:due_on)
       @logs = @client.health_logs.order(checked_at: :desc).limit(40)
+      @work_logs = @client.work_logs.order(worked_on: :desc, id: :desc).limit(20)
+      @work_monthly = @client.work_logs.monthly_minutes
     end
 
     def update

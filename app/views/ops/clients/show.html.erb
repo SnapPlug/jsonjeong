@@ -44,6 +44,38 @@
   </div>
 </section>
 
+<section id="work" class="space-y-2">
+  <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">유지보수 작업 시간</h2>
+  <div class="rounded-lg border border-zinc-800 bg-zinc-900">
+    <div class="grid grid-cols-3 gap-px border-b border-zinc-800 bg-zinc-800 sm:grid-cols-6">
+      <% @work_monthly.each do |month, minutes| %>
+        <div class="bg-zinc-900 px-3 py-2">
+          <p class="text-[11px] text-zinc-500"><%= month %></p>
+          <p class="text-sm font-semibold tabular-nums <%= minutes.zero? ? "text-zinc-600" : "text-zinc-100" %>"><%= work_minutes(minutes) %></p>
+        </div>
+      <% end %>
+    </div>
+    <%= form_with model: WorkLog.new(worked_on: Date.current, kind: "security"), url: ops_client_work_logs_path(@client), class: "flex flex-wrap items-end gap-2 border-b border-zinc-800 p-3" do |f| %>
+      <label class="block space-y-1"><span class="text-xs text-zinc-500">날짜</span><%= f.date_field :worked_on, class: OpsHelper::INPUT %></label>
+      <label class="block w-24 space-y-1"><span class="text-xs text-zinc-500">분</span><%= f.number_field :minutes, min: 1, step: 1, placeholder: "30", class: OpsHelper::INPUT %></label>
+      <label class="block space-y-1"><span class="text-xs text-zinc-500">종류</span><%= f.select :kind, WorkLog::KINDS.map { |k, v| [ v, k ] }, {}, class: OpsHelper::INPUT + " cursor-pointer" %></label>
+      <label class="block min-w-40 flex-1 space-y-1"><span class="text-xs text-zinc-500">메모</span><%= f.text_field :note, placeholder: "Next.js 16.4.5 패치", class: OpsHelper::INPUT %></label>
+      <%= f.submit "기록", class: OpsHelper::PRIMARY_BUTTON %>
+    <% end %>
+    <div class="divide-y divide-zinc-800 text-xs">
+      <% @work_logs.each do |log| %>
+        <div class="flex flex-wrap items-center gap-x-3 gap-y-1 px-4 py-1.5">
+          <span class="w-20 text-zinc-500"><%= log.worked_on %></span>
+          <span class="w-16 text-zinc-300"><%= WorkLog::KINDS[log.kind] %></span>
+          <span class="w-14 tabular-nums text-zinc-100"><%= log.minutes %>분</span>
+          <span class="min-w-0 flex-1 truncate text-zinc-400"><%= log.note %></span>
+        </div>
+      <% end %>
+      <% if @work_logs.empty? %><p class="p-4 text-center text-zinc-500">아직 기록이 없습니다</p><% end %>
+    </div>
+  </div>
+</section>
+
 <section class="space-y-2">
   <h2 class="text-xs font-medium uppercase tracking-wide text-zinc-500">서비스 정보 · 고객사 설정</h2>
   <%= form_with model: @client, url: ops_client_path(@client), class: "grid grid-cols-1 gap-4 rounded-lg border border-zinc-800 bg-zinc-900 p-4 md:grid-cols-2" do |f| %>
